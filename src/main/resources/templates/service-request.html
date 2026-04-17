@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Service Request - CarFix Rwanda</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+
+<div class="service-request-page">
+    <div class="service-request-wrapper">
+
+        <div class="service-request-left">
+            <div class="request-badge">CARFIX RWANDA</div>
+            <h1>Request Vehicle Service</h1>
+            <p>
+                Submit a repair or maintenance request and get connected to the
+                right mechanic based on your vehicle and service needs.
+            </p>
+
+            <a href="/mechanics" class="request-submit-btn">Browse Mechanics</a>
+            <div class="request-info-grid">
+                <div class="request-info-card">
+                    <h3>Choose Your Vehicle</h3>
+                    <p>Select one of your saved vehicles before submitting a request.</p>
+                </div>
+
+                <div class="request-info-card">
+                    <h3>Describe the Problem</h3>
+                    <p>Give clear issue details so the mechanic understands the service needed.</p>
+                </div>
+
+                <div class="request-info-card">
+                    <h3>Track Progress</h3>
+                    <p>After submission, follow the request from pending to completion.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="service-request-right">
+            <div class="service-request-card">
+                <h2>Request Details</h2>
+
+                <form>
+                    <div class="service-request-grid">
+
+                        <div class="form-group full">
+                            <label>Select Vehicle</label>
+                            <select>
+                                <option>Select your vehicle</option>
+                                <option>Toyota RAV4 - RAB 123 A</option>
+                                <option>Hyundai Tucson - RAE 456 K</option>
+                                <option>Volkswagen Golf - RAA 987 T</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Service Type</label>
+                            <select>
+                                <option>Select service type</option>
+                                <option>Engine Repair</option>
+                                <option>Brake Service</option>
+                                <option>Electrical Diagnosis</option>
+                                <option>Transmission Repair</option>
+                                <option>Oil Change</option>
+                                <option>Body Work</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Urgency</label>
+                            <select>
+                                <option>Select urgency</option>
+                                <option>Low</option>
+                                <option>Medium</option>
+                                <option>High</option>
+                                <option>Critical</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full">
+                            <label>Preferred Mechanic</label>
+                            <select>
+                                <option>Select mechanic (optional)</option>
+                                <option>Jean Bosco</option>
+                                <option>Fabrice Kwizera</option>
+                                <option>Aline Uwera</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full">
+                            <label>Problem Title</label>
+                            <input type="text" placeholder="e.g. Brake noise when driving">
+                        </div>
+
+                        <div class="form-group full">
+                            <label>Problem Description</label>
+                            <textarea placeholder="Describe the issue in detail..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Preferred Date</label>
+                            <input type="date">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Preferred Time</label>
+                            <input type="time">
+                        </div>
+
+                        <div class="form-group full">
+                            <label>Pickup / Garage Location Notes</label>
+                            <input type="text" placeholder="e.g. Nyarutarama, near MTN center">
+                        </div>
+
+                    </div>
+
+                    <div class="service-request-actions">
+                        <a href="/customer-dashboard" class="request-cancel-btn">Cancel</a>
+                        <button type="submit" class="request-submit-btn">Submit Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

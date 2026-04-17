@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Dashboard - CarFix Rwanda</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <aside class="admin-sidebar">
+        <div>
+            <div class="admin-brand">CarFix Rwanda</div>
+            <div class="admin-subtitle">ADMIN CONSOLE</div>
+
+            <nav class="admin-menu">
+                <a href="/admin-dashboard" class="active">Overview</a>
+                <a href="/customer-dashboard">User Management</a>
+                <a href="/mechanics">Mechanics</a>
+                <a href="/service-request">Requests</a>
+                <a href="#">Analytics</a>
+                <a href="#">Settings</a>
+            </nav>
+        </div>
+
+        <a href="/admin-dashboard" class="admin-report-btn">+ Generate Report</a>
+    </aside>
+
+    <main class="admin-main">
+
+        <header class="admin-topbar">
+            <div class="admin-search-wrap">
+                <input type="text" placeholder="Search users, mechanics, requests..." class="admin-search">
+            </div>
+
+            <div class="admin-top-actions">
+                <div class="admin-top-icon">🔔</div>
+                <div class="admin-top-icon">?</div>
+
+                <div class="admin-userbox">
+                    <div class="admin-avatar">A</div>
+                    <div>
+                        <div class="admin-user-name">Admin User</div>
+                        <div class="admin-user-role">Super Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="admin-hero-cards">
+            <div class="admin-summary-card">
+                <div class="summary-top">
+                    <div class="summary-icon blue">👥</div>
+                    <div class="summary-growth green">+12%</div>
+                </div>
+                <h4>Total Users</h4>
+                <h2>12,482</h2>
+                <p>10.2k Customers • 2.2k Mechanics</p>
+            </div>
+
+            <div class="admin-summary-card">
+                <div class="summary-top">
+                    <div class="summary-icon gray">💳</div>
+                    <div class="summary-growth green">+8.4%</div>
+                </div>
+                <h4>Total Revenue</h4>
+                <h2>RWF 42.8M</h2>
+                <p>Fiscal period ending Dec 2024</p>
+            </div>
+
+            <div class="admin-summary-card wide">
+                <div class="panel-header no-margin">
+                    <div>
+                        <h4>Active Service Requests</h4>
+                        <h2>1,842</h2>
+                        <p>Peak hour load</p>
+                    </div>
+                </div>
+
+                <div class="admin-mini-chart">
+                    <span></span>
+                    <span></span>
+                    <span class="highlight"></span>
+                    <span></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="admin-dashboard-grid">
+
+            <div class="admin-primary-column">
+
+                <div class="dashboard-panel">
+                    <div class="panel-header">
+                        <h3>Active Repair Status</h3>
+                        <a href="#">Full Registry</a>
+                    </div>
+
+                    <table class="admin-table refined-table">
+                        <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Vehicle & Issue</th>
+                            <th>Assigned Mechanic</th>
+                            <th>Status</th>
+                            <th>Timer</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>#RX-9012</td>
+                            <td>
+                                <strong>Toyota RAV4 2022</strong><br>
+                                <small>Engine Misfire Diagnostic</small>
+                            </td>
+                            <td>Jean-Paul N.</td>
+                            <td><span class="status-pill blue">In Progress</span></td>
+                            <td>1h 42m</td>
+                        </tr>
+                        <tr>
+                            <td>#RX-8944</td>
+                            <td>
+                                <strong>Volkswagen ID.4</strong><br>
+                                <small>Software Update Required</small>
+                            </td>
+                            <td>Eric Mugisha</td>
+                            <td><span class="status-pill orange">Awaiting Parts</span></td>
+                            <td>4d 12h</td>
+                        </tr>
+                        <tr>
+                            <td>#RX-9055</td>
+                            <td>
+                                <strong class="danger-text">Mercedes C300</strong><br>
+                                <small class="danger-text">Transmission Failure</small>
+                            </td>
+                            <td>— Unassigned —</td>
+                            <td><span class="status-pill red">Flagged/Delayed</span></td>
+                            <td class="danger-text">Critical</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="dashboard-panel">
+                    <h3>Mechanic Verification Queue</h3>
+
+                    <div class="verification-grid">
+                        <div class="verification-card refined">
+                            <div class="verification-profile">
+                                <div class="verification-avatar">FK</div>
+                                <div>
+                                    <h4>Fabrice Kwizera</h4>
+                                    <p>Specialty: Hybrid Engines</p>
+                                </div>
+                            </div>
+
+                            <div class="verification-tags">
+                                <span>ID Verified</span>
+                                <span>Garage Inspected</span>
+                            </div>
+
+                            <div class="verification-actions">
+                                <button class="approve-btn">Approve</button>
+                                <button class="reject-btn">Reject</button>
+                            </div>
+                        </div>
+
+                        <div class="verification-card refined">
+                            <div class="verification-profile">
+                                <div class="verification-avatar alt">AU</div>
+                                <div>
+                                    <h4>Aline Uwera</h4>
+                                    <p>Specialty: Body Work & Paint</p>
+                                </div>
+                            </div>
+
+                            <div class="verification-tags">
+                                <span>Certificate Pending</span>
+                                <span>Garage Inspected</span>
+                            </div>
+
+                            <div class="verification-actions">
+                                <button class="approve-btn">Approve</button>
+                                <button class="reject-btn">Reject</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-panel">
+                    <div class="panel-header">
+                        <h3>Recent User Registrations</h3>
+                        <div class="mini-filters">
+                            <span>All Roles</span>
+                            <span>Last 24 Hours</span>
+                        </div>
+                    </div>
+
+                    <div class="recent-users-grid">
+                        <div class="recent-user-card">
+                            <div class="avatar">MN</div>
+                            <div>
+                                <h4>Musa Ndahiro</h4>
+                                <p>CUSTOMER</p>
+                            </div>
+                        </div>
+
+                        <div class="recent-user-card">
+                            <div class="avatar grayish">SK</div>
+                            <div>
+                                <h4>Solange Kaneza</h4>
+                                <p>MECHANIC</p>
+                            </div>
+                        </div>
+
+                        <div class="recent-user-card">
+                            <div class="avatar">PK</div>
+                            <div>
+                                <h4>Pascal Kayumba</h4>
+                                <p>CUSTOMER</p>
+                            </div>
+                        </div>
+
+                        <div class="recent-user-card">
+                            <div class="avatar red">EU</div>
+                            <div>
+                                <h4>Emmanuel Umwali</h4>
+                                <p>MECHANIC</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="admin-secondary-column">
+
+                <div class="dashboard-side-panel">
+                    <h4>SYSTEM HEALTH</h4>
+
+                    <div class="health-item">
+                        <span>API Response Time</span>
+                        <strong>124ms</strong>
+                    </div>
+                    <div class="health-bar"><span style="width: 70%;"></span></div>
+
+                    <div class="health-item">
+                        <span>Database Load</span>
+                        <strong>42%</strong>
+                    </div>
+                    <div class="health-bar"><span style="width: 42%;"></span></div>
+
+                    <div class="system-ok">● ALL SYSTEMS OPERATIONAL</div>
+                </div>
+
+                <div class="dashboard-side-panel">
+                    <h3>Live Activity</h3>
+
+                    <div class="activity-item">
+                        <strong>New Mechanic Registered</strong>
+                        <p>David Rukundo joined the platform.</p>
+                        <small>2 minutes ago</small>
+                    </div>
+
+                    <div class="activity-item">
+                        <strong>Service Completed</strong>
+                        <p>Request #RX-8822 completed successfully.</p>
+                        <small>15 minutes ago</small>
+                    </div>
+
+                    <div class="activity-item">
+                        <strong>High Demand Alert</strong>
+                        <p>Surge in requests from Gasabo District.</p>
+                        <small>45 minutes ago</small>
+                    </div>
+
+                    <div class="activity-item">
+                        <strong>System Backup</strong>
+                        <p>Automated cloud redundancy complete.</p>
+                        <small>1 hour ago</small>
+                    </div>
+
+                    <button class="view-logs-btn">View All Logs</button>
+                </div>
+
+            </div>
+
+        </section>
+    </main>
+</div>
+
+</body>
+</html>

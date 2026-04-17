@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>CarFix Rwanda</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="nav-left">
+        <div class="logo">CarFix Rwanda</div>
+    </div>
+
+    <nav class="nav-center">
+        <a href="/" class="active">Find Mechanics</a>
+        <a href="/vehicle-registration">My Vehicles</a>
+        <a href="/service-request">Services</a>
+        <a href="/customer-dashboard">Dashboard</a>
+    </nav>
+
+    <div class="nav-right">
+        <a href="/customer-dashboard" class="signin-link">Sign In</a>
+        <a href="/customer-dashboard" class="register-btn">Register</a>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="hero-overlay"></div>
+
+    <div class="hero-inner">
+        <div class="hero-text">
+            <h1>Expert Care for Your Car, <span>Anywhere</span> in Rwanda.</h1>
+            <p>
+                Connecting car owners with verified, professional mechanics.
+                Precision engineering meets seamless digital booking for a
+                maintenance experience like no other.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="/mechanics" class="primary-btn">Find a Mechanic →</a>
+                <a href="/add-mechanic" class="secondary-btn">Register My Garage</a>
+            </div>
+        </div>
+
+        <div class="search-card">
+            <h2>Quick Search</h2>
+
+            <label>Vehicle Brand</label>
+            <select>
+                <option>Select Brand</option>
+                <option>Toyota</option>
+                <option>BMW</option>
+                <option>Mercedes</option>
+                <option>Hyundai</option>
+            </select>
+
+            <label>Model</label>
+            <input type="text" placeholder="e.g. Hilux, Golf, C-Class">
+
+            <label>Specialization</label>
+            <div class="specialization-grid">
+                <button type="button">Engine</button>
+                <button type="button">Electrical</button>
+                <button type="button">Bodywork</button>
+                <button type="button">Transmission</button>
+            </div>
+
+            <button class="search-btn">Search Specialists</button>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="section-tag">OUR EDGE</div>
+    <h2>Why CarFix Rwanda?</h2>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon blue">👨‍🔧</div>
+            <h3>Specialized Mechanics</h3>
+            <p>
+                Access a curated network of technicians who specialize in your
+                specific vehicle make and model.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon gray">🛡️</div>
+            <h3>Verified Reviews</h3>
+            <p>
+                Make decisions based on honest feedback from car owners who
+                have used the services before you.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon peach">⏱️</div>
+            <h3>Easy Tracking</h3>
+            <p>
+                Follow your car’s repair journey in real time from diagnosis
+                to completion.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="how-it-works">
+    <h2>How it Works</h2>
+    <p class="section-subtitle">Three simple steps to professional automotive care.</p>
+
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Search</h3>
+            <p>Enter your vehicle details and service needs to find the right mechanic near you.</p>
+            <div class="step-image">Search</div>
+        </div>
+
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Book</h3>
+            <p>Choose a mechanic, compare services, and book at your convenient time.</p>
+            <div class="step-image">Book</div>
+        </div>
+
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Track</h3>
+            <p>Receive updates, service progress, and digital reports in your dashboard.</p>
+            <div class="step-image">Track</div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="cta-box">
+        <h2>Ready for a Better Way to Maintain Your Car?</h2>
+        <div class="cta-buttons">
+            <a href="/customer-dashboard" class="light-btn">Get Started Now</a>
+            <a href="/service-request" class="outline-btn">Support Center</a>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-grid">
+        <div>
+            <h3>CarFix Rwanda</h3>
+            <p>
+                Building the future of automotive services in Rwanda through
+                transparency, expertise, and digital precision.
+            </p>
+        </div>
+
+        <div>
+            <h4>Platform</h4>
+            <a href="#">Mechanic Flow</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </div>
+
+        <div>
+            <h4>Support</h4>
+            <a href="#">Contact Support</a>
+            <a href="#">Help Center</a>
+            <a href="#">Service Status</a>
+        </div>
+
+        <div>
+            <h4>Newsletter</h4>
+            <div class="newsletter">
+                <input type="email" placeholder="Email Address">
+                <button>Join</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        © 2024 CarFix Rwanda. Precision engineering for the road ahead.
+    </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Customer Dashboard - CarFix Rwanda</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+
+<div class="customer-layout">
+
+    <aside class="customer-sidebar">
+        <div>
+            <div class="customer-brand">CarFix Rwanda</div>
+            <div class="customer-subtitle">CUSTOMER PORTAL</div>
+
+            <nav class="customer-menu">
+                <a href="/customer-dashboard" class="active">Overview</a>
+                <a href="/vehicle-registration">My Vehicles</a>
+                <a href="/service-request">Requests</a>
+                <a href="/service-request">Bookings</a>
+                <a href="#">Messages</a>
+                <a href="#">Settings</a>
+            </nav>
+        </div>
+
+        <a href="/mechanics" class="customer-action-btn">Find Mechanic</a>
+    </aside>
+
+    <main class="customer-main">
+
+        <header class="customer-topbar">
+            <div class="customer-top-links">
+                <a href="/customer-dashboard" class="active">Dashboard</a>
+                <a href="/mechanics">Find Mechanics</a>
+                <a href="/service-request">Services</a>
+            </div>
+
+            <div class="customer-profile-box">
+                <div class="customer-profile-avatar">AN</div>
+                <div class="customer-profile-name">Ange User</div>
+            </div>
+        </header>
+
+        <section class="customer-summary-grid">
+            <div class="customer-welcome-card">
+                <h3>Customer Dashboard</h3>
+                <p class="small-label">WELCOME BACK</p>
+                <h2>Manage Your Vehicles & Requests</h2>
+                <p class="welcome-text">
+                    Track service requests, view your vehicles, and connect with trusted mechanics across Rwanda.
+                </p>
+            </div>
+
+            <div class="customer-mini-card">
+                <div class="mini-icon blue">🚗</div>
+                <p>MY VEHICLES</p>
+                <h2 th:text="${vehicleCount}">03</h2>
+            </div>
+
+            <div class="customer-mini-card">
+                <div class="mini-icon peach">📋</div>
+                <p>ACTIVE REQUESTS</p>
+                <h2>05</h2>
+            </div>
+        </section>
+
+        <section class="customer-dashboard-grid">
+
+            <div class="customer-left-column">
+
+                <div class="customer-panel">
+                    <div class="panel-header">
+                        <h3>My Vehicles</h3>
+                        <a href="/vehicle-registration">Add Vehicle</a>
+                    </div>
+
+                    <div class="vehicle-grid">
+                        <div class="vehicle-card" th:each="vehicle : ${vehicles}">
+                            <div class="vehicle-icon">🚗</div>
+                            <h4 th:text="${vehicle.vehicleName}">Vehicle Name</h4>
+                            <p>
+                                Plate:
+                                <span th:text="${vehicle.plateNumber}">RAB 123 A</span>
+                            </p>
+                            <small>
+                                <span th:text="${vehicle.year}">2022</span>
+                                •
+                                <span th:text="${vehicle.fuelType}">Petrol</span>
+                                •
+                                <span th:text="${vehicle.transmission}">Automatic</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="customer-panel">
+                    <div class="panel-header">
+                        <h3>Recent Service Requests</h3>
+                        <a href="/service-request">View All</a>
+                    </div>
+
+                    <div class="customer-request-table">
+                        <div class="customer-request-header">
+                            <span>Request</span>
+                            <span>Vehicle</span>
+                            <span>Status</span>
+                            <span>Assigned Mechanic</span>
+                        </div>
+
+                        <div class="customer-request-row">
+                            <span>#RQ-2011</span>
+                            <span>Toyota RAV4</span>
+                            <span><span class="status-pill blue">In Progress</span></span>
+                            <span>Jean Bosco</span>
+                        </div>
+
+                        <div class="customer-request-row">
+                            <span>#RQ-2014</span>
+                            <span>Hyundai Tucson</span>
+                            <span><span class="status-pill orange">Awaiting Parts</span></span>
+                            <span>Eric Mugisha</span>
+                        </div>
+
+                        <div class="customer-request-row">
+                            <span>#RQ-2018</span>
+                            <span>Volkswagen Golf</span>
+                            <span><span class="status-pill green">Completed</span></span>
+                            <span>Fabrice Kwizera</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="customer-right-column">
+
+                <div class="customer-panel">
+                    <div class="panel-header">
+                        <h3>Quick Actions</h3>
+                    </div>
+
+                    <div class="quick-actions-grid">
+                        <a href="/mechanics" class="quick-action-card">
+                            <div class="quick-icon">🔎</div>
+                            <h4>Find Mechanic</h4>
+                            <p>Search mechanics by specialization and vehicle model.</p>
+                        </a>
+
+                        <a href="/service-request" class="quick-action-card">
+                            <div class="quick-icon">📝</div>
+                            <h4>Request Service</h4>
+                            <p>Create a new repair or maintenance request.</p>
+                        </a>
+
+                        <a href="/service-request" class="quick-action-card">
+                            <div class="quick-icon">📍</div>
+                            <h4>Track Progress</h4>
+                            <p>Follow your vehicle’s current service status.</p>
+                        </a>
+
+                        <a href="/mechanics" class="quick-action-card">
+                            <div class="quick-icon">⭐</div>
+                            <h4>Review Service</h4>
+                            <p>Rate mechanics and leave service feedback.</p>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="customer-panel">
+                    <h3>Service Progress</h3>
+
+                    <div class="progress-item">
+                        <div class="progress-top">
+                            <strong>Toyota RAV4 - Brake Inspection</strong>
+                            <span>65%</span>
+                        </div>
+                        <div class="progress-bar"><span style="width:65%"></span></div>
+                        <small class="blue-text">Diagnosis & repair in progress</small>
+                    </div>
+
+                    <div class="progress-item">
+                        <div class="progress-top">
+                            <strong>Hyundai Tucson - Engine Service</strong>
+                            <span>30%</span>
+                        </div>
+                        <div class="progress-bar"><span class="orange-bar" style="width:30%"></span></div>
+                        <small class="orange-text">Waiting for replacement parts</small>
+                    </div>
+                </div>
+
+                <div class="customer-panel">
+                    <h3>Recommended Mechanics</h3>
+
+                    <div class="recommended-mechanic">
+                        <div class="rec-avatar">JB</div>
+                        <div>
+                            <h4>Jean Bosco</h4>
+                            <p>Specialist: Toyota • Engine • Suspension</p>
+                        </div>
+                    </div>
+
+                    <div class="recommended-mechanic">
+                        <div class="rec-avatar alt">FK</div>
+                        <div>
+                            <h4>Fabrice Kwizera</h4>
+                            <p>Specialist: Hybrid Systems • Diagnostics</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Mechanics List</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+
+<h1>Mechanics List</h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Full Name</th>
+        <th>Email</th>
+        <th>Phone Number</th>
+        <th>Specialization</th>
+        <th>Supported Vehicle Model</th>
+        <th>Garage Location</th>
+        <th>Availability</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="mechanic : ${mechanics}">
+        <td th:text="${mechanic.id}"></td>
+        <td th:text="${mechanic.user.fullName}"></td>
+        <td th:text="${mechanic.user.email}"></td>
+        <td th:text="${mechanic.user.phone}"></td>
+        <td th:text="${mechanic.specialization}"></td>
+        <td th:text="${mechanic.supportedVehicleModel}"></td>
+        <td th:text="${mechanic.garageLocation}"></td>
+        <td th:text="${mechanic.availabilityStatus}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<br>
+<a th:href="@{/add-mechanic}">Add New Mechanic</a>
+
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Mechanic Dashboard - CarFix Rwanda</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+
+<div class="mechanic-layout">
+
+    <aside class="mechanic-sidebar">
+        <div>
+            <div class="mechanic-brand">CarFix Rwanda</div>
+            <div class="mechanic-subtitle">MECHANIC PORTAL</div>
+
+            <nav class="mechanic-menu">
+                <a href="/mechanic-dashboard" class="active">Overview</a>
+                <a href="/vehicle-registration">My Vehicles</a>
+                <a href="/service-request">Requests</a>
+                <a href="#">Messages</a>
+                <a href="#">Settings</a>
+            </nav>
+        </div>
+
+        <a href="/service-request" class="mechanic-action-btn">Request Service</a>
+    </aside>
+
+    <main class="mechanic-main">
+
+        <header class="mechanic-topbar">
+            <div class="mechanic-top-links">
+                <a href="/mechanic-dashboard" class="active">Dashboard</a>
+                <a href="/mechanics">Find Mechanics</a>
+                <a href="/service-request">Services</a>
+            </div>
+
+            <div class="mechanic-profile-box">
+                <div class="mechanic-profile-avatar">JB</div>
+                <div class="mechanic-profile-name">Jean Bosco</div>
+            </div>
+        </header>
+
+        <section class="mechanic-summary-grid">
+            <div class="mechanic-revenue-card">
+                <h3>Mechanic Dashboard</h3>
+                <p class="small-label">TOTAL REVENUE</p>
+                <h2>RWF 1,240,000</h2>
+                <p class="growth-text">↗ +12.5% from last month</p>
+            </div>
+
+            <div class="mechanic-mini-card">
+                <div class="mini-icon peach">🧰</div>
+                <p>NEW REQUESTS</p>
+                <h2>08</h2>
+            </div>
+
+            <div class="mechanic-mini-card">
+                <div class="mini-icon blue">🛠️</div>
+                <p>ONGOING REPAIRS</p>
+                <h2>14</h2>
+            </div>
+        </section>
+
+        <section class="mechanic-dashboard-grid">
+
+            <div class="mechanic-left-column">
+
+                <div class="mechanic-panel">
+                    <div class="panel-header">
+                        <h3>Service Requests</h3>
+                        <span class="live-badge">LIVE QUEUE</span>
+                    </div>
+
+                    <div class="request-card urgent">
+                        <div class="request-head">
+                            <div>
+                                <h4>Toyota RAV4 (2018)</h4>
+                                <p>Brake noise & suspension check</p>
+                            </div>
+                            <span>2m ago</span>
+                        </div>
+                        <div class="request-actions">
+                            <button class="accept-btn">Accept</button>
+                            <button class="decline-btn">Decline</button>
+                        </div>
+                    </div>
+
+                    <div class="request-card blue-line">
+                        <div class="request-head">
+                            <div>
+                                <h4>Volkswagen Amarok</h4>
+                                <p>Regular engine oil service</p>
+                            </div>
+                            <span>15m ago</span>
+                        </div>
+                        <div class="request-actions">
+                            <button class="accept-btn">Accept</button>
+                            <button class="decline-btn">Decline</button>
+                        </div>
+                    </div>
+
+                    <div class="request-card gray-line">
+                        <div class="request-head">
+                            <div>
+                                <h4>Hyundai Tucson</h4>
+                                <p>Electrical system diagnostics</p>
+                            </div>
+                            <span>1h ago</span>
+                        </div>
+                        <div class="request-actions">
+                            <button class="accept-btn faded">Accept</button>
+                            <button class="decline-btn">Decline</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mechanic-right-column">
+
+                <div class="mechanic-panel">
+                    <div class="panel-header">
+                        <h3>Ongoing Repairs</h3>
+                        <div class="filter-icon">☰</div>
+                    </div>
+
+                    <div class="repair-table">
+                        <div class="repair-header">
+                            <span>Vehicle & Owner</span>
+                            <span>Repair Progress</span>
+                            <span>Status Update</span>
+                        </div>
+
+                        <div class="repair-row">
+                            <div>
+                                <strong>Mercedes-Benz G63</strong>
+                                <p>Owner: Alice Umutoni</p>
+                            </div>
+                            <div>
+                                <div class="progress-bar"><span style="width:65%"></span></div>
+                                <small class="blue-text">Diagnosis (65%)</small>
+                            </div>
+                            <div>
+                                <select>
+                                    <option>Diagnosis</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="repair-row">
+                            <div>
+                                <strong>Toyota Land Cruiser</strong>
+                                <p>Owner: Eric Mugisha</p>
+                            </div>
+                            <div>
+                                <div class="progress-bar"><span class="orange-bar" style="width:30%"></span></div>
+                                <small class="orange-text">Waiting for Parts (30%)</small>
+                            </div>
+                            <div>
+                                <select>
+                                    <option>Waiting for Parts</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="repair-row">
+                            <div>
+                                <strong>Kia Sportage</strong>
+                                <p>Owner: Sarah Kalisa</p>
+                            </div>
+                            <div>
+                                <div class="progress-bar"><span class="green-bar" style="width:90%"></span></div>
+                                <small class="green-text">Final Testing (90%)</small>
+                            </div>
+                            <div>
+                                <select>
+                                    <option>Final Testing</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mechanic-bottom-grid">
+                    <div class="mechanic-profile-card">
+                        <div class="profile-photo">👨‍🔧</div>
+                        <div class="profile-info">
+                            <h3>Jean Bosco</h3>
+                            <p>Lead Systems Engineer</p>
+                            <div class="profile-tags">
+                                <span>BMW</span>
+                                <span>Mercedes</span>
+                                <span>Toyota</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mechanic-target-card">
+                        <h4>Weekly Target</h4>
+                        <p>Complete 20 repairs to unlock Gold badge.</p>
+                        <h2>14/20</h2>
+                        <div class="progress-bar large">
+                            <span style="width:70%"></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+</div>
+
+</body>
+</html>

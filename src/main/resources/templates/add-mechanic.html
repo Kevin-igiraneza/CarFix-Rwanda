@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Mechanic</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+
+<h1>Add Mechanic</h1>
+
+<form th:action="@{/save-mechanic}" method="post">
+    <label>Full Name:</label>
+    <input type="text" name="fullName" required><br><br>
+
+    <label>Email:</label>
+    <input type="email" name="email" required><br><br>
+
+    <label>Phone Number:</label>
+    <input type="text" name="phoneNumber" required><br><br>
+
+    <label>Specialization:</label>
+    <input type="text" name="specialization" required><br><br>
+
+    <label>Supported Vehicle Model:</label>
+    <input type="text" name="supportedVehicleModel" required><br><br>
+
+    <label>Garage Location:</label>
+    <input type="text" name="garageLocation" required><br><br>
+
+    <button type="submit">Save Mechanic</button>
+</form>
+
+<br>
+<a th:href="@{/mechanics}">View Mechanics</a>
+
+</body>
+</html>

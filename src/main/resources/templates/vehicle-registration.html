@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register Vehicle - CarFix Rwanda</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+
+<div class="vehicle-page">
+    <div class="vehicle-form-wrapper">
+        <div class="vehicle-form-left">
+            <div class="vehicle-badge">CARFIX RWANDA</div>
+            <h1>Register Your Vehicle</h1>
+            <p>
+                Add your vehicle details so you can request service, track repairs,
+                and connect with the right mechanic for your car.
+            </p>
+
+            <div class="vehicle-info-cards">
+                <div class="vehicle-info-card">
+                    <h3>Smart Matching</h3>
+                    <p>We match your vehicle with mechanics who support that model.</p>
+                </div>
+
+                <div class="vehicle-info-card">
+                    <h3>Faster Requests</h3>
+                    <p>Once saved, you can submit service requests more quickly.</p>
+                </div>
+
+                <div class="vehicle-info-card">
+                    <h3>Service History</h3>
+                    <p>Keep your vehicles organized in one customer dashboard.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="vehicle-form-right">
+            <div class="vehicle-form-card">
+                <h2>Vehicle Details</h2>
+
+                <form th:action="@{/save-vehicle}" method="post">
+                    <div class="vehicle-form-grid">
+                        <div class="form-group full">
+                            <label>Vehicle Name</label>
+                            <input type="text" name="vehicleName" placeholder="e.g. Toyota RAV4">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Brand</label>
+                            <select name="brand">
+                                <option>Select brand</option>
+                                <option>Toyota</option>
+                                <option>Hyundai</option>
+                                <option>Volkswagen</option>
+                                <option>BMW</option>
+                                <option>Mercedes</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Model</label>
+                            <input type="text" name="model" placeholder="e.g. RAV4">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Year</label>
+                            <input type="number" name="year" placeholder="e.g. 2022">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Plate Number</label>
+                            <input type="text" name="plateNumber" placeholder="e.g. RAB 123 A">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Fuel Type</label>
+                            <select name="fuelType">
+                                <option>Select fuel type</option>
+                                <option>Petrol</option>
+                                <option>Diesel</option>
+                                <option>Hybrid</option>
+                                <option>Electric</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Transmission</label>
+                            <select name="transmission">
+                                <option>Select transmission</option>
+                                <option>Automatic</option>
+                                <option>Manual</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full">
+                            <label>Notes</label>
+                            <textarea name="notes" placeholder="Add any important vehicle notes..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="vehicle-form-actions">
+                        <a href="/customer-dashboard" class="vehicle-cancel-btn">Cancel</a>
+                        <button type="submit" class="vehicle-save-btn">Save Vehicle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

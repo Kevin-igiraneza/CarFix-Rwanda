@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="9aa15113-e367-41a4-89e6-143766043ed8" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/config/SecurityConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/controller/CustomerDashboardController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/controller/CustomerVehicleController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/enums/AvailabilityStatus.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/enums/RequestStatus.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/enums/Role.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/model/CustomerVehicle.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/model/ServiceRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/model/User.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/repository/CustomerVehicleRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/repository/UserRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/service/CustomerVehicleService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/resources/templates/admin-dashboard.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/resources/templates/customer-dashboard.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/resources/templates/mechanic-dashboard.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/resources/templates/service-request.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/resources/templates/vehicle-registration.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CarFix-Rwanda/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/CarFix-Rwanda/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/controller/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/controller/HomeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/controller/MechanicController.java" beforeDir="false" afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/controller/MechanicController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/model/Mechanic.java" beforeDir="false" afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/java/com/carfix/carfixrwanda/model/Mechanic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CarFix-Rwanda/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CarFix-Rwanda/src/main/resources/static/css/style.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CarFix-Rwanda/src/main/resources/templates/add-mechanic.html" beforeDir="false" afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/resources/templates/add-mechanic.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CarFix-Rwanda/src/main/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/resources/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CarFix-Rwanda/src/main/resources/templates/mechanics.html" beforeDir="false" afterPath="$PROJECT_DIR$/CarFix-Rwanda/src/main/resources/templates/mechanics.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/carfix/carfixrwanda/CarfixrwandaApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/carfix/carfixrwanda/controller/HomeController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/carfix/carfixrwanda/controller/MechanicController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/carfix/carfixrwanda/model/Mechanic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/carfix/carfixrwanda/repository/MechanicRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/carfix/carfixrwanda/service/MechanicService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/style.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/add-mechanic.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/mechanics.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/carfix/carfixrwanda/CarfixrwandaApplicationTests.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/CarFix-Rwanda" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="3CTeMq8Ufpnx0NHuiN0deOpklba" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "Spring Boot.CarfixrwandaApplication.executor": "Run",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9aa15113-e367-41a4-89e6-143766043ed8" name="Changes" comment="" />
+      <created>1776413943826</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1776413943826</updated>
+      <workItem from="1776413948348" duration="27000" />
+    </task>
+    <servers />
+  </component>
+</project>

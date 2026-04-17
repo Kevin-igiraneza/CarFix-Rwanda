@@ -14,7 +14,7 @@
             <div class="admin-subtitle">ADMIN CONSOLE</div>
 
             <nav class="admin-menu">
-                <a href="/admin-dashboard" class="active">Overview</a>
+                <a href="/real-admin-dashboard" class="active">Overview</a>
                 <a href="/customer-dashboard">User Management</a>
                 <a href="/mechanics">Mechanics</a>
                 <a href="/service-request">Requests</a>
@@ -23,7 +23,7 @@
             </nav>
         </div>
 
-        <a href="/admin-dashboard" class="admin-report-btn">+ Generate Report</a>
+        <a href="/real-admin-dashboard" class="admin-report-btn">+ Generate Report</a>
     </aside>
 
     <main class="admin-main">
@@ -51,29 +51,29 @@
             <div class="admin-summary-card">
                 <div class="summary-top">
                     <div class="summary-icon blue">👥</div>
-                    <div class="summary-growth green">+12%</div>
+                    <div class="summary-growth green">Live</div>
                 </div>
-                <h4>Total Users</h4>
-                <h2>12,482</h2>
-                <p>10.2k Customers • 2.2k Mechanics</p>
+                <h4>Total Vehicles</h4>
+                <h2 th:text="${vehicleCount}">0</h2>
+                <p>Registered vehicles in the platform</p>
             </div>
 
             <div class="admin-summary-card">
                 <div class="summary-top">
-                    <div class="summary-icon gray">💳</div>
-                    <div class="summary-growth green">+8.4%</div>
+                    <div class="summary-icon gray">🧰</div>
+                    <div class="summary-growth green">Live</div>
                 </div>
-                <h4>Total Revenue</h4>
-                <h2>RWF 42.8M</h2>
-                <p>Fiscal period ending Dec 2024</p>
+                <h4>Total Mechanics</h4>
+                <h2 th:text="${mechanicCount}">0</h2>
+                <p>Verified and listed mechanics</p>
             </div>
 
             <div class="admin-summary-card wide">
                 <div class="panel-header no-margin">
                     <div>
                         <h4>Active Service Requests</h4>
-                        <h2>1,842</h2>
-                        <p>Peak hour load</p>
+                        <h2 th:text="${requestCount}">0</h2>
+                        <p>Current requests in the system</p>
                     </div>
                 </div>
 
@@ -107,35 +107,19 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>#RX-9012</td>
+                        <tr th:each="request : ${requests}">
+                            <td th:text="${'#RX-' + request.id}">#RX-1</td>
                             <td>
-                                <strong>Toyota RAV4 2022</strong><br>
-                                <small>Engine Misfire Diagnostic</small>
+                                <strong th:text="${request.customerVehicle.vehicleName}">Toyota RAV4</strong><br>
+                                <small th:text="${request.problemTitle}">Brake issue</small>
                             </td>
-                            <td>Jean-Paul N.</td>
-                            <td><span class="status-pill blue">In Progress</span></td>
-                            <td>1h 42m</td>
-                        </tr>
-                        <tr>
-                            <td>#RX-8944</td>
+                            <td th:text="${request.preferredMechanic != null && !request.preferredMechanic.isEmpty() ? request.preferredMechanic : 'Not Assigned'}">
+                                Not Assigned
+                            </td>
                             <td>
-                                <strong>Volkswagen ID.4</strong><br>
-                                <small>Software Update Required</small>
+                                <span class="status-pill blue" th:text="${request.status}">PENDING</span>
                             </td>
-                            <td>Eric Mugisha</td>
-                            <td><span class="status-pill orange">Awaiting Parts</span></td>
-                            <td>4d 12h</td>
-                        </tr>
-                        <tr>
-                            <td>#RX-9055</td>
-                            <td>
-                                <strong class="danger-text">Mercedes C300</strong><br>
-                                <small class="danger-text">Transmission Failure</small>
-                            </td>
-                            <td>— Unassigned —</td>
-                            <td><span class="status-pill red">Flagged/Delayed</span></td>
-                            <td class="danger-text">Critical</td>
+                            <td th:text="${request.preferredTime != null ? request.preferredTime : '—'}">—</td>
                         </tr>
                         </tbody>
                     </table>
@@ -145,43 +129,42 @@
                     <h3>Mechanic Verification Queue</h3>
 
                     <div class="verification-grid">
-                        <div class="verification-card refined">
+                        <div class="verification-card refined" th:each="mechanic, stat : ${mechanics}">
                             <div class="verification-profile">
-                                <div class="verification-avatar">FK</div>
+                                <div class="verification-avatar" th:classappend="${stat.index % 2 == 1} ? ' alt' : ''">
+                                    <span th:text="${#strings.substring(mechanic.user.fullName,0,1)}">K</span>
+                                </div>
                                 <div>
-                                    <h4>Fabrice Kwizera</h4>
-                                    <p>Specialty: Hybrid Engines</p>
+                                    <h4 th:text="${mechanic.user.fullName}">Kevin Igiraneza</h4>
+                                    <p>
+                                        Specialty:
+                                        <span th:text="${mechanic.specialization}">Engine</span>
+                                    </p>
                                 </div>
                             </div>
 
                             <div class="verification-tags">
-                                <span>ID Verified</span>
-                                <span>Garage Inspected</span>
+                                <span>Garage Registered</span>
+                                <span th:text="${mechanic.supportedVehicleModel}">BMW</span>
                             </div>
+
+                            <p class="verification-status-line">
+                                <strong>Status:</strong>
+                                <span class="status-pill blue" th:text="${mechanic.verificationStatus}">PENDING</span>
+                            </p>
 
                             <div class="verification-actions">
-                                <button class="approve-btn">Approve</button>
-                                <button class="reject-btn">Reject</button>
-                            </div>
-                        </div>
+                                <form th:action="@{/update-mechanic-verification}" method="post">
+                                    <input type="hidden" name="mechanicId" th:value="${mechanic.id}">
+                                    <input type="hidden" name="status" value="APPROVED">
+                                    <button type="submit" class="approve-btn">Approve</button>
+                                </form>
 
-                        <div class="verification-card refined">
-                            <div class="verification-profile">
-                                <div class="verification-avatar alt">AU</div>
-                                <div>
-                                    <h4>Aline Uwera</h4>
-                                    <p>Specialty: Body Work & Paint</p>
-                                </div>
-                            </div>
-
-                            <div class="verification-tags">
-                                <span>Certificate Pending</span>
-                                <span>Garage Inspected</span>
-                            </div>
-
-                            <div class="verification-actions">
-                                <button class="approve-btn">Approve</button>
-                                <button class="reject-btn">Reject</button>
+                                <form th:action="@{/update-mechanic-verification}" method="post">
+                                    <input type="hidden" name="mechanicId" th:value="${mechanic.id}">
+                                    <input type="hidden" name="status" value="REJECTED">
+                                    <button type="submit" class="reject-btn">Reject</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -191,41 +174,17 @@
                     <div class="panel-header">
                         <h3>Recent User Registrations</h3>
                         <div class="mini-filters">
-                            <span>All Roles</span>
-                            <span>Last 24 Hours</span>
+                            <span>Live</span>
+                            <span>System View</span>
                         </div>
                     </div>
 
                     <div class="recent-users-grid">
-                        <div class="recent-user-card">
-                            <div class="avatar">MN</div>
+                        <div class="recent-user-card" th:each="user : ${recentUsers}">
+                            <div class="avatar" th:text="${#strings.substring(user.fullName,0,1)}">U</div>
                             <div>
-                                <h4>Musa Ndahiro</h4>
-                                <p>CUSTOMER</p>
-                            </div>
-                        </div>
-
-                        <div class="recent-user-card">
-                            <div class="avatar grayish">SK</div>
-                            <div>
-                                <h4>Solange Kaneza</h4>
-                                <p>MECHANIC</p>
-                            </div>
-                        </div>
-
-                        <div class="recent-user-card">
-                            <div class="avatar">PK</div>
-                            <div>
-                                <h4>Pascal Kayumba</h4>
-                                <p>CUSTOMER</p>
-                            </div>
-                        </div>
-
-                        <div class="recent-user-card">
-                            <div class="avatar red">EU</div>
-                            <div>
-                                <h4>Emmanuel Umwali</h4>
-                                <p>MECHANIC</p>
+                                <h4 th:text="${user.fullName}">User Name</h4>
+                                <p th:text="${user.role}">CUSTOMER</p>
                             </div>
                         </div>
                     </div>
@@ -246,7 +205,7 @@
 
                     <div class="health-item">
                         <span>Database Load</span>
-                        <strong>42%</strong>
+                        <strong th:text="${requestCount}">0</strong>
                     </div>
                     <div class="health-bar"><span style="width: 42%;"></span></div>
 
@@ -256,28 +215,10 @@
                 <div class="dashboard-side-panel">
                     <h3>Live Activity</h3>
 
-                    <div class="activity-item">
-                        <strong>New Mechanic Registered</strong>
-                        <p>David Rukundo joined the platform.</p>
-                        <small>2 minutes ago</small>
-                    </div>
-
-                    <div class="activity-item">
-                        <strong>Service Completed</strong>
-                        <p>Request #RX-8822 completed successfully.</p>
-                        <small>15 minutes ago</small>
-                    </div>
-
-                    <div class="activity-item">
-                        <strong>High Demand Alert</strong>
-                        <p>Surge in requests from Gasabo District.</p>
-                        <small>45 minutes ago</small>
-                    </div>
-
-                    <div class="activity-item">
-                        <strong>System Backup</strong>
-                        <p>Automated cloud redundancy complete.</p>
-                        <small>1 hour ago</small>
+                    <div class="activity-item" th:each="request : ${requests}">
+                        <strong th:text="${'Request #' + request.id}">Request #1</strong>
+                        <p th:text="${request.problemTitle}">Issue title</p>
+                        <small th:text="${request.status}">PENDING</small>
                     </div>
 
                     <button class="view-logs-btn">View All Logs</button>

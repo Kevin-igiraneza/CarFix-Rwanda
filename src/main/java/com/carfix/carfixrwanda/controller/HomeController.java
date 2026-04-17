@@ -6,10 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-    @GetMapping("/")
-    public String home() {
-        return "index";
-    }
+
 
     @GetMapping("/admin-dashboard")
     public String adminDashboard() {
@@ -21,8 +18,5 @@ public class HomeController {
         return "mechanic-dashboard";
     }
 
-    @GetMapping("/service-request")
-    public String serviceRequest() {
-        return "service-request";
-    }
+
 }

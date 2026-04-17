@@ -45,7 +45,6 @@ public class MechanicController {
         User user = new User();
         user.setFullName(fullName);
         user.setEmail(email);
-        user.setPhone(phoneNumber);
         user.setPassword("1234");
         user.setRole(Role.MECHANIC);
 

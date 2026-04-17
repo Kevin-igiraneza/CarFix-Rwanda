@@ -2,7 +2,9 @@ package com.carfix.carfixrwanda.model;
 
 import com.carfix.carfixrwanda.enums.AvailabilityStatus;
 import jakarta.persistence.*;
-
+import com.carfix.carfixrwanda.enums.VerificationStatus;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 @Entity
 public class Mechanic {
 
@@ -22,6 +24,9 @@ public class Mechanic {
 
     @Column(nullable = false)
     private String garageLocation;
+
+    @Enumerated(EnumType.STRING)
+    private VerificationStatus verificationStatus = VerificationStatus.PENDING;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -65,6 +70,14 @@ public class Mechanic {
 
     public void setGarageLocation(String garageLocation) {
         this.garageLocation = garageLocation;
+    }
+
+    public VerificationStatus getVerificationStatus() {
+        return verificationStatus;
+    }
+
+    public void setVerificationStatus(VerificationStatus verificationStatus) {
+        this.verificationStatus = verificationStatus;
     }
 
     public AvailabilityStatus getAvailabilityStatus() {

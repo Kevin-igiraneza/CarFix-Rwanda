@@ -17,7 +17,6 @@
                 right mechanic based on your vehicle and service needs.
             </p>
 
-            <a href="/mechanics" class="request-submit-btn">Browse Mechanics</a>
             <div class="request-info-grid">
                 <div class="request-info-card">
                     <h3>Choose Your Vehicle</h3>
@@ -40,22 +39,23 @@
             <div class="service-request-card">
                 <h2>Request Details</h2>
 
-                <form>
+                <form th:action="@{/save-service-request}" method="post">
                     <div class="service-request-grid">
 
                         <div class="form-group full">
                             <label>Select Vehicle</label>
-                            <select>
-                                <option>Select your vehicle</option>
-                                <option>Toyota RAV4 - RAB 123 A</option>
-                                <option>Hyundai Tucson - RAE 456 K</option>
-                                <option>Volkswagen Golf - RAA 987 T</option>
+                            <select name="vehicleId">
+                                <option value="">Select your vehicle</option>
+                                <option th:each="vehicle : ${vehicles}"
+                                        th:value="${vehicle.id}"
+                                        th:text="${vehicle.vehicleName + ' - ' + vehicle.plateNumber}">
+                                </option>
                             </select>
                         </div>
 
                         <div class="form-group">
                             <label>Service Type</label>
-                            <select>
+                            <select name="serviceType">
                                 <option>Select service type</option>
                                 <option>Engine Repair</option>
                                 <option>Brake Service</option>
@@ -68,7 +68,7 @@
 
                         <div class="form-group">
                             <label>Urgency</label>
-                            <select>
+                            <select name="urgency">
                                 <option>Select urgency</option>
                                 <option>Low</option>
                                 <option>Medium</option>
@@ -79,8 +79,8 @@
 
                         <div class="form-group full">
                             <label>Preferred Mechanic</label>
-                            <select>
-                                <option>Select mechanic (optional)</option>
+                            <select name="preferredMechanic">
+                                <option value="">Select mechanic (optional)</option>
                                 <option>Jean Bosco</option>
                                 <option>Fabrice Kwizera</option>
                                 <option>Aline Uwera</option>
@@ -89,27 +89,27 @@
 
                         <div class="form-group full">
                             <label>Problem Title</label>
-                            <input type="text" placeholder="e.g. Brake noise when driving">
+                            <input type="text" name="problemTitle" placeholder="e.g. Brake noise when driving">
                         </div>
 
                         <div class="form-group full">
                             <label>Problem Description</label>
-                            <textarea placeholder="Describe the issue in detail..."></textarea>
+                            <textarea name="problemDescription" placeholder="Describe the issue in detail..."></textarea>
                         </div>
 
                         <div class="form-group">
                             <label>Preferred Date</label>
-                            <input type="date">
+                            <input type="date" name="preferredDate">
                         </div>
 
                         <div class="form-group">
                             <label>Preferred Time</label>
-                            <input type="time">
+                            <input type="time" name="preferredTime">
                         </div>
 
                         <div class="form-group full">
                             <label>Pickup / Garage Location Notes</label>
-                            <input type="text" placeholder="e.g. Nyarutarama, near MTN center">
+                            <input type="text" name="locationNotes" placeholder="e.g. Nyarutarama, near MTN center">
                         </div>
 
                     </div>

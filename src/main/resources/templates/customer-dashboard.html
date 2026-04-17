@@ -36,8 +36,17 @@
             </div>
 
             <div class="customer-profile-box">
-                <div class="customer-profile-avatar">AN</div>
-                <div class="customer-profile-name">Ange User</div>
+                <div class="customer-profile-avatar"
+                     th:text="${#strings.substring(currentUser.fullName,0,1)}">A</div>
+
+                <div class="customer-profile-details">
+                    <div class="customer-profile-name" th:text="${currentUser.fullName}">Ange User</div>
+                    <div class="customer-profile-role">Logged In User</div>
+                </div>
+
+                <form th:action="@{/logout}" method="post" class="logout-form">
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
             </div>
         </header>
 
@@ -60,7 +69,7 @@
             <div class="customer-mini-card">
                 <div class="mini-icon peach">📋</div>
                 <p>ACTIVE REQUESTS</p>
-                <h2>05</h2>
+                <h2 th:text="${requestCount}">05</h2>
             </div>
         </section>
 
@@ -107,25 +116,15 @@
                             <span>Assigned Mechanic</span>
                         </div>
 
-                        <div class="customer-request-row">
-                            <span>#RQ-2011</span>
-                            <span>Toyota RAV4</span>
-                            <span><span class="status-pill blue">In Progress</span></span>
-                            <span>Jean Bosco</span>
-                        </div>
-
-                        <div class="customer-request-row">
-                            <span>#RQ-2014</span>
-                            <span>Hyundai Tucson</span>
-                            <span><span class="status-pill orange">Awaiting Parts</span></span>
-                            <span>Eric Mugisha</span>
-                        </div>
-
-                        <div class="customer-request-row">
-                            <span>#RQ-2018</span>
-                            <span>Volkswagen Golf</span>
-                            <span><span class="status-pill green">Completed</span></span>
-                            <span>Fabrice Kwizera</span>
+                        <div class="customer-request-row" th:each="request : ${requests}">
+                            <span th:text="${'#RQ-' + request.id}">#RQ-2011</span>
+                            <span th:text="${request.customerVehicle.vehicleName}">Toyota RAV4</span>
+                            <span>
+                                <span class="status-pill blue" th:text="${request.status}">PENDING</span>
+                            </span>
+                            <span th:text="${request.preferredMechanic != null && !request.preferredMechanic.isEmpty() ? request.preferredMechanic : 'Not Assigned'}">
+                                Jean Bosco
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -169,41 +168,44 @@
                 <div class="customer-panel">
                     <h3>Service Progress</h3>
 
-                    <div class="progress-item">
+                    <div class="progress-item" th:each="request : ${requests}">
                         <div class="progress-top">
-                            <strong>Toyota RAV4 - Brake Inspection</strong>
-                            <span>65%</span>
+                            <strong th:text="${request.customerVehicle.vehicleName + ' - ' + request.problemTitle}">
+                                Toyota RAV4 - Brake Inspection
+                            </strong>
+                            <span th:text="${request.status == T(com.carfix.carfixrwanda.enums.RequestStatus).COMPLETED ? '100%' : (request.status == T(com.carfix.carfixrwanda.enums.RequestStatus).IN_PROGRESS ? '65%' : '20%')}">
+                                20%
+                            </span>
                         </div>
-                        <div class="progress-bar"><span style="width:65%"></span></div>
-                        <small class="blue-text">Diagnosis & repair in progress</small>
-                    </div>
 
-                    <div class="progress-item">
-                        <div class="progress-top">
-                            <strong>Hyundai Tucson - Engine Service</strong>
-                            <span>30%</span>
+                        <div class="progress-bar">
+                            <span th:style="${request.status == T(com.carfix.carfixrwanda.enums.RequestStatus).COMPLETED ? 'width:100%; background:#16a34a;' : (request.status == T(com.carfix.carfixrwanda.enums.RequestStatus).IN_PROGRESS ? 'width:65%; background:#2563eb;' : 'width:20%; background:#ea580c;')}">
+                            </span>
                         </div>
-                        <div class="progress-bar"><span class="orange-bar" style="width:30%"></span></div>
-                        <small class="orange-text">Waiting for replacement parts</small>
+
+                        <small
+                                th:text="${request.status == T(com.carfix.carfixrwanda.enums.RequestStatus).COMPLETED ? 'Service completed' : (request.status == T(com.carfix.carfixrwanda.enums.RequestStatus).IN_PROGRESS ? 'Work in progress' : 'Pending review')}"
+                                th:classappend="${request.status == T(com.carfix.carfixrwanda.enums.RequestStatus).COMPLETED ? ' green-text' : (request.status == T(com.carfix.carfixrwanda.enums.RequestStatus).IN_PROGRESS ? ' blue-text' : ' orange-text')}">
+                            Pending review
+                        </small>
                     </div>
                 </div>
 
                 <div class="customer-panel">
                     <h3>Recommended Mechanics</h3>
 
-                    <div class="recommended-mechanic">
-                        <div class="rec-avatar">JB</div>
-                        <div>
-                            <h4>Jean Bosco</h4>
-                            <p>Specialist: Toyota • Engine • Suspension</p>
+                    <div class="recommended-mechanic" th:each="mechanic, stat : ${mechanics}">
+                        <div class="rec-avatar" th:classappend="${stat.index % 2 == 1} ? ' alt' : ''">
+                            <span th:text="${#strings.substring(mechanic.user.fullName,0,1)}">K</span>
                         </div>
-                    </div>
-
-                    <div class="recommended-mechanic">
-                        <div class="rec-avatar alt">FK</div>
                         <div>
-                            <h4>Fabrice Kwizera</h4>
-                            <p>Specialist: Hybrid Systems • Diagnostics</p>
+                            <h4 th:text="${mechanic.user.fullName}">Kevin Igiraneza</h4>
+                            <p>
+                                Specialist:
+                                <span th:text="${mechanic.specialization}">Engine</span>
+                                •
+                                <span th:text="${mechanic.supportedVehicleModel}">BMW</span>
+                            </p>
                         </div>
                     </div>
                 </div>

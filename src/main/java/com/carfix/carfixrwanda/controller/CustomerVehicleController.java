@@ -5,6 +5,7 @@ import com.carfix.carfixrwanda.model.CustomerVehicle;
 import com.carfix.carfixrwanda.model.User;
 import com.carfix.carfixrwanda.repository.UserRepository;
 import com.carfix.carfixrwanda.service.CustomerVehicleService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,10 +16,14 @@ public class CustomerVehicleController {
 
     private final CustomerVehicleService customerVehicleService;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public CustomerVehicleController(CustomerVehicleService customerVehicleService, UserRepository userRepository) {
+    public CustomerVehicleController(CustomerVehicleService customerVehicleService,
+                                     UserRepository userRepository,
+                                     PasswordEncoder passwordEncoder) {
         this.customerVehicleService = customerVehicleService;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/vehicle-registration")
@@ -42,8 +47,7 @@ public class CustomerVehicleController {
             User newUser = new User();
             newUser.setFullName("Default Customer");
             newUser.setEmail("customer@carfix.com");
-            newUser.setPhone("0780000000");
-            newUser.setPassword("1234");
+            newUser.setPassword(passwordEncoder.encode("1234"));
             newUser.setRole(Role.CUSTOMER);
             return userRepository.save(newUser);
         });

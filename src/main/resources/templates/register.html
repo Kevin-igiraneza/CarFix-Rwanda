@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register - CarFix Rwanda</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #eef4fb 0%, #dfe9f7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 460px;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 36px 32px;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+            border: 1px solid #e5edf7;
+        }
+
+        .auth-card h1 {
+            margin-bottom: 10px;
+            font-size: 38px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .auth-card p {
+            margin-bottom: 24px;
+            color: #64748b;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            height: 52px;
+            border: 1px solid #dbe4f0;
+            border-radius: 14px;
+            padding: 0 16px;
+            font-size: 15px;
+            color: #0f172a;
+            background: #f8fbff;
+            outline: none;
+            transition: 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #1d4ed8;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.08);
+        }
+
+        .auth-btn {
+            width: 100%;
+            height: 54px;
+            border: none;
+            border-radius: 16px;
+            background: #0f4aa3;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: 0.2s ease;
+        }
+
+        .auth-btn:hover {
+            background: #0b3d88;
+        }
+
+        .auth-link-text {
+            margin-top: 22px;
+            text-align: center;
+            font-size: 15px;
+            color: #64748b;
+        }
+
+        .auth-link-text a {
+            color: #1d4ed8;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .auth-link-text a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-card">
+    <h1>Create Account</h1>
+    <p>Register to use CarFix Rwanda and access customer or mechanic services.</p>
+
+    <div th:if="${errorMessage}" style="background:#fef2f2; color:#b91c1c; padding:12px 14px; border-radius:12px; margin-bottom:18px; font-size:14px;">
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <form th:action="@{/register}" method="post" class="auth-form">
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="fullName" placeholder="Enter your full name" required>
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Enter your email" required>
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Create a password" required>
+        </div>
+
+        <div class="form-group">
+            <label>Role</label>
+            <select name="role" required>
+                <option value="">Select role</option>
+                <option value="CUSTOMER">Customer</option>
+                <option value="MECHANIC">Mechanic</option>
+            </select>
+        </div>
+
+        <button type="submit" class="auth-btn">Register</button>
+    </form>
+
+    <div class="auth-link-text">
+        Already have an account?
+        <a href="/login">Sign in</a>
+    </div>
+</div>
+
+</body>
+</html>

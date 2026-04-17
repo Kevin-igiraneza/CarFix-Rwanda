@@ -51,13 +51,13 @@
             <div class="mechanic-mini-card">
                 <div class="mini-icon peach">🧰</div>
                 <p>NEW REQUESTS</p>
-                <h2>08</h2>
+                <h2 th:text="${requestCount}">08</h2>
             </div>
 
             <div class="mechanic-mini-card">
                 <div class="mini-icon blue">🛠️</div>
                 <p>ONGOING REPAIRS</p>
-                <h2>14</h2>
+                <h2 th:text="${requestCount}">14</h2>
             </div>
         </section>
 
@@ -71,45 +71,19 @@
                         <span class="live-badge">LIVE QUEUE</span>
                     </div>
 
-                    <div class="request-card urgent">
-                        <div class="request-head">
-                            <div>
-                                <h4>Toyota RAV4 (2018)</h4>
-                                <p>Brake noise & suspension check</p>
+                    <div class="mechanic-request-list">
+                        <div class="request-card urgent" th:each="request : ${assignedRequests}">
+                            <div class="request-head">
+                                <div>
+                                    <h4 th:text="${request.customerVehicle.vehicleName}">Toyota RAV4</h4>
+                                    <p th:text="${request.problemTitle}">Brake noise & suspension check</p>
+                                </div>
+                                <span th:text="${request.preferredTime != null ? request.preferredTime : 'Scheduled'}">Scheduled</span>
                             </div>
-                            <span>2m ago</span>
-                        </div>
-                        <div class="request-actions">
-                            <button class="accept-btn">Accept</button>
-                            <button class="decline-btn">Decline</button>
-                        </div>
-                    </div>
-
-                    <div class="request-card blue-line">
-                        <div class="request-head">
-                            <div>
-                                <h4>Volkswagen Amarok</h4>
-                                <p>Regular engine oil service</p>
+                            <div class="request-actions">
+                                <button class="accept-btn">Accept</button>
+                                <button class="decline-btn">Decline</button>
                             </div>
-                            <span>15m ago</span>
-                        </div>
-                        <div class="request-actions">
-                            <button class="accept-btn">Accept</button>
-                            <button class="decline-btn">Decline</button>
-                        </div>
-                    </div>
-
-                    <div class="request-card gray-line">
-                        <div class="request-head">
-                            <div>
-                                <h4>Hyundai Tucson</h4>
-                                <p>Electrical system diagnostics</p>
-                            </div>
-                            <span>1h ago</span>
-                        </div>
-                        <div class="request-actions">
-                            <button class="accept-btn faded">Accept</button>
-                            <button class="decline-btn">Decline</button>
                         </div>
                     </div>
                 </div>
@@ -131,51 +105,29 @@
                             <span>Status Update</span>
                         </div>
 
-                        <div class="repair-row">
+                        <div class="repair-row" th:each="request : ${assignedRequests}">
                             <div>
-                                <strong>Mercedes-Benz G63</strong>
-                                <p>Owner: Alice Umutoni</p>
+                                <strong th:text="${request.customerVehicle.vehicleName}">Vehicle Name</strong>
+                                <p>
+                                    Owner:
+                                    <span th:text="${request.customerVehicle.user.fullName}">Owner Name</span>
+                                </p>
                             </div>
                             <div>
-                                <div class="progress-bar"><span style="width:65%"></span></div>
-                                <small class="blue-text">Diagnosis (65%)</small>
+                                <div class="progress-bar">
+                                    <span th:style="${request.status.name() == 'COMPLETED' ? 'width:100%' : (request.status.name() == 'IN_PROGRESS' ? 'width:65%' : 'width:20%')}"></span>
+                                </div>
+                                <small th:text="${request.status}">PENDING</small>
                             </div>
                             <div>
-                                <select>
-                                    <option>Diagnosis</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="repair-row">
-                            <div>
-                                <strong>Toyota Land Cruiser</strong>
-                                <p>Owner: Eric Mugisha</p>
-                            </div>
-                            <div>
-                                <div class="progress-bar"><span class="orange-bar" style="width:30%"></span></div>
-                                <small class="orange-text">Waiting for Parts (30%)</small>
-                            </div>
-                            <div>
-                                <select>
-                                    <option>Waiting for Parts</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="repair-row">
-                            <div>
-                                <strong>Kia Sportage</strong>
-                                <p>Owner: Sarah Kalisa</p>
-                            </div>
-                            <div>
-                                <div class="progress-bar"><span class="green-bar" style="width:90%"></span></div>
-                                <small class="green-text">Final Testing (90%)</small>
-                            </div>
-                            <div>
-                                <select>
-                                    <option>Final Testing</option>
-                                </select>
+                                <form th:action="@{/update-request-status}" method="post">
+                                    <input type="hidden" name="requestId" th:value="${request.id}">
+                                    <select name="status" onchange="this.form.submit()">
+                                        <option value="PENDING" th:selected="${request.status.name() == 'PENDING'}">PENDING</option>
+                                        <option value="IN_PROGRESS" th:selected="${request.status.name() == 'IN_PROGRESS'}">IN_PROGRESS</option>
+                                        <option value="COMPLETED" th:selected="${request.status.name() == 'COMPLETED'}">COMPLETED</option>
+                                    </select>
+                                </form>
                             </div>
                         </div>
                     </div>

@@ -1,7 +1,14 @@
 package com.carfix.carfixrwanda.controller;
 
 import com.carfix.carfixrwanda.model.CustomerVehicle;
+import com.carfix.carfixrwanda.model.Mechanic;
+import com.carfix.carfixrwanda.model.ServiceRequest;
+import com.carfix.carfixrwanda.model.User;
+import com.carfix.carfixrwanda.repository.UserRepository;
 import com.carfix.carfixrwanda.service.CustomerVehicleService;
+import com.carfix.carfixrwanda.service.MechanicService;
+import com.carfix.carfixrwanda.service.ServiceRequestService;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,16 +19,36 @@ import java.util.List;
 public class CustomerDashboardController {
 
     private final CustomerVehicleService customerVehicleService;
+    private final ServiceRequestService serviceRequestService;
+    private final MechanicService mechanicService;
+    private final UserRepository userRepository;
 
-    public CustomerDashboardController(CustomerVehicleService customerVehicleService) {
+    public CustomerDashboardController(CustomerVehicleService customerVehicleService,
+                                       ServiceRequestService serviceRequestService,
+                                       MechanicService mechanicService,
+                                       UserRepository userRepository) {
         this.customerVehicleService = customerVehicleService;
+        this.serviceRequestService = serviceRequestService;
+        this.mechanicService = mechanicService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/customer-dashboard")
-    public String customerDashboard(Model model) {
-        List<CustomerVehicle> vehicles = customerVehicleService.getVehiclesByUserId(3L);
+    public String customerDashboard(Model model, Authentication authentication) {
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
+
+        List<CustomerVehicle> vehicles = customerVehicleService.getVehiclesByUserId(currentUser.getId());
+        List<ServiceRequest> requests = serviceRequestService.getRequestsByUserId(currentUser.getId());
+        List<Mechanic> mechanics = mechanicService.getAllMechanics();
+
+        model.addAttribute("currentUser", currentUser);
         model.addAttribute("vehicles", vehicles);
         model.addAttribute("vehicleCount", vehicles.size());
+        model.addAttribute("requests", requests);
+        model.addAttribute("requestCount", requests.size());
+        model.addAttribute("mechanics", mechanics);
+
         return "customer-dashboard";
     }
 }

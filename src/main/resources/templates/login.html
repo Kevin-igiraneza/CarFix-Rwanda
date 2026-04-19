@@ -132,13 +132,50 @@
             margin-bottom: 18px;
             font-size: 14px;
         }
+
+        .login-tabs {
+            display: flex;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 6px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+            color: #64748b;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #0b3b92;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
     </style>
 </head>
 <body>
 
 <div class="auth-card">
-    <h1>Welcome Back</h1>
-    <p>Sign in to continue using CarFix Rwanda.</p>
+    <div style="margin-bottom:14px;">
+        <a href="/" style="color:#0b3b92;font-weight:700;text-decoration:none;">← Back to home</a>
+    </div>
+    <div class="login-tabs">
+        <button type="button" class="tab-btn active" onclick="switchTab('CUSTOMER', this)">Customer</button>
+        <button type="button" class="tab-btn" onclick="switchTab('MECHANIC', this)">Mechanic</button>
+        <button type="button" class="tab-btn" onclick="switchTab('ADMIN', this)">Admin</button>
+    </div>
+
+    <h1 id="login-title">Customer Login</h1>
+    <p id="login-desc" style="margin-bottom: 24px; color: #64748b; font-size: 16px; line-height: 1.6;">Sign in to book repairs and manage your vehicles.</p>
 
     <div th:if="${param.error}" class="auth-error">
         Invalid email or password.
@@ -148,7 +185,12 @@
         You have been logged out successfully.
     </div>
 
+    <div th:if="${param.registered}" class="auth-success">
+        Account created. Sign in with your email and password (use the <strong>Mechanic</strong> or <strong>Customer</strong> tab to match your account type).
+    </div>
+
     <form th:action="@{/login}" method="post" class="auth-form">
+        <input type="hidden" name="loginRole" id="loginRoleInput" value="CUSTOMER">
         <div class="form-group">
             <label>Email</label>
             <input type="email" name="username" placeholder="Enter your email" required>
@@ -167,6 +209,30 @@
         <a href="/register">Create one</a>
     </div>
 </div>
+
+<script>
+    function switchTab(role, btn) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const title = document.getElementById('login-title');
+        const desc = document.getElementById('login-desc');
+
+        if(role === 'CUSTOMER') {
+            document.getElementById('loginRoleInput').value = 'CUSTOMER';
+            title.innerText = 'Customer Login';
+            desc.innerText = 'Sign in to book repairs and manage your vehicles.';
+        } else if(role === 'MECHANIC') {
+            document.getElementById('loginRoleInput').value = 'MECHANIC';
+            title.innerText = 'Mechanic Portal';
+            desc.innerText = 'Sign in to accept jobs and update service progress.';
+        } else if(role === 'ADMIN') {
+            document.getElementById('loginRoleInput').value = 'ADMIN';
+            title.innerText = 'Admin Console';
+            desc.innerText = 'Sign in with your administrator credentials.';
+        }
+    }
+</script>
 
 </body>
 </html>

@@ -1,42 +1,311 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Mechanics List</title>
+    <title>Find Mechanics - CarFix Rwanda</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <style>
+        .mechanics-container {
+            padding: 56px 24px 72px;
+            background: #f3f7fb;
+            min-height: 80vh;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 36px;
+            max-width: 720px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .page-header h1 {
+            color: #0b3b92;
+            font-size: clamp(26px, 4vw, 36px);
+            margin-bottom: 12px;
+            font-weight: 800;
+        }
+
+        .page-header p {
+            color: #64748b;
+            font-size: 15px;
+            line-height: 1.55;
+        }
+
+        .mechanic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 22px;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .m-card {
+            background: white;
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .m-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
+        }
+
+        .m-card-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .m-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            background: #eaf1f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #0b3b92;
+            font-weight: 700;
+        }
+
+        .m-info h3 {
+            font-size: 17px;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .m-info span {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .m-details {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .m-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #475569;
+            font-size: 14px;
+        }
+
+        .m-card-actions {
+            border-top: 1px solid #e5edf7;
+            padding-top: 16px;
+        }
+
+        .m-book-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background: #0b3b92;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            transition: 0.2s ease;
+        }
+
+        .m-book-btn:hover {
+            background: #0a2d6e;
+        }
+
+        .mechanics-search-wrap {
+            max-width: 1280px;
+            margin: 0 auto 24px;
+        }
+
+        .mechanics-search-form input {
+            height: 44px;
+            border-radius: 12px;
+            border: 1px solid #dbe4f0;
+            padding: 0 12px;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        .mechanics-search-form button[type="submit"],
+        .mechanics-search-form .reset-link {
+            height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 18px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .mechanics-search-form button[type="submit"] {
+            background: #0b3b92;
+            color: white;
+        }
+
+        .mechanics-search-form .reset-link {
+            border: 1px solid #dbe4f0;
+            color: #0f172a;
+            background: white;
+            text-decoration: none;
+        }
+
+        .guest-cta {
+            max-width: 1280px;
+            margin: 0 auto 20px;
+            text-align: right;
+        }
+
+        .guest-cta a {
+            display: inline-block;
+            background: #8b3d08;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
 
-<h1>Mechanics List</h1>
+<header class="navbar">
+    <div class="nav-left">
+        <a href="/" class="logo-link">CarFix Rwanda</a>
+    </div>
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Full Name</th>
-        <th>Email</th>
-        <th>Phone Number</th>
-        <th>Specialization</th>
-        <th>Supported Vehicle Model</th>
-        <th>Garage Location</th>
-        <th>Availability</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="mechanic : ${mechanics}">
-        <td th:text="${mechanic.id}"></td>
-        <td th:text="${mechanic.user.fullName}"></td>
-        <td th:text="${mechanic.user.email}"></td>
-        <td th:text="${mechanic.user.phone}"></td>
-        <td th:text="${mechanic.specialization}"></td>
-        <td th:text="${mechanic.supportedVehicleModel}"></td>
-        <td th:text="${mechanic.garageLocation}"></td>
-        <td th:text="${mechanic.availabilityStatus}"></td>
-    </tr>
-    </tbody>
-</table>
+    <nav class="nav-center" th:if="${navLoggedIn && navIsCustomer}">
+        <a href="/mechanics" class="active">Find mechanics</a>
+        <a href="/vehicle-registration">My vehicles</a>
+        <a href="/service-request">New request</a>
+        <a href="/customer-dashboard">Dashboard</a>
+    </nav>
+    <nav class="nav-center" th:if="${navLoggedIn && navIsMechanic}">
+        <a href="/mechanics" class="active">Directory</a>
+        <a href="/real-mechanic-dashboard">Dashboard</a>
+    </nav>
+    <nav class="nav-center" th:if="${navLoggedIn && navIsAdmin}">
+        <a href="/mechanics" class="active">Directory</a>
+        <a href="/real-admin-dashboard">Admin</a>
+    </nav>
+    <nav class="nav-center" th:unless="${navLoggedIn}">
+        <a href="/">Home</a>
+        <a href="/mechanics" class="active">Find mechanics</a>
+        <a href="/help">Help</a>
+    </nav>
 
-<br>
-<a th:href="@{/add-mechanic}">Add New Mechanic</a>
+    <div class="nav-right" th:if="${navLoggedIn}">
+        <div class="nav-user-cluster">
+            <a th:href="${navDashboardUrl}" class="nav-dashboard-link">Dashboard</a>
+            <form th:action="@{/logout}" method="post" style="margin:0;">
+                <button type="submit" class="btn-logout">Log out</button>
+            </form>
+        </div>
+    </div>
+    <div class="nav-right" th:unless="${navLoggedIn}">
+        <a href="/login" class="signin-link">Sign in</a>
+        <a href="/register" class="register-btn">Register</a>
+    </div>
+</header>
+
+<div class="mechanics-container">
+    <div class="page-header">
+        <h1>Find the right mechanic</h1>
+        <p>Search by specialization, vehicle model, or keyword. Only <strong>verified</strong> garages are listed.</p>
+    </div>
+
+    <div class="mechanics-search-wrap">
+        <form class="mechanics-search-form" th:action="@{/mechanics}" method="get">
+            <div class="form-group" style="display:flex;flex-direction:column;gap:6px;">
+                <label style="font-weight:700;font-size:13px;color:#334155;">Specialization</label>
+                <input type="text" name="specialization" th:value="${filterSpecialization}" placeholder="e.g. Engine repair">
+            </div>
+            <div class="form-group" style="display:flex;flex-direction:column;gap:6px;">
+                <label style="font-weight:700;font-size:13px;color:#334155;">Vehicle model / brand</label>
+                <input type="text" name="vehicleModel" th:value="${filterVehicleModel}" placeholder="e.g. Toyota RAV4">
+            </div>
+            <div class="form-group" style="display:flex;flex-direction:column;gap:6px;">
+                <label style="font-weight:700;font-size:13px;color:#334155;">Keyword</label>
+                <input type="text" name="q" th:value="${filterKeyword}" placeholder="Name, area…">
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <button type="submit">Search</button>
+                <a class="reset-link" th:href="@{/mechanics}">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <p th:if="${mechanics == null || mechanics.isEmpty()}" style="text-align:center;color:#64748b;max-width:640px;margin:0 auto 36px;line-height:1.6;">
+        <span th:if="${navLoggedIn}">No verified mechanics match these filters. Try broader keywords or check back after more garages are approved.</span>
+        <span th:unless="${navLoggedIn}">No verified mechanics match these filters yet. Try broader keywords or check back later.</span>
+    </p>
+
+    <div class="mechanic-grid" th:if="${mechanics != null && !mechanics.isEmpty()}">
+        <div class="m-card" th:each="mechanic : ${mechanics}">
+            <div class="m-card-header">
+                <div class="m-avatar">👨‍🔧</div>
+                <div class="m-info">
+                    <h3 th:text="${mechanic.user.fullName}"></h3>
+                    <span th:text="${mechanic.availabilityStatus}"></span>
+                    <span style="margin-left:6px;background:#ecfdf5;color:#047857;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:800;">VERIFIED</span>
+                </div>
+            </div>
+
+            <div class="m-details">
+                <div class="m-detail-item">
+                    <span>📍</span>
+                    <span th:text="${mechanic.garageLocation}"></span>
+                </div>
+                <div class="m-detail-item">
+                    <span>⚙️</span>
+                    <span th:text="${mechanic.specialization} + ' specialist'"></span>
+                </div>
+                <div class="m-detail-item">
+                    <span>🚗</span>
+                    <span th:text="${mechanic.supportedVehicleModel}"></span>
+                </div>
+                <div class="m-detail-item">
+                    <span>📞</span>
+                    <span th:text="${mechanic.user.phone}"></span>
+                </div>
+            </div>
+
+            <div class="m-card-actions">
+                <a th:if="${navLoggedIn && navIsCustomer}" th:href="@{/service-request(mechanicId=${mechanic.id})}" class="m-book-btn">Request service with this garage</a>
+                <span th:if="${navLoggedIn && navIsMechanic}" style="display:block;text-align:center;color:#64748b;font-size:13px;padding:10px;">
+                    Browsing as a mechanic (read-only). Customers book garages from this page.
+                </span>
+                <span th:if="${navLoggedIn && navIsAdmin}" style="display:block;text-align:center;color:#64748b;font-size:13px;padding:10px;">
+                    Admin view — assign mechanics from service requests in the admin console.
+                </span>
+                <span th:unless="${navLoggedIn}" style="display:block;text-align:center;color:#64748b;font-size:13px;padding:10px;">
+                    <a href="/login" style="color:#0b3b92;font-weight:700;">Sign in</a> as a customer to book this garage.
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="footer-bottom" style="margin-top: 0; padding-top: 0; text-align: center; border: none;">
+        © 2026 CarFix Rwanda
+    </div>
+</footer>
 
 </body>
 </html>

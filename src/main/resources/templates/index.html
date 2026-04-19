@@ -8,19 +8,40 @@
 
 <header class="navbar">
     <div class="nav-left">
-        <div class="logo">CarFix Rwanda</div>
+        <a href="/" class="logo-link">CarFix Rwanda</a>
     </div>
 
-    <nav class="nav-center">
-        <a href="/" class="active">Find Mechanics</a>
-        <a href="/vehicle-registration">My Vehicles</a>
-        <a href="/service-request">Services</a>
+    <nav class="nav-center" th:if="${navLoggedIn && navIsCustomer}">
+        <a href="/mechanics">Find mechanics</a>
+        <a href="/vehicle-registration">My vehicles</a>
+        <a href="/service-request">New request</a>
         <a href="/customer-dashboard">Dashboard</a>
     </nav>
+    <nav class="nav-center" th:if="${navLoggedIn && navIsMechanic}">
+        <a href="/real-mechanic-dashboard">Dashboard</a>
+        <a href="/mechanics">Directory</a>
+    </nav>
+    <nav class="nav-center" th:if="${navLoggedIn && navIsAdmin}">
+        <a href="/real-admin-dashboard">Admin</a>
+        <a href="/mechanics">Directory</a>
+    </nav>
+    <nav class="nav-center" th:unless="${navLoggedIn}">
+        <a href="/" class="active">Home</a>
+        <a href="/mechanics">Find mechanics</a>
+        <a href="/help">Help</a>
+    </nav>
 
-    <div class="nav-right">
-        <a href="/customer-dashboard" class="signin-link">Sign In</a>
-        <a href="/customer-dashboard" class="register-btn">Register</a>
+    <div class="nav-right" th:if="${navLoggedIn}">
+        <div class="nav-user-cluster">
+            <a th:href="${navDashboardUrl}" class="nav-dashboard-link">My dashboard</a>
+            <form th:action="@{/logout}" method="post" style="margin:0;">
+                <button type="submit" class="btn-logout">Log out</button>
+            </form>
+        </div>
+    </div>
+    <div class="nav-right" th:unless="${navLoggedIn}">
+        <a href="/login" class="signin-link">Sign in</a>
+        <a href="/register" class="register-btn">Register</a>
     </div>
 </header>
 
@@ -29,43 +50,40 @@
 
     <div class="hero-inner">
         <div class="hero-text">
-            <h1>Expert Care for Your Car, <span>Anywhere</span> in Rwanda.</h1>
+            <h1>Expert care for your car, <span>anywhere</span> in Rwanda.</h1>
             <p>
-                Connecting car owners with verified, professional mechanics.
-                Precision engineering meets seamless digital booking for a
-                maintenance experience like no other.
+                Find verified mechanics by specialization and vehicle type, submit service requests,
+                and track status from one simple place.
             </p>
 
             <div class="hero-buttons">
-                <a href="/mechanics" class="primary-btn">Find a Mechanic →</a>
-                <a href="/add-mechanic" class="secondary-btn">Register My Garage</a>
+                <a href="/mechanics" class="primary-btn">Find a mechanic →</a>
+                <a href="/register?as=mechanic" class="secondary-btn">Join as a mechanic</a>
             </div>
         </div>
 
         <div class="search-card">
-            <h2>Quick Search</h2>
+            <h2>Search mechanics</h2>
+            <p style="color:#cbd5e1;font-size:14px;margin-bottom:14px;line-height:1.5;">
+                Runs a real search on the public directory (verified garages only).
+            </p>
 
-            <label>Vehicle Brand</label>
-            <select>
-                <option>Select Brand</option>
-                <option>Toyota</option>
-                <option>BMW</option>
-                <option>Mercedes</option>
-                <option>Hyundai</option>
-            </select>
-
-            <label>Model</label>
-            <input type="text" placeholder="e.g. Hilux, Golf, C-Class">
-
-            <label>Specialization</label>
-            <div class="specialization-grid">
-                <button type="button">Engine</button>
-                <button type="button">Electrical</button>
-                <button type="button">Bodywork</button>
-                <button type="button">Transmission</button>
-            </div>
-
-            <button class="search-btn">Search Specialists</button>
+            <form class="hero-search-form" id="heroQuickSearch" th:action="@{/mechanics}" method="get">
+                <div>
+                    <label for="hs-spec">Specialization</label>
+                    <input id="hs-spec" type="text" name="specialization" placeholder="e.g. Brakes, engine">
+                </div>
+                <div>
+                    <label for="hs-model">Vehicle brand / model</label>
+                    <input id="hs-model" type="text" name="vehicleModel" placeholder="e.g. Toyota RAV4">
+                </div>
+                <div>
+                    <label for="hs-q">Keyword (optional)</label>
+                    <input id="hs-q" type="text" name="q" placeholder="Area, garage name…">
+                </div>
+                <p id="hero-search-msg" style="display:none;color:#fecaca;font-size:12px;font-weight:700;">Enter at least one search field before searching.</p>
+                <button type="submit">Search</button>
+            </form>
         </div>
     </div>
 </section>
@@ -77,56 +95,53 @@
     <div class="feature-grid">
         <div class="feature-card">
             <div class="feature-icon blue">👨‍🔧</div>
-            <h3>Specialized Mechanics</h3>
+            <h3>Specialized mechanics</h3>
             <p>
-                Access a curated network of technicians who specialize in your
-                specific vehicle make and model.
+                Browse profiles with clear specialties and supported vehicle types before you book.
             </p>
         </div>
 
         <div class="feature-card">
             <div class="feature-icon gray">🛡️</div>
-            <h3>Verified Reviews</h3>
+            <h3>Verified listings</h3>
             <p>
-                Make decisions based on honest feedback from car owners who
-                have used the services before you.
+                Mechanics in the public directory are approved by an administrator after registration.
             </p>
         </div>
 
         <div class="feature-card">
             <div class="feature-icon peach">⏱️</div>
-            <h3>Easy Tracking</h3>
+            <h3>Request tracking</h3>
             <p>
-                Follow your car’s repair journey in real time from diagnosis
-                to completion.
+                Customers follow request status; mechanics update progress from their dashboard.
             </p>
         </div>
     </div>
 </section>
 
-<section class="how-it-works">
-    <h2>How it Works</h2>
-    <p class="section-subtitle">Three simple steps to professional automotive care.</p>
+<section class="how-it-works" id="how-it-works">
+    <h2>How it works</h2>
+    <p class="section-subtitle">Three steps from search to tracked service.</p>
 
     <div class="steps-grid">
         <div class="step-card">
             <div class="step-number">1</div>
             <h3>Search</h3>
-            <p>Enter your vehicle details and service needs to find the right mechanic near you.</p>
+            <p>Use filters on the mechanics page to find a garage that fits your vehicle and repair need.</p>
             <div class="step-image">Search</div>
         </div>
 
         <div class="step-card">
             <div class="step-number">2</div>
-            <h3>Book</h3>
-            <p>Choose a mechanic, compare services, and book at your convenient time.</p>
-            <div class="step-image">Book</div>
+            <h3>Request</h3>
+            <p>Sign in as a customer, register your vehicle, and submit a service request (optional preferred mechanic).</p>
+            <div class="step-image">Request</div>
         </div>
 
         <div class="step-card">
             <div class="step-number">3</div>
             <h3>Track</h3>
-            <p>Receive updates, service progress, and digital reports in your dashboard.</p>
+            <p>Watch status updates on your dashboard. Admins can assign a mechanic if you did not pick one.</p>
             <div class="step-image">Track</div>
         </div>
     </div>
@@ -134,10 +149,10 @@
 
 <section class="cta-section">
     <div class="cta-box">
-        <h2>Ready for a Better Way to Maintain Your Car?</h2>
+        <h2>Ready to find the right mechanic?</h2>
         <div class="cta-buttons">
-            <a href="/customer-dashboard" class="light-btn">Get Started Now</a>
-            <a href="/service-request" class="outline-btn">Support Center</a>
+            <a href="/mechanics" class="light-btn">Browse directory</a>
+            <a href="/help" class="outline-btn">Help &amp; contact</a>
         </div>
     </div>
 </section>
@@ -147,38 +162,56 @@
         <div>
             <h3>CarFix Rwanda</h3>
             <p>
-                Building the future of automotive services in Rwanda through
-                transparency, expertise, and digital precision.
+                A practical platform for matching vehicle owners with mechanics by specialization and vehicle support.
             </p>
         </div>
 
         <div>
             <h4>Platform</h4>
-            <a href="#">Mechanic Flow</a>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
+            <a href="/register">Create account</a>
+            <a href="/login">Sign in</a>
+            <a href="/help">Help</a>
         </div>
 
         <div>
             <h4>Support</h4>
-            <a href="#">Contact Support</a>
-            <a href="#">Help Center</a>
-            <a href="#">Service Status</a>
+            <a href="/help">Help center</a>
+            <a href="/mechanics">Find a mechanic</a>
         </div>
 
         <div>
-            <h4>Newsletter</h4>
-            <div class="newsletter">
-                <input type="email" placeholder="Email Address">
-                <button>Join</button>
-            </div>
+            <h4>Get started</h4>
+            <p style="color:#94a3b8;font-size:14px;line-height:1.6;">Register as a customer or mechanic, then use the matching login tab.</p>
         </div>
     </div>
 
     <div class="footer-bottom">
-        © 2024 CarFix Rwanda. Precision engineering for the road ahead.
+        © 2026 CarFix Rwanda
     </div>
 </footer>
+
+<script>
+    (function () {
+        const form = document.getElementById('heroQuickSearch');
+        if (!form) {
+            return;
+        }
+        const msg = document.getElementById('hero-search-msg');
+        form.addEventListener('submit', function (e) {
+            const spec = document.getElementById('hs-spec').value.trim();
+            const model = document.getElementById('hs-model').value.trim();
+            const keyword = document.getElementById('hs-q').value.trim();
+            if (!spec && !model && !keyword) {
+                e.preventDefault();
+                if (msg) {
+                    msg.style.display = 'block';
+                }
+            } else if (msg) {
+                msg.style.display = 'none';
+            }
+        });
+    })();
+</script>
 
 </body>
 </html>

@@ -39,13 +39,18 @@
             <div class="service-request-card">
                 <h2>Request Details</h2>
 
+                 <div th:if="${flashMessage}" style="margin-bottom:14px;padding:12px 14px;border-radius:12px;background:#ecfdf5;color:#047857;font-weight:600;"
+                     th:text="${flashMessage}">Saved.</div>
+                 <div th:if="${flashError}" style="margin-bottom:14px;padding:12px 14px;border-radius:12px;background:#fef2f2;color:#b91c1c;font-weight:600;"
+                     th:text="${flashError}">Error.</div>
+
                 <form th:action="@{/save-service-request}" method="post">
                     <div class="service-request-grid">
 
                         <div class="form-group full">
                             <label>Select Vehicle</label>
-                            <select name="vehicleId">
-                                <option value="">Select your vehicle</option>
+                            <select name="vehicleId" required>
+                                <option value="" selected disabled hidden>Select your vehicle</option>
                                 <option th:each="vehicle : ${vehicles}"
                                         th:value="${vehicle.id}"
                                         th:text="${vehicle.vehicleName + ' - ' + vehicle.plateNumber}">
@@ -55,8 +60,8 @@
 
                         <div class="form-group">
                             <label>Service Type</label>
-                            <select name="serviceType">
-                                <option>Select service type</option>
+                            <select name="serviceType" required>
+                                <option value="" selected disabled hidden>Select service type</option>
                                 <option>Engine Repair</option>
                                 <option>Brake Service</option>
                                 <option>Electrical Diagnosis</option>
@@ -68,8 +73,8 @@
 
                         <div class="form-group">
                             <label>Urgency</label>
-                            <select name="urgency">
-                                <option>Select urgency</option>
+                            <select name="urgency" required>
+                                <option value="" selected disabled hidden>Select urgency</option>
                                 <option>Low</option>
                                 <option>Medium</option>
                                 <option>High</option>
@@ -78,23 +83,28 @@
                         </div>
 
                         <div class="form-group full">
-                            <label>Preferred Mechanic</label>
-                            <select name="preferredMechanic">
-                                <option value="">Select mechanic (optional)</option>
-                                <option>Jean Bosco</option>
-                                <option>Fabrice Kwizera</option>
-                                <option>Aline Uwera</option>
+                            <label>Preferred mechanic</label>
+                            <select name="preferredMechanicId">
+                                <option value="">No preference (admin can help assign later)</option>
+                                <option th:each="m : ${mechanics}"
+                                        th:value="${m.id}"
+                                        th:selected="${preselectedMechanicId != null && preselectedMechanicId == m.id}"
+                                        th:text="${m.user.fullName + ' — ' + m.specialization + ' (' + m.supportedVehicleModel + ')'}">
+                                </option>
                             </select>
+                            <small style="display:block;margin-top:8px;color:#64748b;font-size:13px;">
+                                Only <strong>verified</strong> mechanics appear here (approved by an administrator).
+                            </small>
                         </div>
 
                         <div class="form-group full">
                             <label>Problem Title</label>
-                            <input type="text" name="problemTitle" placeholder="e.g. Brake noise when driving">
+                            <input type="text" name="problemTitle" placeholder="e.g. Brake noise when driving" required>
                         </div>
 
                         <div class="form-group full">
                             <label>Problem Description</label>
-                            <textarea name="problemDescription" placeholder="Describe the issue in detail..."></textarea>
+                            <textarea name="problemDescription" placeholder="Describe the issue in detail..." required></textarea>
                         </div>
 
                         <div class="form-group">

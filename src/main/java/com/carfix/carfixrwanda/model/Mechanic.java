@@ -1,10 +1,9 @@
 package com.carfix.carfixrwanda.model;
 
 import com.carfix.carfixrwanda.enums.AvailabilityStatus;
-import jakarta.persistence.*;
 import com.carfix.carfixrwanda.enums.VerificationStatus;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
+
 @Entity
 public class Mechanic {
 

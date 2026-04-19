@@ -138,8 +138,13 @@ a {
 }
 
 .secondary-btn {
-    background: #cfd8e6;
-    color: white;
+    background: #e5edf8;
+    color: #12396f;
+    border: 1px solid #c9d7ee;
+}
+
+.secondary-btn:hover {
+    background: #dbe8fb;
 }
 
 /* SEARCH CARD */
@@ -1735,7 +1740,7 @@ table th {
    .customer-request-header,
    .customer-request-row {
        display: grid;
-       grid-template-columns: 0.8fr 1fr 0.8fr 1fr;
+       grid-template-columns: 0.75fr 1fr 0.75fr 1fr minmax(140px, 1.1fr);
        gap: 14px;
        padding: 16px 18px;
        align-items: center;
@@ -2164,6 +2169,8 @@ table th {
          .service-request-page {
              padding: 20px;
          }
+     }
+
     .rec-avatar {
         width: 46px;
         height: 46px;
@@ -2183,7 +2190,9 @@ table th {
     .rec-avatar.alt {
         background: #dcfce7;
         color: #16a34a;
-    }.verification-grid {
+    }
+
+    .verification-grid {
          display: grid;
          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
          gap: 20px;
@@ -2256,25 +2265,15 @@ table th {
      .verification-actions {
          display: flex;
          gap: 12px;
-     }.verification-status-line {
+     }
+
+     .verification-status-line {
           display: flex;
           align-items: center;
           gap: 10px;
           margin: 10px 0 16px;
       }
-      .logout-btn {
-          background: #0f4aa3;
-          color: white;
-          border: none;
-          border-radius: 12px;
-          padding: 10px 16px;
-          font-weight: 600;
-          cursor: pointer;
-      }
 
-      .logout-btn:hover {
-          background: #0b3d88;
-      }
       .customer-profile-box {
           display: flex;
           align-items: center;
@@ -2337,3 +2336,291 @@ table th {
       .logout-btn:hover {
           background: #dbeafe;
       }
+
+/* --- UI polish: responsive admin, nav when logged in, shared logout --- */
+.logo-link {
+    font-size: clamp(24px, 3vw, 35px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #0b3b92;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo-link::before {
+    content: "◉";
+    font-size: 12px;
+    color: #8b3d08;
+}
+
+.nav-right {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.nav-user-cluster {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.nav-dashboard-link {
+    color: #0f172a;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: #f1f5f9;
+}
+
+.nav-dashboard-link:hover {
+    background: #e2e8f0;
+}
+
+.btn-logout {
+    -webkit-appearance: none;
+    appearance: none;
+    background: #ffffff;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    padding: 8px 16px;
+    line-height: 1;
+    min-height: 34px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-logout:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+}
+
+.admin-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 16px;
+    border: 1px solid #e5edf7;
+}
+
+.admin-table-scroll .admin-table {
+    min-width: 960px;
+    margin: 0;
+}
+
+.refined-table tbody tr:hover {
+    background: #f8fbff;
+}
+
+.refined-table td {
+    border-color: #e6edf6;
+}
+
+.refined-table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.admin-topbar-clean {
+    background: #ffffff;
+    border: 1px solid #e5edf7;
+    border-radius: 18px;
+    padding: 16px 18px;
+}
+
+.admin-summary-card.wide {
+    min-height: 220px;
+}
+
+.customer-profile-box .btn-logout,
+.mechanic-profile-box .btn-logout,
+.admin-top-actions .btn-logout {
+    margin-left: 6px;
+}
+
+.admin-row-needs-mechanic {
+    background: #fffbeb;
+}
+
+@media (max-width: 900px) {
+    .admin-main {
+        padding: 16px;
+    }
+
+    .admin-hero-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-topbar {
+        align-items: flex-start;
+    }
+}
+
+.mechanics-search-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+}
+
+@media (max-width: 960px) {
+    .mechanics-search-form {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .mechanics-container {
+        padding: 48px 20px 64px;
+    }
+
+    .page-header h1 {
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 560px) {
+    .mechanics-search-form {
+        grid-template-columns: 1fr;
+    }
+}
+
+.hero-search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.hero-search-form label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #cbd5e1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.hero-search-form input,
+.hero-search-form select {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(15, 23, 42, 0.35);
+    color: #fff;
+    padding: 12px 14px;
+    font-size: 15px;
+    outline: none;
+}
+
+.hero-search-form input::placeholder {
+    color: rgba(255,255,255,0.55);
+}
+
+.hero-search-form button[type="submit"] {
+    margin-top: 6px;
+    width: 100%;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    font-weight: 800;
+    font-size: 15px;
+    background: #0b3b92;
+    color: #fff;
+    cursor: pointer;
+}
+
+.hero-search-form button[type="submit"]:hover {
+    background: #082f75;
+}
+
+.mechanic-summary-simple {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+@media (max-width: 900px) {
+    .mechanic-summary-simple {
+        grid-template-columns: 1fr;
+    }
+}
+
+.repair-table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.repair-table {
+    min-width: 640px;
+}
+
+.mechanic-dashboard-compact {
+    grid-template-columns: 1fr !important;
+}
+
+.quick-actions-grid--three {
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+    .quick-actions-grid--three {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* --- Dashboard cleanup overrides --- */
+.admin-dashboard-grid {
+    grid-template-columns: 1fr;
+}
+
+.customer-top-note,
+.mechanic-top-note {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 620px;
+}
+
+.customer-topbar,
+.mechanic-topbar {
+    gap: 14px;
+}
+
+.customer-request-row form {
+    margin: 0;
+}
+
+@media (max-width: 900px) {
+    .customer-profile-box,
+    .mechanic-profile-box,
+    .admin-userbox {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .customer-top-note,
+    .mechanic-top-note {
+        max-width: 100%;
+    }
+
+    .admin-menu,
+    .customer-menu,
+    .mechanic-menu {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 560px) {
+    .admin-menu,
+    .customer-menu,
+    .mechanic-menu {
+        grid-template-columns: 1fr;
+    }
+}

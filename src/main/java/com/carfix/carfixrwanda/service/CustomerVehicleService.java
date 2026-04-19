@@ -5,6 +5,7 @@ import com.carfix.carfixrwanda.repository.CustomerVehicleRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CustomerVehicleService {
@@ -25,5 +26,9 @@ public class CustomerVehicleService {
 
     public List<CustomerVehicle> getVehiclesByUserId(Long userId) {
         return customerVehicleRepository.findByUserId(userId);
+    }
+
+    public Optional<CustomerVehicle> findVehicleOwnedByUser(Long vehicleId, Long userId) {
+        return customerVehicleRepository.findByIdAndUserId(vehicleId, userId);
     }
 }

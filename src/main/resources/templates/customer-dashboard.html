@@ -3,6 +3,13 @@
 <head>
     <title>Customer Dashboard - CarFix Rwanda</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <script>
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
 </head>
 <body>
 
@@ -15,37 +22,37 @@
 
             <nav class="customer-menu">
                 <a href="/customer-dashboard" class="active">Overview</a>
-                <a href="/vehicle-registration">My Vehicles</a>
-                <a href="/service-request">Requests</a>
-                <a href="/service-request">Bookings</a>
-                <a href="#">Messages</a>
-                <a href="#">Settings</a>
+                <a href="/vehicle-registration">My vehicles</a>
+                <a href="/service-request">New request</a>
+                <a href="/mechanics">Find mechanics</a>
+                <a href="/help">Help</a>
             </nav>
         </div>
 
-        <a href="/mechanics" class="customer-action-btn">Find Mechanic</a>
+        <a href="/service-request" class="customer-action-btn">Create Request</a>
     </aside>
 
     <main class="customer-main">
 
+        <div th:if="${flashMessage}" style="margin:0 24px 16px;padding:12px 16px;border-radius:12px;background:#ecfdf5;color:#047857;font-weight:600;"
+             th:text="${flashMessage}">OK</div>
+        <div th:if="${flashError}" style="margin:0 24px 16px;padding:12px 16px;border-radius:12px;background:#fef2f2;color:#b91c1c;font-weight:600;"
+             th:text="${flashError}">Error</div>
+
         <header class="customer-topbar">
-            <div class="customer-top-links">
-                <a href="/customer-dashboard" class="active">Dashboard</a>
-                <a href="/mechanics">Find Mechanics</a>
-                <a href="/service-request">Services</a>
-            </div>
+            <p class="customer-top-note">Manage your vehicles, monitor request progress, and cancel open requests when needed.</p>
 
             <div class="customer-profile-box">
                 <div class="customer-profile-avatar"
-                     th:text="${#strings.substring(currentUser.fullName,0,1)}">A</div>
+                     th:text="${currentUser.fullName != null && !currentUser.fullName.isEmpty() ? #strings.substring(currentUser.fullName,0,1) : 'U'}">A</div>
 
                 <div class="customer-profile-details">
-                    <div class="customer-profile-name" th:text="${currentUser.fullName}">Ange User</div>
-                    <div class="customer-profile-role">Logged In User</div>
+                    <div class="customer-profile-name" th:text="${currentUser.fullName != null ? currentUser.fullName : 'User'}">Ange User</div>
+                    <div class="customer-profile-role">Customer account</div>
                 </div>
 
                 <form th:action="@{/logout}" method="post" class="logout-form">
-                    <button type="submit" class="logout-btn">Logout</button>
+                    <button type="submit" class="btn-logout">Log out</button>
                 </form>
             </div>
         </header>
@@ -83,7 +90,11 @@
                         <a href="/vehicle-registration">Add Vehicle</a>
                     </div>
 
-                    <div class="vehicle-grid">
+                    <p th:if="${vehicles == null || vehicles.isEmpty()}" style="color:#64748b;font-size:14px;line-height:1.6;">
+                        You have not registered any vehicle yet.
+                    </p>
+
+                    <div class="vehicle-grid" th:if="${vehicles != null && !vehicles.isEmpty()}">
                         <div class="vehicle-card" th:each="vehicle : ${vehicles}">
                             <div class="vehicle-icon">🚗</div>
                             <h4 th:text="${vehicle.vehicleName}">Vehicle Name</h4>
@@ -104,26 +115,44 @@
 
                 <div class="customer-panel">
                     <div class="panel-header">
-                        <h3>Recent Service Requests</h3>
-                        <a href="/service-request">View All</a>
+                        <h3>My Service Requests</h3>
+                        <a href="/service-request">Create New</a>
                     </div>
 
-                    <div class="customer-request-table">
+                    <p th:if="${requests == null || requests.isEmpty()}" style="color:#64748b;font-size:14px;line-height:1.6;">
+                        You have no service requests yet.
+                    </p>
+
+                    <div class="customer-request-table" th:if="${requests != null && !requests.isEmpty()}">
                         <div class="customer-request-header">
                             <span>Request</span>
                             <span>Vehicle</span>
                             <span>Status</span>
-                            <span>Assigned Mechanic</span>
+                            <span>Mechanic</span>
+                            <span>Actions</span>
                         </div>
 
                         <div class="customer-request-row" th:each="request : ${requests}">
                             <span th:text="${'#RQ-' + request.id}">#RQ-2011</span>
-                            <span th:text="${request.customerVehicle.vehicleName}">Toyota RAV4</span>
+                            <span th:text="${request.customerVehicle != null ? request.customerVehicle.vehicleName : 'Vehicle'}">Toyota RAV4</span>
                             <span>
-                                <span class="status-pill blue" th:text="${request.status}">PENDING</span>
+                                <span class="status-pill blue" th:text="${request.status != null ? request.status : 'PENDING'}">PENDING</span>
                             </span>
-                            <span th:text="${request.preferredMechanic != null && !request.preferredMechanic.isEmpty() ? request.preferredMechanic : 'Not Assigned'}">
+                            <span th:text="${request.preferredMechanic != null && request.preferredMechanic.user != null ? request.preferredMechanic.user.fullName : 'Not assigned yet'}">
                                 Jean Bosco
+                            </span>
+                            <span>
+                                <form th:action="@{/customer/cancel-service-request}" method="post"
+                                      th:if="${request.status != null && request.status.name() != 'COMPLETED' && request.status.name() != 'CANCELLED'}">
+                                    <input type="hidden" name="requestId" th:value="${request.id}">
+                                    <button type="submit"
+                                            style="padding:8px 12px;border-radius:10px;border:1px solid #fecaca;background:#fff1f2;color:#b91c1c;font-weight:700;cursor:pointer;font-size:13px;"
+                                            onclick="return confirm('Cancel this service request? You can submit a new one later.');">
+                                        Cancel request
+                                    </button>
+                                </form>
+                                <span th:if="${request.status != null && (request.status.name() == 'COMPLETED' || request.status.name() == 'CANCELLED')}"
+                                      style="color:#94a3b8;font-size:13px;">—</span>
                             </span>
                         </div>
                     </div>
@@ -138,29 +167,23 @@
                         <h3>Quick Actions</h3>
                     </div>
 
-                    <div class="quick-actions-grid">
+                    <div class="quick-actions-grid quick-actions-grid--three">
                         <a href="/mechanics" class="quick-action-card">
                             <div class="quick-icon">🔎</div>
-                            <h4>Find Mechanic</h4>
-                            <p>Search mechanics by specialization and vehicle model.</p>
+                            <h4>Find a mechanic</h4>
+                            <p>Search verified garages by skill and vehicle type.</p>
                         </a>
 
                         <a href="/service-request" class="quick-action-card">
                             <div class="quick-icon">📝</div>
-                            <h4>Request Service</h4>
-                            <p>Create a new repair or maintenance request.</p>
+                            <h4>New service request</h4>
+                            <p>Describe the issue and optionally pick a preferred garage.</p>
                         </a>
 
-                        <a href="/service-request" class="quick-action-card">
-                            <div class="quick-icon">📍</div>
-                            <h4>Track Progress</h4>
-                            <p>Follow your vehicle’s current service status.</p>
-                        </a>
-
-                        <a href="/mechanics" class="quick-action-card">
-                            <div class="quick-icon">⭐</div>
-                            <h4>Review Service</h4>
-                            <p>Rate mechanics and leave service feedback.</p>
+                        <a href="/vehicle-registration" class="quick-action-card">
+                            <div class="quick-icon">🚗</div>
+                            <h4>Add a vehicle</h4>
+                            <p>Register another car so you can request service for it anytime.</p>
                         </a>
                     </div>
                 </div>
@@ -170,22 +193,22 @@
 
                     <div class="progress-item" th:each="request : ${requests}">
                         <div class="progress-top">
-                            <strong th:text="${request.customerVehicle.vehicleName + ' - ' + request.problemTitle}">
+                            <strong th:text="${(request.customerVehicle != null ? request.customerVehicle.vehicleName : 'Vehicle') + ' - ' + request.problemTitle}">
                                 Toyota RAV4 - Brake Inspection
                             </strong>
-                            <span th:text="${request.status == T(com.carfix.carfixrwanda.enums.RequestStatus).COMPLETED ? '100%' : (request.status == T(com.carfix.carfixrwanda.enums.RequestStatus).IN_PROGRESS ? '65%' : '20%')}">
+                            <span th:text="${request.status != null && request.status.name() == 'COMPLETED' ? '100%' : (request.status != null && request.status.name() == 'IN_PROGRESS' ? '65%' : (request.status != null && request.status.name() == 'ASSIGNED' ? '40%' : '20%'))}">
                                 20%
                             </span>
                         </div>
 
                         <div class="progress-bar">
-                            <span th:style="${request.status == T(com.carfix.carfixrwanda.enums.RequestStatus).COMPLETED ? 'width:100%; background:#16a34a;' : (request.status == T(com.carfix.carfixrwanda.enums.RequestStatus).IN_PROGRESS ? 'width:65%; background:#2563eb;' : 'width:20%; background:#ea580c;')}">
+                            <span th:style="${request.status != null && request.status.name() == 'COMPLETED' ? 'width:100%; background:#16a34a;' : (request.status != null && request.status.name() == 'IN_PROGRESS' ? 'width:65%; background:#2563eb;' : (request.status != null && request.status.name() == 'ASSIGNED' ? 'width:40%; background:#2563eb;' : 'width:20%; background:#ea580c;'))}">
                             </span>
                         </div>
 
                         <small
-                                th:text="${request.status == T(com.carfix.carfixrwanda.enums.RequestStatus).COMPLETED ? 'Service completed' : (request.status == T(com.carfix.carfixrwanda.enums.RequestStatus).IN_PROGRESS ? 'Work in progress' : 'Pending review')}"
-                                th:classappend="${request.status == T(com.carfix.carfixrwanda.enums.RequestStatus).COMPLETED ? ' green-text' : (request.status == T(com.carfix.carfixrwanda.enums.RequestStatus).IN_PROGRESS ? ' blue-text' : ' orange-text')}">
+                                th:text="${request.status != null && request.status.name() == 'COMPLETED' ? 'Service completed' : (request.status != null && request.status.name() == 'IN_PROGRESS' ? 'Work in progress' : (request.status != null && request.status.name() == 'ASSIGNED' ? 'Mechanic assigned' : 'Pending review'))}"
+                                th:classappend="${request.status != null && request.status.name() == 'COMPLETED' ? ' green-text' : (request.status != null && request.status.name() == 'IN_PROGRESS' ? ' blue-text' : (request.status != null && request.status.name() == 'ASSIGNED' ? ' blue-text' : ' orange-text'))}">
                             Pending review
                         </small>
                     </div>
@@ -196,10 +219,10 @@
 
                     <div class="recommended-mechanic" th:each="mechanic, stat : ${mechanics}">
                         <div class="rec-avatar" th:classappend="${stat.index % 2 == 1} ? ' alt' : ''">
-                            <span th:text="${#strings.substring(mechanic.user.fullName,0,1)}">K</span>
+                            <span th:text="${mechanic.user != null && mechanic.user.fullName != null && !mechanic.user.fullName.isEmpty() ? #strings.substring(mechanic.user.fullName,0,1) : 'M'}">K</span>
                         </div>
                         <div>
-                            <h4 th:text="${mechanic.user.fullName}">Kevin Igiraneza</h4>
+                            <h4 th:text="${mechanic.user != null ? mechanic.user.fullName : 'Unknown'}">Kevin Igiraneza</h4>
                             <p>
                                 Specialist:
                                 <span th:text="${mechanic.specialization}">Engine</span>

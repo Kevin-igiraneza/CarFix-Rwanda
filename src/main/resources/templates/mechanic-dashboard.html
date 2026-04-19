@@ -3,6 +3,13 @@
 <head>
     <title>Mechanic Dashboard - CarFix Rwanda</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <script>
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
 </head>
 <body>
 
@@ -14,149 +21,126 @@
             <div class="mechanic-subtitle">MECHANIC PORTAL</div>
 
             <nav class="mechanic-menu">
-                <a href="/mechanic-dashboard" class="active">Overview</a>
-                <a href="/vehicle-registration">My Vehicles</a>
-                <a href="/service-request">Requests</a>
-                <a href="#">Messages</a>
-                <a href="#">Settings</a>
+                <a href="/real-mechanic-dashboard" class="active">My jobs</a>
+                <a href="/help">Help</a>
             </nav>
         </div>
 
-        <a href="/service-request" class="mechanic-action-btn">Request Service</a>
+        <a href="/real-mechanic-dashboard" class="mechanic-action-btn">Refresh</a>
     </aside>
 
     <main class="mechanic-main">
 
-        <header class="mechanic-topbar">
-            <div class="mechanic-top-links">
-                <a href="/mechanic-dashboard" class="active">Dashboard</a>
-                <a href="/mechanics">Find Mechanics</a>
-                <a href="/service-request">Services</a>
-            </div>
+           <div th:if="${mechanicFlashMessage}" style="margin:0 0 16px;padding:12px 16px;border-radius:12px;background:#ecfdf5;color:#047857;font-weight:600;"
+               th:text="${mechanicFlashMessage}">Saved.</div>
+           <div th:if="${mechanicFlashError}" style="margin:0 0 16px;padding:12px 16px;border-radius:12px;background:#fef2f2;color:#b91c1c;font-weight:600;"
+               th:text="${mechanicFlashError}">Error.</div>
 
-            <div class="mechanic-profile-box">
-                <div class="mechanic-profile-avatar">JB</div>
-                <div class="mechanic-profile-name">Jean Bosco</div>
+        <header class="mechanic-topbar">
+            <p class="mechanic-top-note">Review assigned jobs, update status as work progresses, and keep requests accurate.</p>
+
+            <div class="mechanic-profile-box" style="display:flex; align-items:center; gap:14px;">
+                <div class="mechanic-profile-avatar" th:text="${#strings.substring(currentUser.fullName,0,1)}">M</div>
+                <div class="mechanic-profile-name" th:text="${currentUser.fullName}">Name</div>
+                <form th:action="@{/logout}" method="post" style="margin:0;">
+                    <button type="submit" class="btn-logout">Log out</button>
+                </form>
             </div>
         </header>
 
-        <section class="mechanic-summary-grid">
-            <div class="mechanic-revenue-card">
-                <h3>Mechanic Dashboard</h3>
-                <p class="small-label">TOTAL REVENUE</p>
-                <h2>RWF 1,240,000</h2>
-                <p class="growth-text">↗ +12.5% from last month</p>
-            </div>
-
+        <section class="mechanic-summary-simple">
             <div class="mechanic-mini-card">
                 <div class="mini-icon peach">🧰</div>
-                <p>NEW REQUESTS</p>
-                <h2 th:text="${requestCount}">08</h2>
+                <p>ASSIGNED TO YOU</p>
+                <h2 th:text="${requestCount}">0</h2>
             </div>
-
             <div class="mechanic-mini-card">
                 <div class="mini-icon blue">🛠️</div>
-                <p>ONGOING REPAIRS</p>
-                <h2 th:text="${requestCount}">14</h2>
+                <p>OPEN (NOT DONE)</p>
+                <h2 th:text="${openWorkCount}">0</h2>
+            </div>
+            <div class="mechanic-mini-card">
+                <div class="mini-icon gray">✓</div>
+                <p>COMPLETED</p>
+                <h2 th:text="${completedCount}">0</h2>
             </div>
         </section>
 
-        <section class="mechanic-dashboard-grid">
-
+        <section class="mechanic-dashboard-grid mechanic-dashboard-compact">
             <div class="mechanic-left-column">
-
                 <div class="mechanic-panel">
                     <div class="panel-header">
-                        <h3>Service Requests</h3>
-                        <span class="live-badge">LIVE QUEUE</span>
+                        <h3>Your service requests</h3>
+                        <span class="live-badge" th:text="${inProgressCount} + ' in progress'">0 in progress</span>
                     </div>
 
-                    <div class="mechanic-request-list">
-                        <div class="request-card urgent" th:each="request : ${assignedRequests}">
-                            <div class="request-head">
-                                <div>
-                                    <h4 th:text="${request.customerVehicle.vehicleName}">Toyota RAV4</h4>
-                                    <p th:text="${request.problemTitle}">Brake noise & suspension check</p>
-                                </div>
-                                <span th:text="${request.preferredTime != null ? request.preferredTime : 'Scheduled'}">Scheduled</span>
+                    <p th:if="${assignedRequests == null || assignedRequests.isEmpty()}"
+                       style="padding:20px;color:#64748b;font-size:15px;">
+                        No jobs are assigned to you yet. When a customer picks your garage—or an admin assigns you—a request will appear here.
+                    </p>
+
+                    <div class="repair-table-scroll" th:if="${assignedRequests != null && !assignedRequests.isEmpty()}">
+                        <div class="repair-table">
+                            <div class="repair-header">
+                                <span>Vehicle &amp; owner</span>
+                                <span>Status</span>
+                                <span>Update</span>
                             </div>
-                            <div class="request-actions">
-                                <button class="accept-btn">Accept</button>
-                                <button class="decline-btn">Decline</button>
+
+                            <div class="repair-row" th:each="request : ${assignedRequests}">
+                                <div>
+                                    <strong th:text="${request.customerVehicle.vehicleName}">Vehicle</strong>
+                                    <p style="margin-top:4px;color:#64748b;font-size:13px;" th:text="${request.problemTitle}">Issue</p>
+                                    <p style="margin-top:6px;font-size:13px;">
+                                        Owner:
+                                        <span th:text="${request.customerVehicle.user.fullName}">—</span>
+                                    </p>
+                                </div>
+                                <div>
+                                    <div class="progress-bar">
+                                        <span th:style="${request.status.name() == 'COMPLETED' ? 'width:100%' : (request.status.name() == 'IN_PROGRESS' ? 'width:65%' : (request.status.name() == 'ASSIGNED' ? 'width:40%' : 'width:20%'))}"></span>
+                                    </div>
+                                    <small th:text="${request.status}">PENDING</small>
+                                </div>
+                                <div>
+                                    <form th:action="@{/update-request-status}" method="post">
+                                        <input type="hidden" name="requestId" th:value="${request.id}">
+                                        <select name="status"
+                                                th:disabled="${request.status.name() == 'COMPLETED' || request.status.name() == 'CANCELLED'}"
+                                                onchange="if(!this.disabled){this.form.submit();}"
+                                                style="padding:8px 10px;border-radius:10px;border:1px solid #dbe4f0;width:100%;max-width:200px;">
+                                            <th:block th:if="${request.status.name() == 'ASSIGNED'}">
+                                                <option value="ASSIGNED" selected>ASSIGNED</option>
+                                                <option value="IN_PROGRESS">IN_PROGRESS</option>
+                                            </th:block>
+                                            <th:block th:if="${request.status.name() == 'IN_PROGRESS'}">
+                                                <option value="IN_PROGRESS" selected>IN_PROGRESS</option>
+                                                <option value="COMPLETED">COMPLETED</option>
+                                            </th:block>
+                                            <option value="COMPLETED" th:if="${request.status.name() == 'COMPLETED'}" selected>COMPLETED</option>
+                                            <option value="CANCELLED" th:if="${request.status.name() == 'CANCELLED'}" selected>CANCELLED</option>
+                                        </select>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
 
-            <div class="mechanic-right-column">
-
-                <div class="mechanic-panel">
-                    <div class="panel-header">
-                        <h3>Ongoing Repairs</h3>
-                        <div class="filter-icon">☰</div>
-                    </div>
-
-                    <div class="repair-table">
-                        <div class="repair-header">
-                            <span>Vehicle & Owner</span>
-                            <span>Repair Progress</span>
-                            <span>Status Update</span>
-                        </div>
-
-                        <div class="repair-row" th:each="request : ${assignedRequests}">
-                            <div>
-                                <strong th:text="${request.customerVehicle.vehicleName}">Vehicle Name</strong>
-                                <p>
-                                    Owner:
-                                    <span th:text="${request.customerVehicle.user.fullName}">Owner Name</span>
-                                </p>
-                            </div>
-                            <div>
-                                <div class="progress-bar">
-                                    <span th:style="${request.status.name() == 'COMPLETED' ? 'width:100%' : (request.status.name() == 'IN_PROGRESS' ? 'width:65%' : 'width:20%')}"></span>
-                                </div>
-                                <small th:text="${request.status}">PENDING</small>
-                            </div>
-                            <div>
-                                <form th:action="@{/update-request-status}" method="post">
-                                    <input type="hidden" name="requestId" th:value="${request.id}">
-                                    <select name="status" onchange="this.form.submit()">
-                                        <option value="PENDING" th:selected="${request.status.name() == 'PENDING'}">PENDING</option>
-                                        <option value="IN_PROGRESS" th:selected="${request.status.name() == 'IN_PROGRESS'}">IN_PROGRESS</option>
-                                        <option value="COMPLETED" th:selected="${request.status.name() == 'COMPLETED'}">COMPLETED</option>
-                                    </select>
-                                </form>
-                            </div>
+            <div class="mechanic-bottom-grid" style="margin-top: 8px;">
+                <div class="mechanic-profile-card" style="max-width: 520px;">
+                    <div class="profile-photo">👨‍🔧</div>
+                    <div class="profile-info">
+                        <h3 th:text="${currentUser.fullName}">You</h3>
+                        <p>Your garage profile</p>
+                        <div class="profile-tags" th:if="${mechanicProfile != null}">
+                            <span th:text="${mechanicProfile.specialization}">Specialty</span>
+                            <span th:text="${mechanicProfile.supportedVehicleModel}">Models</span>
+                            <span th:text="${mechanicProfile.garageLocation}">Location</span>
                         </div>
                     </div>
                 </div>
-
-                <div class="mechanic-bottom-grid">
-                    <div class="mechanic-profile-card">
-                        <div class="profile-photo">👨‍🔧</div>
-                        <div class="profile-info">
-                            <h3>Jean Bosco</h3>
-                            <p>Lead Systems Engineer</p>
-                            <div class="profile-tags">
-                                <span>BMW</span>
-                                <span>Mercedes</span>
-                                <span>Toyota</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mechanic-target-card">
-                        <h4>Weekly Target</h4>
-                        <p>Complete 20 repairs to unlock Gold badge.</p>
-                        <h2>14/20</h2>
-                        <div class="progress-bar large">
-                            <span style="width:70%"></span>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </section>
 

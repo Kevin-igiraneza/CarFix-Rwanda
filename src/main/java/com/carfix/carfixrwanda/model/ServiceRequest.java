@@ -4,6 +4,7 @@ import com.carfix.carfixrwanda.enums.RequestStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -20,8 +21,6 @@ public class ServiceRequest {
     @Column(nullable = false)
     private String urgency;
 
-    private String preferredMechanic;
-
     @Column(nullable = false)
     private String problemTitle;
 
@@ -37,6 +36,16 @@ public class ServiceRequest {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RequestStatus status;
+
+    @Column(name = "status_updated_at")
+    private LocalDateTime statusUpdatedAt;
+
+    @Column(name = "status_updated_by", length = 120)
+    private String statusUpdatedBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "preferred_mechanic_id")
+    private Mechanic preferredMechanic;
 
     @ManyToOne
     @JoinColumn(name = "vehicle_id", nullable = false)
@@ -66,11 +75,11 @@ public class ServiceRequest {
         this.urgency = urgency;
     }
 
-    public String getPreferredMechanic() {
+    public Mechanic getPreferredMechanic() {
         return preferredMechanic;
     }
 
-    public void setPreferredMechanic(String preferredMechanic) {
+    public void setPreferredMechanic(Mechanic preferredMechanic) {
         this.preferredMechanic = preferredMechanic;
     }
 
@@ -120,6 +129,22 @@ public class ServiceRequest {
 
     public void setStatus(RequestStatus status) {
         this.status = status;
+    }
+
+    public LocalDateTime getStatusUpdatedAt() {
+        return statusUpdatedAt;
+    }
+
+    public void setStatusUpdatedAt(LocalDateTime statusUpdatedAt) {
+        this.statusUpdatedAt = statusUpdatedAt;
+    }
+
+    public String getStatusUpdatedBy() {
+        return statusUpdatedBy;
+    }
+
+    public void setStatusUpdatedBy(String statusUpdatedBy) {
+        this.statusUpdatedBy = statusUpdatedBy;
     }
 
     public CustomerVehicle getCustomerVehicle() {

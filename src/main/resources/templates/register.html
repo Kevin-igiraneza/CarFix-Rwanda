@@ -21,7 +21,7 @@
 
         .auth-card {
             width: 100%;
-            max-width: 460px;
+            max-width: 520px;
             background: #ffffff;
             border-radius: 24px;
             padding: 36px 32px;
@@ -31,22 +31,50 @@
 
         .auth-card h1 {
             margin-bottom: 10px;
-            font-size: 38px;
+            font-size: 34px;
             font-weight: 800;
             color: #0f172a;
         }
 
-        .auth-card p {
-            margin-bottom: 24px;
+        .auth-card > p {
+            margin-bottom: 20px;
             color: #64748b;
-            font-size: 16px;
+            font-size: 15px;
             line-height: 1.6;
+        }
+
+        .register-tabs {
+            display: flex;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 6px;
+            border-radius: 14px;
+            margin-bottom: 22px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+            color: #64748b;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #0b3b92;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         .auth-form {
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 16px;
         }
 
         .form-group {
@@ -62,9 +90,9 @@
         }
 
         .form-group input,
-        .form-group select {
+        .form-group textarea {
             width: 100%;
-            height: 52px;
+            min-height: 48px;
             border: 1px solid #dbe4f0;
             border-radius: 14px;
             padding: 0 16px;
@@ -75,16 +103,37 @@
             transition: 0.2s ease;
         }
 
+        .form-group textarea {
+            padding: 12px 16px;
+            min-height: 72px;
+            resize: vertical;
+        }
+
         .form-group input:focus,
-        .form-group select:focus {
+        .form-group textarea:focus {
             border-color: #1d4ed8;
             background: #ffffff;
             box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.08);
         }
 
+        #mechanicFields {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            padding-top: 4px;
+            border-top: 1px solid #e5edf7;
+            margin-top: 4px;
+        }
+
+        #mechanicFields .hint {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
         .auth-btn {
             width: 100%;
-            height: 54px;
+            height: 52px;
             border: none;
             border-radius: 16px;
             background: #0f4aa3;
@@ -92,7 +141,7 @@
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            margin-top: 8px;
+            margin-top: 6px;
             transition: 0.2s ease;
         }
 
@@ -121,39 +170,62 @@
 <body>
 
 <div class="auth-card">
-    <h1>Create Account</h1>
-    <p>Register to use CarFix Rwanda and access customer or mechanic services.</p>
+    <div style="margin-bottom:14px;">
+        <a href="/" style="color:#0b3b92;font-weight:700;text-decoration:none;">← Back to home</a>
+    </div>
+    <h1>Create account</h1>
+    <p>Choose <strong>Customer</strong> to book services and manage vehicles, or <strong>Mechanic</strong> to list your garage (admin verification required before you appear in the public directory).</p>
 
     <div th:if="${errorMessage}" style="background:#fef2f2; color:#b91c1c; padding:12px 14px; border-radius:12px; margin-bottom:18px; font-size:14px;">
         <span th:text="${errorMessage}"></span>
     </div>
 
-    <form th:action="@{/register}" method="post" class="auth-form">
+    <div class="register-tabs">
+        <button type="button" class="tab-btn active" id="tabCustomer" onclick="selectRole('CUSTOMER', this)">Customer</button>
+        <button type="button" class="tab-btn" id="tabMechanic" onclick="selectRole('MECHANIC', this)">Mechanic</button>
+    </div>
+
+    <form th:action="@{/register}" method="post" class="auth-form" id="registerForm">
+        <input type="hidden" name="registrationRole" id="registrationRoleInput"
+               th:value="${defaultAccountType != null ? defaultAccountType : 'CUSTOMER'}">
+
         <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" name="fullName" placeholder="Enter your full name" required>
+            <label>Full name</label>
+            <input type="text" name="fullName" placeholder="Your full name" required>
         </div>
 
         <div class="form-group">
             <label>Email</label>
-            <input type="email" name="email" placeholder="Enter your email" required>
+            <input type="email" name="email" placeholder="you@example.com" required>
         </div>
 
         <div class="form-group">
             <label>Password</label>
-            <input type="password" name="password" placeholder="Create a password" required>
+            <input type="password" name="password" placeholder="Create a secure password" required minlength="6">
         </div>
 
         <div class="form-group">
-            <label>Role</label>
-            <select name="role" required>
-                <option value="">Select role</option>
-                <option value="CUSTOMER">Customer</option>
-                <option value="MECHANIC">Mechanic</option>
-            </select>
+            <label>Phone number</label>
+            <input type="tel" name="phone" placeholder="e.g. 0780000000" required>
         </div>
 
-        <button type="submit" class="auth-btn">Register</button>
+        <div id="mechanicFields">
+            <p class="hint">Mechanic accounts need a short garage profile. An administrator will review and approve your listing.</p>
+            <div class="form-group">
+                <label>Specialization</label>
+                <input type="text" name="specialization" id="specialization" placeholder="e.g. Engine repair, brakes">
+            </div>
+            <div class="form-group">
+                <label>Supported vehicle models / brands</label>
+                <input type="text" name="supportedVehicleModel" id="supportedVehicleModel" placeholder="e.g. Toyota, BMW, Volkswagen">
+            </div>
+            <div class="form-group">
+                <label>Garage location</label>
+                <input type="text" name="garageLocation" id="garageLocation" placeholder="e.g. Kigali, Remera">
+            </div>
+        </div>
+
+        <button type="submit" class="auth-btn">Create account</button>
     </form>
 
     <div class="auth-link-text">
@@ -161,6 +233,38 @@
         <a href="/login">Sign in</a>
     </div>
 </div>
+
+<script th:inline="javascript">
+    const defaultRole = /*[[${defaultAccountType}]]*/ 'CUSTOMER';
+
+    function selectRole(role, btn) {
+        document.querySelectorAll('.register-tabs .tab-btn').forEach(function (b) {
+            b.classList.remove('active');
+        });
+        btn.classList.add('active');
+        document.getElementById('registrationRoleInput').value = role;
+        var block = document.getElementById('mechanicFields');
+        var show = role === 'MECHANIC';
+        block.style.display = show ? 'flex' : 'none';
+        ['specialization', 'supportedVehicleModel', 'garageLocation'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) {
+                el.required = show;
+                if (!show) {
+                    el.value = '';
+                }
+            }
+        });
+    }
+
+    (function init() {
+        if (defaultRole === 'MECHANIC') {
+            selectRole('MECHANIC', document.getElementById('tabMechanic'));
+        } else {
+            selectRole('CUSTOMER', document.getElementById('tabCustomer'));
+        }
+    })();
+</script>
 
 </body>
 </html>

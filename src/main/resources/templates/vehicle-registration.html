@@ -38,17 +38,22 @@
             <div class="vehicle-form-card">
                 <h2>Vehicle Details</h2>
 
+                 <div th:if="${flashMessage}" style="margin-bottom:14px;padding:12px 14px;border-radius:12px;background:#ecfdf5;color:#047857;font-weight:600;"
+                     th:text="${flashMessage}">Saved.</div>
+                 <div th:if="${flashError}" style="margin-bottom:14px;padding:12px 14px;border-radius:12px;background:#fef2f2;color:#b91c1c;font-weight:600;"
+                     th:text="${flashError}">Error.</div>
+
                 <form th:action="@{/save-vehicle}" method="post">
                     <div class="vehicle-form-grid">
                         <div class="form-group full">
                             <label>Vehicle Name</label>
-                            <input type="text" name="vehicleName" placeholder="e.g. Toyota RAV4">
+                            <input type="text" name="vehicleName" placeholder="e.g. Toyota RAV4" required>
                         </div>
 
                         <div class="form-group">
                             <label>Brand</label>
-                            <select name="brand">
-                                <option>Select brand</option>
+                            <select name="brand" required>
+                                <option value="" selected disabled hidden>Select brand</option>
                                 <option>Toyota</option>
                                 <option>Hyundai</option>
                                 <option>Volkswagen</option>
@@ -59,23 +64,23 @@
 
                         <div class="form-group">
                             <label>Model</label>
-                            <input type="text" name="model" placeholder="e.g. RAV4">
+                            <input type="text" name="model" placeholder="e.g. RAV4" required>
                         </div>
 
                         <div class="form-group">
                             <label>Year</label>
-                            <input type="number" name="year" placeholder="e.g. 2022">
+                            <input type="number" name="year" placeholder="e.g. 2022" min="1950" max="2100" required>
                         </div>
 
                         <div class="form-group">
                             <label>Plate Number</label>
-                            <input type="text" name="plateNumber" placeholder="e.g. RAB 123 A">
+                            <input type="text" name="plateNumber" placeholder="e.g. RAB 123 A" required>
                         </div>
 
                         <div class="form-group">
                             <label>Fuel Type</label>
-                            <select name="fuelType">
-                                <option>Select fuel type</option>
+                            <select name="fuelType" required>
+                                <option value="" selected disabled hidden>Select fuel type</option>
                                 <option>Petrol</option>
                                 <option>Diesel</option>
                                 <option>Hybrid</option>
@@ -85,8 +90,8 @@
 
                         <div class="form-group">
                             <label>Transmission</label>
-                            <select name="transmission">
-                                <option>Select transmission</option>
+                            <select name="transmission" required>
+                                <option value="" selected disabled hidden>Select transmission</option>
                                 <option>Automatic</option>
                                 <option>Manual</option>
                             </select>

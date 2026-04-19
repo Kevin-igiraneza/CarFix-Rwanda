@@ -1,5 +1,6 @@
 package com.carfix.carfixrwanda.controller;
 
+import com.carfix.carfixrwanda.enums.RequestStatus;
 import com.carfix.carfixrwanda.model.CustomerVehicle;
 import com.carfix.carfixrwanda.model.Mechanic;
 import com.carfix.carfixrwanda.model.ServiceRequest;
@@ -12,6 +13,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -40,15 +44,34 @@ public class CustomerDashboardController {
 
         List<CustomerVehicle> vehicles = customerVehicleService.getVehiclesByUserId(currentUser.getId());
         List<ServiceRequest> requests = serviceRequestService.getRequestsByUserId(currentUser.getId());
-        List<Mechanic> mechanics = mechanicService.getAllMechanics();
+        List<Mechanic> mechanics = mechanicService.getVerifiedMechanics();
+
+        long activeRequestCount = requests.stream()
+                .filter(r -> r.getStatus() != RequestStatus.COMPLETED && r.getStatus() != RequestStatus.CANCELLED)
+                .count();
 
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("vehicles", vehicles);
         model.addAttribute("vehicleCount", vehicles.size());
         model.addAttribute("requests", requests);
-        model.addAttribute("requestCount", requests.size());
+        model.addAttribute("requestCount", activeRequestCount);
         model.addAttribute("mechanics", mechanics);
 
         return "customer-dashboard";
+    }
+
+    @PostMapping("/customer/cancel-service-request")
+    public String cancelServiceRequest(@RequestParam("requestId") Long requestId,
+                                       Authentication authentication,
+                                       RedirectAttributes redirectAttributes) {
+        User user = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
+        try {
+            serviceRequestService.cancelRequestAsCustomer(requestId, user.getId(), "CUSTOMER:" + user.getEmail());
+            redirectAttributes.addFlashAttribute("flashMessage", "Your service request was cancelled.");
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("flashError", ex.getMessage());
+        }
+        return "redirect:/customer-dashboard";
     }
 }

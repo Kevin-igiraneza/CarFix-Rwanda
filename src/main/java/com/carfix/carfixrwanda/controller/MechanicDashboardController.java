@@ -90,4 +90,52 @@ public class MechanicDashboardController {
                 }
         return "redirect:/real-mechanic-dashboard";
     }
+
+    @PostMapping("/mechanic/review-cancellation-request")
+    public String reviewCancellationRequest(@RequestParam("requestId") Long requestId,
+                                            @RequestParam("decision") String decision,
+                                            @RequestParam("responseMessage") String responseMessage,
+                                            Authentication authentication,
+                                            RedirectAttributes redirectAttributes) {
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
+        Mechanic mechanic = mechanicService.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new IllegalStateException("No mechanic profile is linked to this account"));
+
+        try {
+            boolean approve = "APPROVE".equalsIgnoreCase(decision);
+            serviceRequestService.reviewCancellationRequestAsMechanic(
+                    requestId,
+                    approve,
+                    responseMessage,
+                    mechanic,
+                    "MECHANIC:" + currentUser.getEmail()
+            );
+            redirectAttributes.addFlashAttribute(
+                    "mechanicFlashMessage",
+                    approve ? "Cancellation request approved." : "Cancellation request reply sent."
+            );
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("mechanicFlashError", ex.getMessage());
+        }
+        return "redirect:/real-mechanic-dashboard";
+    }
+
+    @PostMapping("/mechanic/delete-service-request")
+    public String deleteServiceRequest(@RequestParam("requestId") Long requestId,
+                                       Authentication authentication,
+                                       RedirectAttributes redirectAttributes) {
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
+        Mechanic mechanic = mechanicService.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new IllegalStateException("No mechanic profile is linked to this account"));
+
+        try {
+            serviceRequestService.deleteCancelledRequestAsMechanic(requestId, mechanic.getId());
+            redirectAttributes.addFlashAttribute("mechanicFlashMessage", "Cancelled request removed.");
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("mechanicFlashError", ex.getMessage());
+        }
+        return "redirect:/real-mechanic-dashboard";
+    }
 }

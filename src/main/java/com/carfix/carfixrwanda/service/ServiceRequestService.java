@@ -1,5 +1,6 @@
 package com.carfix.carfixrwanda.service;
 
+import com.carfix.carfixrwanda.enums.CancellationRequestStatus;
 import com.carfix.carfixrwanda.enums.RequestStatus;
 import com.carfix.carfixrwanda.enums.VerificationStatus;
 import com.carfix.carfixrwanda.model.Mechanic;
@@ -69,6 +70,9 @@ public class ServiceRequestService {
         Mechanic assigned = request.getPreferredMechanic();
         if (assigned == null || !assigned.getId().equals(mechanic.getId())) {
             throw new AccessDeniedException("This service request is not assigned to you");
+        }
+        if (request.isCancellationRequested()) {
+            throw new IllegalStateException("Respond to the customer's cancellation request before changing the job status.");
         }
 
         RequestStatus current = request.getStatus();
@@ -140,26 +144,66 @@ public class ServiceRequestService {
         appendHistory(saved, current, status, actor, "ADMIN_STATUS_UPDATED", null);
     }
 
-    /**
-     * Customer cancels their own request (any non-terminal status except already completed/cancelled).
-     */
-    public void cancelRequestAsCustomer(Long requestId, Long customerUserId, String actor) {
+    public void requestCancellationAsCustomer(Long requestId, Long customerUserId, String cancellationReason, String actor) {
         ServiceRequest request = serviceRequestRepository.findById(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("Request not found"));
         if (!request.getCustomerVehicle().getUser().getId().equals(customerUserId)) {
-            throw new AccessDeniedException("You can only cancel your own service requests");
+            throw new AccessDeniedException("You can only manage your own service requests");
         }
         RequestStatus current = request.getStatus();
-        if (current == RequestStatus.IN_PROGRESS) {
-            throw new IllegalStateException("Cannot cancel a request already in progress. Contact support or an admin.");
-        }
         if (TERMINAL_STATUSES.contains(current)) {
             throw new IllegalStateException("This request is already closed.");
         }
-        request.setStatus(RequestStatus.CANCELLED);
-        auditStatusChange(request, actor);
+        if (request.getPreferredMechanic() == null) {
+            throw new IllegalStateException("This request is not assigned to a mechanic yet. Please contact an administrator.");
+        }
+        if (request.isCancellationRequested()) {
+            throw new IllegalStateException("A cancellation request is already waiting for the mechanic's response.");
+        }
+        String reason = requireText(cancellationReason, "Tell the mechanic why you want to cancel this request.");
+        request.setCancellationRequestStatus(CancellationRequestStatus.PENDING);
+        request.setCancellationRequestedAt(LocalDateTime.now());
+        request.setCancellationRequestMessage(reason);
+        request.setCancellationRespondedAt(null);
+        request.setCancellationResponseMessage(null);
         ServiceRequest saved = serviceRequestRepository.save(request);
-        appendHistory(saved, current, RequestStatus.CANCELLED, actor, "CUSTOMER_CANCELLED", "Customer cancelled this request.");
+        appendHistory(saved, current, current, actor, "CUSTOMER_CANCELLATION_REQUESTED",
+                reason);
+    }
+
+    public void reviewCancellationRequestAsMechanic(Long requestId,
+                                                    boolean approve,
+                                                    String responseMessage,
+                                                    Mechanic mechanic,
+                                                    String actor) {
+        ServiceRequest request = serviceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("Request not found"));
+        Mechanic assigned = request.getPreferredMechanic();
+        if (assigned == null || !assigned.getId().equals(mechanic.getId())) {
+            throw new AccessDeniedException("This service request is not assigned to you");
+        }
+        if (!request.isCancellationRequested()) {
+            throw new IllegalStateException("There is no pending cancellation request for this job.");
+        }
+
+        String mechanicMessage = requireText(responseMessage, "Enter a message for the customer.");
+        RequestStatus current = request.getStatus();
+        request.setCancellationRequestedAt(request.getCancellationRequestedAt() == null ? LocalDateTime.now() : request.getCancellationRequestedAt());
+        request.setCancellationRespondedAt(LocalDateTime.now());
+        request.setCancellationResponseMessage(mechanicMessage);
+
+        if (approve) {
+            request.setCancellationRequestStatus(CancellationRequestStatus.APPROVED);
+            request.setStatus(RequestStatus.CANCELLED);
+            auditStatusChange(request, actor);
+            ServiceRequest saved = serviceRequestRepository.save(request);
+            appendHistory(saved, current, RequestStatus.CANCELLED, actor, "MECHANIC_CANCELLATION_APPROVED", mechanicMessage);
+            return;
+        }
+
+        request.setCancellationRequestStatus(CancellationRequestStatus.DECLINED);
+        ServiceRequest saved = serviceRequestRepository.save(request);
+        appendHistory(saved, current, current, actor, "MECHANIC_CANCELLATION_DECLINED", mechanicMessage);
     }
 
     /**
@@ -233,8 +277,34 @@ public class ServiceRequestService {
                 "Admin deleted a closed request."
         );
 
-        statusHistoryRepository.deleteByServiceRequestId(requestId);
-        serviceRequestRepository.deleteById(requestId);
+        deleteRequestWithHistory(request);
+    }
+
+    @Transactional
+    public void deleteCancelledRequestAsCustomer(Long requestId, Long customerUserId) {
+        ServiceRequest request = serviceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("Request not found"));
+        if (!request.getCustomerVehicle().getUser().getId().equals(customerUserId)) {
+            throw new AccessDeniedException("You can only delete your own cancelled requests");
+        }
+        if (request.getStatus() != RequestStatus.CANCELLED) {
+            throw new IllegalStateException("Only cancelled requests can be deleted from the dashboard.");
+        }
+        deleteRequestWithHistory(request);
+    }
+
+    @Transactional
+    public void deleteCancelledRequestAsMechanic(Long requestId, Long mechanicId) {
+        ServiceRequest request = serviceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("Request not found"));
+        Mechanic assigned = request.getPreferredMechanic();
+        if (assigned == null || !assigned.getId().equals(mechanicId)) {
+            throw new AccessDeniedException("You can only delete cancelled requests assigned to you");
+        }
+        if (request.getStatus() != RequestStatus.CANCELLED) {
+            throw new IllegalStateException("Only cancelled requests can be deleted from the dashboard.");
+        }
+        deleteRequestWithHistory(request);
     }
 
     private void normalizeAndValidateNewRequest(ServiceRequest request) {
@@ -261,6 +331,11 @@ public class ServiceRequestService {
     private void auditStatusChange(ServiceRequest request, String actor) {
         request.setStatusUpdatedAt(LocalDateTime.now());
         request.setStatusUpdatedBy(actor == null || actor.isBlank() ? "SYSTEM" : actor.trim());
+    }
+
+    private void deleteRequestWithHistory(ServiceRequest request) {
+        statusHistoryRepository.deleteByServiceRequestId(request.getId());
+        serviceRequestRepository.delete(request);
     }
 
     private void appendHistory(ServiceRequest request,

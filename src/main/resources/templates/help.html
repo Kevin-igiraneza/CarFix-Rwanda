@@ -3,6 +3,7 @@
 <head>
     <title>Help &amp; contact - CarFix Rwanda</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <script defer th:src="@{/app-dialogs.js}"></script>
     <style>
         .help-wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; }
         .help-wrap h1 { font-size: 32px; color: #0b3b92; margin-bottom: 12px; }
@@ -12,7 +13,7 @@
         .help-back { display: inline-block; margin-bottom: 20px; color: #0b3b92; font-weight: 700; }
     </style>
 </head>
-<body style="background:#eef4fa;">
+<body class="app-page help-page">
 <header class="navbar">
     <div class="nav-left">
         <a href="/" class="logo-link">CarFix Rwanda</a>
@@ -36,7 +37,7 @@
 </header>
 
 <div class="help-wrap">
-    <a href="/" class="help-back">← Back to home</a>
+    <a href="/" class="help-back">&larr; Back to home</a>
     <h1>Help &amp; Support</h1>
     <p>CarFix Rwanda helps customers find verified mechanics, submit requests, and track status. This page explains the main workflow for each account type.</p>
 
@@ -65,7 +66,7 @@
 
 <footer class="footer">
     <div class="footer-bottom" style="margin-top:0;padding-top:0;text-align:center;border:none;">
-        © 2026 CarFix Rwanda
+        &copy; 2026 CarFix Rwanda
     </div>
 </footer>
 </body>

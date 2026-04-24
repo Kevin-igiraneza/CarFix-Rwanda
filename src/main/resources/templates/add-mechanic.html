@@ -3,6 +3,7 @@
 <head>
     <title>Add Mechanic - CarFix Rwanda</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <script defer th:src="@{/app-dialogs.js}"></script>
     <style>
         body {
             min-height: 100vh;
@@ -121,13 +122,13 @@
         }
     </style>
 </head>
-<body>
+<body class="app-page auth-page add-mechanic-page">
 
 <div class="auth-card">
     <h1>Register Garage</h1>
     <p>Join the CarFix Rwanda network as a certified mechanic.</p>
 
-    <div th:if="${errorMessage}" style="background:#fef2f2; color:#b91c1c; padding:12px 14px; border-radius:12px; margin-bottom:18px; font-size:14px;">
+    <div th:if="${errorMessage}" class="auth-error">
         <span th:text="${errorMessage}"></span>
     </div>
 
@@ -174,7 +175,7 @@
     </form>
 
     <div class="auth-link-text">
-        <a href="/mechanics">← Back to Mechanics List</a>
+        <a href="/mechanics" class="auth-back-link">&larr; Back to Mechanics List</a>
     </div>
 </div>
 

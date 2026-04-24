@@ -3,8 +3,10 @@
 <head>
     <title>Service Request - CarFix Rwanda</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <script defer th:src="@{/app-dialogs.js}"></script>
+    <script defer th:src="@{/form-pickers.js}"></script>
 </head>
-<body>
+<body class="app-page request-page">
 
 <div class="service-request-page">
     <div class="service-request-wrapper">
@@ -107,14 +109,30 @@
                             <textarea name="problemDescription" placeholder="Describe the issue in detail..." required></textarea>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group form-group--picker">
                             <label>Preferred Date</label>
-                            <input type="date" name="preferredDate">
+                            <div class="picker-input-shell">
+                                <input id="preferredDate" type="date" name="preferredDate">
+                                <button type="button" class="picker-trigger-btn" data-picker-target="preferredDate" aria-label="Open date picker">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                                        <path d="M16 3v4M8 3v4M3 10h18"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group form-group--picker">
                             <label>Preferred Time</label>
-                            <input type="time" name="preferredTime">
+                            <div class="picker-input-shell">
+                                <input id="preferredTime" type="time" name="preferredTime">
+                                <button type="button" class="picker-trigger-btn" data-picker-target="preferredTime" aria-label="Open time picker">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <circle cx="12" cy="12" r="8.5"></circle>
+                                        <path d="M12 7.5v5l3 2"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
 
                         <div class="form-group full">

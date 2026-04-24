@@ -3,8 +3,9 @@
 <head>
     <title>CarFix Rwanda</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <script defer th:src="@{/app-dialogs.js}"></script>
 </head>
-<body>
+<body class="home-page">
 
 <header class="navbar">
     <div class="nav-left">
@@ -57,7 +58,7 @@
             </p>
 
             <div class="hero-buttons">
-                <a href="/mechanics" class="primary-btn">Find a mechanic →</a>
+                <a href="/mechanics" class="primary-btn">Find a mechanic &rarr;</a>
                 <a href="/register?as=mechanic" class="secondary-btn">Join as a mechanic</a>
             </div>
         </div>
@@ -79,7 +80,7 @@
                 </div>
                 <div>
                     <label for="hs-q">Keyword (optional)</label>
-                    <input id="hs-q" type="text" name="q" placeholder="Area, garage name…">
+                    <input id="hs-q" type="text" name="q" placeholder="Area, garage name">
                 </div>
                 <p id="hero-search-msg" style="display:none;color:#fecaca;font-size:12px;font-weight:700;">Enter at least one search field before searching.</p>
                 <button type="submit">Search</button>
@@ -94,7 +95,7 @@
 
     <div class="feature-grid">
         <div class="feature-card">
-            <div class="feature-icon blue">👨‍🔧</div>
+            <div class="feature-icon blue">SM</div>
             <h3>Specialized mechanics</h3>
             <p>
                 Browse profiles with clear specialties and supported vehicle types before you book.
@@ -102,7 +103,7 @@
         </div>
 
         <div class="feature-card">
-            <div class="feature-icon gray">🛡️</div>
+            <div class="feature-icon gray">VL</div>
             <h3>Verified listings</h3>
             <p>
                 Mechanics in the public directory are approved by an administrator after registration.
@@ -110,7 +111,7 @@
         </div>
 
         <div class="feature-card">
-            <div class="feature-icon peach">⏱️</div>
+            <div class="feature-icon peach">RT</div>
             <h3>Request tracking</h3>
             <p>
                 Customers follow request status; mechanics update progress from their dashboard.
@@ -186,7 +187,7 @@
     </div>
 
     <div class="footer-bottom">
-        © 2026 CarFix Rwanda
+        &copy; 2026 CarFix Rwanda
     </div>
 </footer>
 

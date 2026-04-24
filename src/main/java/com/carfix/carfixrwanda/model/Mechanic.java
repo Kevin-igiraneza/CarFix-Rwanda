@@ -3,6 +3,8 @@ package com.carfix.carfixrwanda.model;
 import com.carfix.carfixrwanda.enums.AvailabilityStatus;
 import com.carfix.carfixrwanda.enums.VerificationStatus;
 import jakarta.persistence.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 public class Mechanic {
@@ -12,6 +14,7 @@ public class Mechanic {
     private Long id;
 
     @OneToOne
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 

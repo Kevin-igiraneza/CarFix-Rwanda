@@ -3,6 +3,8 @@
 <head>
     <title>Mechanic Dashboard - CarFix Rwanda</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <script defer th:src="@{/app-dialogs.js}"></script>
+    <script defer th:src="@{/dashboard-sidebar.js}"></script>
     <script>
         window.addEventListener("pageshow", function (event) {
             if (event.persisted) {
@@ -11,22 +13,84 @@
         });
     </script>
 </head>
-<body>
+<body class="app-page mechanic-page">
 
-<div class="mechanic-layout">
+<div class="mechanic-layout dashboard-shell">
 
-    <aside class="mechanic-sidebar">
-        <div>
-            <div class="mechanic-brand">CarFix Rwanda</div>
-            <div class="mechanic-subtitle">MECHANIC PORTAL</div>
+    <aside class="mechanic-sidebar dashboard-sidebar">
+        <div class="dashboard-sidebar-top">
+            <div class="dashboard-brand-shell">
+                <div class="dashboard-brand-badge">M</div>
+                <div class="dashboard-brand-copy">
+                    <div class="mechanic-brand">CarFix Rwanda</div>
+                    <div class="mechanic-subtitle">MECHANIC PORTAL</div>
+                </div>
+                <button type="button" class="dashboard-sidebar-toggle" aria-label="Collapse sidebar" aria-expanded="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                </button>
+            </div>
 
-            <nav class="mechanic-menu">
-                <a href="/real-mechanic-dashboard" class="active">My jobs</a>
-                <a href="/help">Help</a>
+            <nav class="mechanic-menu dashboard-menu">
+                <a href="/real-mechanic-dashboard" class="active dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                        </svg>
+                    </span>
+                    <span>My jobs</span>
+                </a>
+                <a href="/mechanics" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="10" cy="7" r="4"></circle>
+                            <path d="M20 8v6"></path>
+                            <path d="M23 11h-6"></path>
+                        </svg>
+                    </span>
+                    <span>Directory</span>
+                </a>
+                <a href="/real-mechanic-dashboard" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12a9 9 0 1 1-2.64-6.36"></path>
+                            <path d="M21 3v6h-6"></path>
+                        </svg>
+                    </span>
+                    <span>Refresh</span>
+                </a>
+                <a href="/help" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4"></path>
+                            <path d="M12 17h.01"></path>
+                        </svg>
+                    </span>
+                    <span>Help</span>
+                </a>
             </nav>
         </div>
 
-        <a href="/real-mechanic-dashboard" class="mechanic-action-btn">Refresh</a>
+        <div class="dashboard-sidebar-footer">
+            <form th:action="@{/logout}" method="post" class="dashboard-logout-form">
+                <button type="submit" class="dashboard-logout-btn">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <path d="M16 17l5-5-5-5"></path>
+                            <path d="M21 12H9"></path>
+                        </svg>
+                    </span>
+                    <span>Log out</span>
+                </button>
+            </form>
+        </div>
     </aside>
 
     <main class="mechanic-main">
@@ -42,9 +106,6 @@
             <div class="mechanic-profile-box" style="display:flex; align-items:center; gap:14px;">
                 <div class="mechanic-profile-avatar" th:text="${#strings.substring(currentUser.fullName,0,1)}">M</div>
                 <div class="mechanic-profile-name" th:text="${currentUser.fullName}">Name</div>
-                <form th:action="@{/logout}" method="post" style="margin:0;">
-                    <button type="submit" class="btn-logout">Log out</button>
-                </form>
             </div>
         </header>
 
@@ -97,16 +158,18 @@
                                     </p>
                                 </div>
                                 <div>
-                                    <div class="progress-bar">
+                                    <div class="progress-bar" th:if="${request.status.name() != 'CANCELLED'}">
                                         <span th:style="${request.status.name() == 'COMPLETED' ? 'width:100%' : (request.status.name() == 'IN_PROGRESS' ? 'width:65%' : (request.status.name() == 'ASSIGNED' ? 'width:40%' : 'width:20%'))}"></span>
                                     </div>
-                                    <small th:text="${request.status}">PENDING</small>
+                                    <span class="status-pill red" th:if="${request.status.name() == 'CANCELLED'}">CANCELLED</span>
+                                    <small th:text="${request.status}" th:if="${request.status.name() != 'CANCELLED'}">PENDING</small>
                                 </div>
                                 <div>
-                                    <form th:action="@{/update-request-status}" method="post">
+                                    <form th:action="@{/update-request-status}" method="post"
+                                          th:if="${request.status.name() != 'CANCELLED'}">
                                         <input type="hidden" name="requestId" th:value="${request.id}">
                                         <select name="status"
-                                                th:disabled="${request.status.name() == 'COMPLETED' || request.status.name() == 'CANCELLED'}"
+                                                th:disabled="${request.status.name() == 'COMPLETED' || request.status.name() == 'CANCELLED' || request.cancellationRequested}"
                                                 onchange="if(!this.disabled){this.form.submit();}"
                                                 style="padding:8px 10px;border-radius:10px;border:1px solid #dbe4f0;width:100%;max-width:200px;">
                                             <th:block th:if="${request.status.name() == 'ASSIGNED'}">
@@ -120,6 +183,59 @@
                                             <option value="COMPLETED" th:if="${request.status.name() == 'COMPLETED'}" selected>COMPLETED</option>
                                             <option value="CANCELLED" th:if="${request.status.name() == 'CANCELLED'}" selected>CANCELLED</option>
                                         </select>
+                                    </form>
+
+                                    <div class="mechanic-cancel-request-box" th:if="${request.cancellationRequested}">
+                                        <p class="mechanic-cancel-request-label">Customer asked to cancel this job.</p>
+                                        <p class="mechanic-cancel-request-copy" th:if="${request.hasCancellationRequestMessage()}">
+                                            <strong>Customer reason:</strong>
+                                            <span th:text="${request.cancellationRequestMessage}">Reason for cancellation.</span>
+                                        </p>
+
+                                        <form th:action="@{/mechanic/review-cancellation-request}" method="post" class="mechanic-cancel-request-form">
+                                            <input type="hidden" name="requestId" th:value="${request.id}">
+                                            <textarea name="responseMessage"
+                                                      maxlength="500"
+                                                      required
+                                                      placeholder="Reply to the customer before approving or declining."></textarea>
+
+                                            <div class="mechanic-cancel-request-actions">
+                                                <button type="submit"
+                                                        name="decision"
+                                                        value="DECLINE"
+                                                        class="mechanic-cancel-request-btn mechanic-cancel-request-btn--ghost">
+                                                    Keep request open
+                                                </button>
+                                                <button type="submit"
+                                                        name="decision"
+                                                        value="APPROVE"
+                                                        class="mechanic-cancel-request-btn"
+                                                        data-confirm="This will cancel the request for the customer."
+                                                        data-confirm-title="Approve Cancellation"
+                                                        data-confirm-accept="Approve Cancellation">
+                                                    Approve cancellation
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <div class="mechanic-cancel-response-note"
+                                         th:if="${!request.cancellationRequested && request.hasCancellationResponseMessage() && request.status.name() != 'CANCELLED'}">
+                                        <strong>Last cancellation reply:</strong>
+                                        <span th:text="${request.cancellationResponseMessage}">The job stays open.</span>
+                                    </div>
+
+                                    <form th:action="@{/mechanic/delete-service-request}" method="post"
+                                          th:if="${request.status.name() == 'CANCELLED'}"
+                                          class="request-delete-form">
+                                        <input type="hidden" name="requestId" th:value="${request.id}">
+                                        <button type="submit"
+                                                class="request-delete-btn"
+                                                data-confirm="This will remove the cancelled request from your dashboard."
+                                                data-confirm-title="Delete Cancelled Request"
+                                                data-confirm-accept="Delete Request">
+                                            Delete request
+                                        </button>
                                     </form>
                                 </div>
                             </div>

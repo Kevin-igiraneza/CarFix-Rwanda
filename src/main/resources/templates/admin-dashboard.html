@@ -3,6 +3,8 @@
 <head>
     <title>Admin Dashboard - CarFix Rwanda</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <script defer th:src="@{/app-dialogs.js}"></script>
+    <script defer th:src="@{/dashboard-sidebar.js}"></script>
     <script>
         window.addEventListener("pageshow", function (event) {
             if (event.persisted) {
@@ -11,23 +13,95 @@
         });
     </script>
 </head>
-<body>
+<body class="app-page admin-page">
 
-<div class="admin-layout">
+<div class="admin-layout dashboard-shell">
 
-    <aside class="admin-sidebar">
-        <div>
-            <div class="admin-brand">CarFix Rwanda</div>
-            <div class="admin-subtitle">ADMIN CONSOLE</div>
+    <aside class="admin-sidebar dashboard-sidebar">
+        <div class="dashboard-sidebar-top">
+            <div class="dashboard-brand-shell">
+                <div class="dashboard-brand-badge">A</div>
+                <div class="dashboard-brand-copy">
+                    <div class="admin-brand">CarFix Rwanda</div>
+                    <div class="admin-subtitle">ADMIN CONSOLE</div>
+                </div>
+                <button type="button" class="dashboard-sidebar-toggle" aria-label="Collapse sidebar" aria-expanded="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                </button>
+            </div>
 
-            <nav class="admin-menu">
-                <a href="/real-admin-dashboard" class="active">Overview</a>
-                <a href="/real-admin-dashboard#requests">Service requests</a>
-                <a href="/mechanics">Mechanic directory</a>
-                <a href="/help">Help</a>
+            <nav class="admin-menu dashboard-menu">
+                <a href="/real-admin-dashboard" class="active dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                        </svg>
+                    </span>
+                    <span>Overview</span>
+                </a>
+                <a href="/real-admin-dashboard#requests" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="4" width="14" height="16" rx="2"></rect>
+                            <path d="M9 9h6"></path>
+                            <path d="M9 13h6"></path>
+                            <path d="M9 17h4"></path>
+                        </svg>
+                    </span>
+                    <span>Service requests</span>
+                </a>
+                <a href="/real-admin-dashboard#verification" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 3l7 4v5c0 5-3.4 8-7 9-3.6-1-7-4-7-9V7l7-4z"></path>
+                            <path d="M9.5 12l1.7 1.7L14.8 10"></path>
+                        </svg>
+                    </span>
+                    <span>Review mechanics</span>
+                </a>
+                <a href="/mechanics" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="10" cy="7" r="4"></circle>
+                            <path d="M20 8v6"></path>
+                            <path d="M23 11h-6"></path>
+                        </svg>
+                    </span>
+                    <span>Mechanic directory</span>
+                </a>
+                <a href="/help" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4"></path>
+                            <path d="M12 17h.01"></path>
+                        </svg>
+                    </span>
+                    <span>Help</span>
+                </a>
             </nav>
         </div>
-        <a href="/real-admin-dashboard#verification" class="admin-report-btn">Review mechanics</a>
+
+        <div class="dashboard-sidebar-footer">
+            <form th:action="@{/logout}" method="post" class="dashboard-logout-form">
+                <button type="submit" class="dashboard-logout-btn">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <path d="M16 17l5-5-5-5"></path>
+                            <path d="M21 12H9"></path>
+                        </svg>
+                    </span>
+                    <span>Log out</span>
+                </button>
+            </form>
+        </div>
     </aside>
 
     <main class="admin-main">
@@ -52,10 +126,6 @@
                         <div class="admin-user-role">Administrator</div>
                     </div>
                 </div>
-
-                <form th:action="@{/logout}" method="post" style="margin:0;">
-                    <button type="submit" class="btn-logout">Log out</button>
-                </form>
             </div>
         </header>
 
@@ -198,7 +268,9 @@
                                       style="margin-top:8px;">
                                     <input type="hidden" name="requestId" th:value="${request.id}">
                                     <button type="submit"
-                                            onclick="return confirm('Delete this closed request permanently?');"
+                                            data-confirm="This will permanently remove the closed request and its status history."
+                                            data-confirm-title="Delete Closed Request"
+                                            data-confirm-accept="Delete Permanently"
                                             style="padding:6px 10px;border-radius:8px;border:1px solid #fecaca;background:#fff1f2;color:#b91c1c;font-weight:700;cursor:pointer;width:100%;">
                                         Delete
                                     </button>
@@ -282,16 +354,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="dashboard-panel">
-                    <h3>Assignment Guidance</h3>
-                    <p style="color:#475569;line-height:1.7;margin-bottom:10px;">
-                        A customer may submit a request without choosing a mechanic. In that case, assign a verified mechanic from the <strong>Assign / unassign</strong> column in the requests table.
-                    </p>
-                    <p style="color:#475569;line-height:1.7;">
-                        Recommended order: approve mechanic profile first, assign mechanic, then move status from <strong>PENDING</strong> to <strong>ASSIGNED</strong> or <strong>IN_PROGRESS</strong>.
-                    </p>
                 </div>
 
                 <div class="dashboard-panel">

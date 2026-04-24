@@ -1,5 +1,6 @@
 package com.carfix.carfixrwanda.model;
 
+import com.carfix.carfixrwanda.enums.CancellationRequestStatus;
 import com.carfix.carfixrwanda.enums.RequestStatus;
 import jakarta.persistence.*;
 
@@ -34,6 +35,22 @@ public class ServiceRequest {
     private String locationNotes;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "cancellation_request_status", length = 20)
+    private CancellationRequestStatus cancellationRequestStatus;
+
+    @Column(name = "cancellation_requested_at")
+    private LocalDateTime cancellationRequestedAt;
+
+    @Column(name = "cancellation_request_message", length = 500)
+    private String cancellationRequestMessage;
+
+    @Column(name = "cancellation_responded_at")
+    private LocalDateTime cancellationRespondedAt;
+
+    @Column(name = "cancellation_response_message", length = 500)
+    private String cancellationResponseMessage;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RequestStatus status;
 
@@ -53,6 +70,7 @@ public class ServiceRequest {
 
     public ServiceRequest() {
         this.status = RequestStatus.PENDING;
+        this.cancellationRequestStatus = CancellationRequestStatus.NONE;
     }
 
     public Long getId() {
@@ -121,6 +139,61 @@ public class ServiceRequest {
 
     public void setLocationNotes(String locationNotes) {
         this.locationNotes = locationNotes;
+    }
+
+    public CancellationRequestStatus getCancellationRequestStatus() {
+        return cancellationRequestStatus == null ? CancellationRequestStatus.NONE : cancellationRequestStatus;
+    }
+
+    public void setCancellationRequestStatus(CancellationRequestStatus cancellationRequestStatus) {
+        this.cancellationRequestStatus = cancellationRequestStatus;
+    }
+
+    public LocalDateTime getCancellationRequestedAt() {
+        return cancellationRequestedAt;
+    }
+
+    public void setCancellationRequestedAt(LocalDateTime cancellationRequestedAt) {
+        this.cancellationRequestedAt = cancellationRequestedAt;
+    }
+
+    public LocalDateTime getCancellationRespondedAt() {
+        return cancellationRespondedAt;
+    }
+
+    public void setCancellationRespondedAt(LocalDateTime cancellationRespondedAt) {
+        this.cancellationRespondedAt = cancellationRespondedAt;
+    }
+
+    public String getCancellationRequestMessage() {
+        return cancellationRequestMessage;
+    }
+
+    public void setCancellationRequestMessage(String cancellationRequestMessage) {
+        this.cancellationRequestMessage = cancellationRequestMessage;
+    }
+
+    public String getCancellationResponseMessage() {
+        return cancellationResponseMessage;
+    }
+
+    public void setCancellationResponseMessage(String cancellationResponseMessage) {
+        this.cancellationResponseMessage = cancellationResponseMessage;
+    }
+
+    @Transient
+    public boolean isCancellationRequested() {
+        return getCancellationRequestStatus() == CancellationRequestStatus.PENDING;
+    }
+
+    @Transient
+    public boolean hasCancellationResponseMessage() {
+        return cancellationResponseMessage != null && !cancellationResponseMessage.isBlank();
+    }
+
+    @Transient
+    public boolean hasCancellationRequestMessage() {
+        return cancellationRequestMessage != null && !cancellationRequestMessage.isBlank();
     }
 
     public RequestStatus getStatus() {

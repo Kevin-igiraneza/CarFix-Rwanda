@@ -19,11 +19,11 @@ public class MechanicService {
     }
 
     public List<Mechanic> getAllMechanics() {
-        return mechanicRepository.findAll();
+        return mechanicRepository.findAllWithExistingUser();
     }
 
     public List<Mechanic> getVerifiedMechanics() {
-        return mechanicRepository.findByVerificationStatus(VerificationStatus.APPROVED);
+        return mechanicRepository.findByVerificationStatusWithExistingUser(VerificationStatus.APPROVED);
     }
 
     /**
@@ -42,11 +42,11 @@ public class MechanicService {
     }
 
     public Optional<Mechanic> findByUserId(Long userId) {
-        return mechanicRepository.findByUserId(userId);
+        return mechanicRepository.findByUserIdWithExistingUser(userId);
     }
 
     public Optional<Mechanic> findById(Long id) {
-        return mechanicRepository.findById(id);
+        return mechanicRepository.findByIdWithExistingUser(id);
     }
 
     public Mechanic saveMechanic(Mechanic mechanic) {
@@ -54,7 +54,7 @@ public class MechanicService {
     }
 
     public void updateVerificationStatus(Long mechanicId, VerificationStatus status) {
-        Mechanic mechanic = mechanicRepository.findById(mechanicId)
+        Mechanic mechanic = findById(mechanicId)
                 .orElseThrow(() -> new IllegalArgumentException("Mechanic not found"));
         mechanic.setVerificationStatus(status);
         mechanicRepository.save(mechanic);

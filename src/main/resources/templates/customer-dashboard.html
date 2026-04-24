@@ -3,6 +3,8 @@
 <head>
     <title>Customer Dashboard - CarFix Rwanda</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <script defer th:src="@{/app-dialogs.js}"></script>
+    <script defer th:src="@{/dashboard-sidebar.js}"></script>
     <script>
         window.addEventListener("pageshow", function (event) {
             if (event.persisted) {
@@ -11,25 +13,98 @@
         });
     </script>
 </head>
-<body>
+<body class="app-page customer-page">
 
-<div class="customer-layout">
+<div class="customer-layout dashboard-shell">
 
-    <aside class="customer-sidebar">
-        <div>
-            <div class="customer-brand">CarFix Rwanda</div>
-            <div class="customer-subtitle">CUSTOMER PORTAL</div>
+    <aside class="customer-sidebar dashboard-sidebar">
+        <div class="dashboard-sidebar-top">
+            <div class="dashboard-brand-shell">
+                <div class="dashboard-brand-badge">C</div>
+                <div class="dashboard-brand-copy">
+                    <div class="customer-brand">CarFix Rwanda</div>
+                    <div class="customer-subtitle">CUSTOMER PORTAL</div>
+                </div>
+                <button type="button" class="dashboard-sidebar-toggle" aria-label="Collapse sidebar" aria-expanded="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                </button>
+            </div>
 
-            <nav class="customer-menu">
-                <a href="/customer-dashboard" class="active">Overview</a>
-                <a href="/vehicle-registration">My vehicles</a>
-                <a href="/service-request">New request</a>
-                <a href="/mechanics">Find mechanics</a>
-                <a href="/help">Help</a>
+            <nav class="customer-menu dashboard-menu">
+                <a href="/customer-dashboard" class="active dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                        </svg>
+                    </span>
+                    <span>Overview</span>
+                </a>
+                <a href="/vehicle-registration" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 16l1.4-4.2A2 2 0 0 1 8.3 10h7.4a2 2 0 0 1 1.9 1.8L19 16"></path>
+                            <path d="M4 16h16"></path>
+                            <path d="M6 19h1"></path>
+                            <path d="M17 19h1"></path>
+                            <circle cx="7.5" cy="16.5" r="1.5"></circle>
+                            <circle cx="16.5" cy="16.5" r="1.5"></circle>
+                        </svg>
+                    </span>
+                    <span>My vehicles</span>
+                </a>
+                <a href="/service-request" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 3h5v5"></path>
+                            <path d="M10 14L19 5"></path>
+                            <path d="M19 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6"></path>
+                        </svg>
+                    </span>
+                    <span>New request</span>
+                </a>
+                <a href="/mechanics" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="6"></circle>
+                            <path d="M20 20l-3.5-3.5"></path>
+                            <path d="M11 8v6"></path>
+                            <path d="M8 11h6"></path>
+                        </svg>
+                    </span>
+                    <span>Find mechanics</span>
+                </a>
+                <a href="/help" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4"></path>
+                            <path d="M12 17h.01"></path>
+                        </svg>
+                    </span>
+                    <span>Help</span>
+                </a>
             </nav>
         </div>
 
-        <a href="/service-request" class="customer-action-btn">Create Request</a>
+        <div class="dashboard-sidebar-footer">
+            <form th:action="@{/logout}" method="post" class="dashboard-logout-form">
+                <button type="submit" class="dashboard-logout-btn">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <path d="M16 17l5-5-5-5"></path>
+                            <path d="M21 12H9"></path>
+                        </svg>
+                    </span>
+                    <span>Log out</span>
+                </button>
+            </form>
+        </div>
     </aside>
 
     <main class="customer-main">
@@ -40,7 +115,10 @@
              th:text="${flashError}">Error</div>
 
         <header class="customer-topbar">
-            <p class="customer-top-note">Manage your vehicles, monitor request progress, and cancel open requests when needed.</p>
+            <p class="customer-top-note customer-top-note--welcome">
+                Welcome back,
+                <span th:text="${currentUser.fullName != null && !currentUser.fullName.isEmpty() ? currentUser.fullName : 'Customer'}">Customer</span>
+            </p>
 
             <div class="customer-profile-box">
                 <div class="customer-profile-avatar"
@@ -50,33 +128,28 @@
                     <div class="customer-profile-name" th:text="${currentUser.fullName != null ? currentUser.fullName : 'User'}">Ange User</div>
                     <div class="customer-profile-role">Customer account</div>
                 </div>
-
-                <form th:action="@{/logout}" method="post" class="logout-form">
-                    <button type="submit" class="btn-logout">Log out</button>
-                </form>
             </div>
         </header>
 
         <section class="customer-summary-grid">
-            <div class="customer-welcome-card">
-                <h3>Customer Dashboard</h3>
-                <p class="small-label">WELCOME BACK</p>
-                <h2>Manage Your Vehicles & Requests</h2>
-                <p class="welcome-text">
-                    Track service requests, view your vehicles, and connect with trusted mechanics across Rwanda.
-                </p>
-            </div>
-
-            <div class="customer-mini-card">
-                <div class="mini-icon blue">🚗</div>
+            <div class="customer-mini-card customer-mini-card--vehicles">
+                <div class="customer-mini-card-head">
+                    <div class="mini-icon blue">&#128663;</div>
+                    <span class="customer-mini-card-tag">Profile total</span>
+                </div>
                 <p>MY VEHICLES</p>
                 <h2 th:text="${vehicleCount}">03</h2>
+                <small>Registered and ready whenever you need service.</small>
             </div>
 
-            <div class="customer-mini-card">
-                <div class="mini-icon peach">📋</div>
+            <div class="customer-mini-card customer-mini-card--requests">
+                <div class="customer-mini-card-head">
+                    <div class="mini-icon peach">&#128203;</div>
+                    <span class="customer-mini-card-tag">Live tracker</span>
+                </div>
                 <p>ACTIVE REQUESTS</p>
                 <h2 th:text="${requestCount}">05</h2>
+                <small>Requests that are open, pending review, or in progress.</small>
             </div>
         </section>
 
@@ -96,7 +169,7 @@
 
                     <div class="vehicle-grid" th:if="${vehicles != null && !vehicles.isEmpty()}">
                         <div class="vehicle-card" th:each="vehicle : ${vehicles}">
-                            <div class="vehicle-icon">🚗</div>
+                            <div class="vehicle-icon">&#128663;</div>
                             <h4 th:text="${vehicle.vehicleName}">Vehicle Name</h4>
                             <p>
                                 Plate:
@@ -104,9 +177,9 @@
                             </p>
                             <small>
                                 <span th:text="${vehicle.year}">2022</span>
-                                •
+                                &bull;
                                 <span th:text="${vehicle.fuelType}">Petrol</span>
-                                •
+                                &bull;
                                 <span th:text="${vehicle.transmission}">Automatic</span>
                             </small>
                         </div>
@@ -135,25 +208,73 @@
                         <div class="customer-request-row" th:each="request : ${requests}">
                             <span th:text="${'#RQ-' + request.id}">#RQ-2011</span>
                             <span th:text="${request.customerVehicle != null ? request.customerVehicle.vehicleName : 'Vehicle'}">Toyota RAV4</span>
-                            <span>
-                                <span class="status-pill blue" th:text="${request.status != null ? request.status : 'PENDING'}">PENDING</span>
-                            </span>
+                            <div>
+                                <span class="status-pill"
+                                      th:classappend="${request.status != null && request.status.name() == 'COMPLETED'} ? ' green' : (${request.status != null && request.status.name() == 'CANCELLED'} ? ' red' : (${request.status != null && request.status.name() == 'IN_PROGRESS'} ? ' blue' : ' orange'))"
+                                      th:text="${request.status != null ? request.status : 'PENDING'}">PENDING</span>
+                                <small class="request-inline-note request-inline-note--pending"
+                                       th:if="${request.cancellationRequested}">
+                                    Cancellation request pending
+                                </small>
+                            </div>
                             <span th:text="${request.preferredMechanic != null && request.preferredMechanic.user != null ? request.preferredMechanic.user.fullName : 'Not assigned yet'}">
                                 Jean Bosco
                             </span>
-                            <span>
-                                <form th:action="@{/customer/cancel-service-request}" method="post"
-                                      th:if="${request.status != null && request.status.name() != 'COMPLETED' && request.status.name() != 'CANCELLED'}">
-                                    <input type="hidden" name="requestId" th:value="${request.id}">
-                                    <button type="submit"
-                                            style="padding:8px 12px;border-radius:10px;border:1px solid #fecaca;background:#fff1f2;color:#b91c1c;font-weight:700;cursor:pointer;font-size:13px;"
-                                            onclick="return confirm('Cancel this service request? You can submit a new one later.');">
-                                        Cancel request
-                                    </button>
-                                </form>
-                                <span th:if="${request.status != null && (request.status.name() == 'COMPLETED' || request.status.name() == 'CANCELLED')}"
-                                      style="color:#94a3b8;font-size:13px;">—</span>
-                            </span>
+                            <div>
+                                <div class="request-action-stack">
+                                    <form th:action="@{/customer/cancel-service-request}" method="post"
+                                          th:if="${request.status != null && request.status.name() != 'COMPLETED' && request.status.name() != 'CANCELLED' && request.preferredMechanic != null && !request.cancellationRequested}">
+                                        <input type="hidden" name="requestId" th:value="${request.id}">
+                                        <input type="hidden" name="cancellationReason">
+                                        <button type="submit"
+                                                class="request-cancel-ask-btn"
+                                                data-confirm="The mechanic will receive your request together with your reason for cancellation."
+                                                data-confirm-title="Request Cancellation"
+                                                data-confirm-accept="Send Request"
+                                                data-confirm-prompt-target="cancellationReason"
+                                                data-confirm-prompt-label="Reason for cancellation"
+                                                data-confirm-prompt-placeholder="Explain why you want to cancel this request."
+                                                data-confirm-prompt-required="true">
+                                            Ask mechanic to cancel
+                                        </button>
+                                    </form>
+
+                                    <small class="request-inline-note"
+                                           th:if="${request.status != null && request.status.name() != 'COMPLETED' && request.status.name() != 'CANCELLED' && request.preferredMechanic == null}">
+                                        A mechanic must be assigned before you can request cancellation.
+                                    </small>
+
+                                    <small class="request-inline-note request-inline-note--pending"
+                                           th:if="${request.cancellationRequested}">
+                                        Waiting for the mechanic's reply.
+                                    </small>
+
+                                    <div class="request-feedback-card"
+                                         th:if="${request.hasCancellationResponseMessage()}">
+                                        <strong th:text="${request.status != null && request.status.name() == 'CANCELLED' ? 'Mechanic approved cancellation' : 'Mechanic reply'}">
+                                            Mechanic reply
+                                        </strong>
+                                        <p th:text="${request.cancellationResponseMessage}">
+                                            Your request is still open.
+                                        </p>
+                                    </div>
+
+                                    <form th:action="@{/customer/delete-service-request}" method="post"
+                                          th:if="${request.status != null && request.status.name() == 'CANCELLED'}">
+                                        <input type="hidden" name="requestId" th:value="${request.id}">
+                                        <button type="submit"
+                                                class="request-delete-btn"
+                                                data-confirm="This will remove the cancelled request from your dashboard."
+                                                data-confirm-title="Delete Cancelled Request"
+                                                data-confirm-accept="Delete Request">
+                                            Delete request
+                                        </button>
+                                    </form>
+
+                                    <span th:if="${!request.cancellationRequested && !request.hasCancellationResponseMessage() && (request.status != null && request.status.name() == 'COMPLETED')}"
+                                          style="color:#94a3b8;font-size:13px;">&mdash;</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -163,35 +284,13 @@
             <div class="customer-right-column">
 
                 <div class="customer-panel">
-                    <div class="panel-header">
-                        <h3>Quick Actions</h3>
-                    </div>
-
-                    <div class="quick-actions-grid quick-actions-grid--three">
-                        <a href="/mechanics" class="quick-action-card">
-                            <div class="quick-icon">🔎</div>
-                            <h4>Find a mechanic</h4>
-                            <p>Search verified garages by skill and vehicle type.</p>
-                        </a>
-
-                        <a href="/service-request" class="quick-action-card">
-                            <div class="quick-icon">📝</div>
-                            <h4>New service request</h4>
-                            <p>Describe the issue and optionally pick a preferred garage.</p>
-                        </a>
-
-                        <a href="/vehicle-registration" class="quick-action-card">
-                            <div class="quick-icon">🚗</div>
-                            <h4>Add a vehicle</h4>
-                            <p>Register another car so you can request service for it anytime.</p>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="customer-panel">
                     <h3>Service Progress</h3>
 
-                    <div class="progress-item" th:each="request : ${requests}">
+                    <p th:if="${progressRequests == null || progressRequests.isEmpty()}" style="color:#94a3b8;font-size:14px;line-height:1.6;">
+                        No active service requests to track right now.
+                    </p>
+
+                    <div class="progress-item" th:each="request : ${progressRequests}">
                         <div class="progress-top">
                             <strong th:text="${(request.customerVehicle != null ? request.customerVehicle.vehicleName : 'Vehicle') + ' - ' + request.problemTitle}">
                                 Toyota RAV4 - Brake Inspection
@@ -226,7 +325,7 @@
                             <p>
                                 Specialist:
                                 <span th:text="${mechanic.specialization}">Engine</span>
-                                •
+                                &bull;
                                 <span th:text="${mechanic.supportedVehicleModel}">BMW</span>
                             </p>
                         </div>

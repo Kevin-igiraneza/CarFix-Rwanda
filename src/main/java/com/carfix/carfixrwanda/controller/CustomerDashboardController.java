@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class CustomerDashboardController {
@@ -49,12 +50,16 @@ public class CustomerDashboardController {
         long activeRequestCount = requests.stream()
                 .filter(r -> r.getStatus() != RequestStatus.COMPLETED && r.getStatus() != RequestStatus.CANCELLED)
                 .count();
+        List<ServiceRequest> progressRequests = requests.stream()
+                .filter(r -> r.getStatus() != RequestStatus.COMPLETED && r.getStatus() != RequestStatus.CANCELLED)
+                .collect(Collectors.toList());
 
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("vehicles", vehicles);
         model.addAttribute("vehicleCount", vehicles.size());
         model.addAttribute("requests", requests);
         model.addAttribute("requestCount", activeRequestCount);
+        model.addAttribute("progressRequests", progressRequests);
         model.addAttribute("mechanics", mechanics);
 
         return "customer-dashboard";
@@ -62,13 +67,34 @@ public class CustomerDashboardController {
 
     @PostMapping("/customer/cancel-service-request")
     public String cancelServiceRequest(@RequestParam("requestId") Long requestId,
+                                       @RequestParam("cancellationReason") String cancellationReason,
                                        Authentication authentication,
                                        RedirectAttributes redirectAttributes) {
         User user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
         try {
-            serviceRequestService.cancelRequestAsCustomer(requestId, user.getId(), "CUSTOMER:" + user.getEmail());
-            redirectAttributes.addFlashAttribute("flashMessage", "Your service request was cancelled.");
+            serviceRequestService.requestCancellationAsCustomer(
+                    requestId,
+                    user.getId(),
+                    cancellationReason,
+                    "CUSTOMER:" + user.getEmail()
+            );
+            redirectAttributes.addFlashAttribute("flashMessage", "Your cancellation request was sent to the mechanic.");
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("flashError", ex.getMessage());
+        }
+        return "redirect:/customer-dashboard";
+    }
+
+    @PostMapping("/customer/delete-service-request")
+    public String deleteServiceRequest(@RequestParam("requestId") Long requestId,
+                                       Authentication authentication,
+                                       RedirectAttributes redirectAttributes) {
+        User user = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
+        try {
+            serviceRequestService.deleteCancelledRequestAsCustomer(requestId, user.getId());
+            redirectAttributes.addFlashAttribute("flashMessage", "Cancelled request removed.");
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("flashError", ex.getMessage());
         }

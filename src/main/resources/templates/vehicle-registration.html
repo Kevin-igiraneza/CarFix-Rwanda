@@ -2,10 +2,69 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Register Vehicle - CarFix Rwanda</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" th:href="@{/style.css?v=18}">
+    <!-- Inline theme toggle — runs immediately so button works before defer scripts load -->
+    <script>
+        (function() {
+            // Apply saved theme right away (prevents flash)
+            var saved = localStorage.getItem('cfr-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+
+            // Define toggleTheme globally so onclick="toggleTheme()" always works
+            window.toggleTheme = function() {
+                var html = document.documentElement;
+                var current = html.getAttribute('data-theme') || 'light';
+                var next = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('cfr-theme', next);
+
+                // Update all toggle button icons
+                document.querySelectorAll('#themeToggleBtn, .topbar-icon-btn[aria-label*="Dark"], .topbar-icon-btn[aria-label*="Light"]').forEach(function(btn) {
+                    var moon = btn.querySelector('.moon-icon');
+                    var sun  = btn.querySelector('.sun-icon');
+                    if (moon && sun) {
+                        moon.style.display = next === 'dark' ? 'none' : 'inline-block';
+                        sun.style.display  = next === 'dark' ? 'inline-block' : 'none';
+                    }
+                    btn.title = next === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+                    btn.setAttribute('aria-label', next === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+                });
+            };
+
+            // Also sync icons once DOM is ready
+            document.addEventListener('DOMContentLoaded', function() {
+                var theme = localStorage.getItem('cfr-theme') || 'light';
+                document.querySelectorAll('#themeToggleBtn, .topbar-icon-btn').forEach(function(btn) {
+                    var moon = btn.querySelector('.moon-icon');
+                    var sun  = btn.querySelector('.sun-icon');
+                    if (moon && sun) {
+                        moon.style.display = theme === 'dark' ? 'none' : 'inline-block';
+                        sun.style.display  = theme === 'dark' ? 'inline-block' : 'none';
+                    }
+                    btn.querySelectorAll('svg, path, circle').forEach(function(el) {
+                        el.style.pointerEvents = 'none';
+                    });
+                });
+            });
+        })();
+    </script>
     <script defer th:src="@{/app-dialogs.js}"></script>
+    <script defer th:src="@{/theme-lang.js?v=18}"></script>
 </head>
 <body class="app-page vehicle-page-shell">
+
+<!-- Theme & Language (floating) -->
+<div style="position:fixed;top:16px;right:16px;z-index:9999;" class="tl-controls">
+    <button id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark Mode" aria-label="Toggle Dark Mode" style="background:transparent;border:none;cursor:pointer;color:inherit;display:inline-flex;align-items:center;justify-content:center;padding:6px;border-radius:10px;">
+    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:20px;height:20px;">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+    </svg>
+    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:none;width:20px;height:20px;">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+    </svg>
+</button>
+</div>
+
 
 <div class="vehicle-page">
     <div class="vehicle-form-wrapper">

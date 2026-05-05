@@ -2,9 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Admin Dashboard - CarFix Rwanda</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" th:href="@{/style.css?v=18}">
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('cfr-theme') || 'light');</script>
     <script defer th:src="@{/app-dialogs.js}"></script>
     <script defer th:src="@{/dashboard-sidebar.js}"></script>
+    <script defer th:src="@{/theme-lang.js?v=18}"></script>
     <script>
         window.addEventListener("pageshow", function (event) {
             if (event.persisted) {
@@ -88,20 +90,7 @@
             </nav>
         </div>
 
-        <div class="dashboard-sidebar-footer">
-            <form th:action="@{/logout}" method="post" class="dashboard-logout-form">
-                <button type="submit" class="dashboard-logout-btn">
-                    <span class="dashboard-menu-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                            <path d="M16 17l5-5-5-5"></path>
-                            <path d="M21 12H9"></path>
-                        </svg>
-                    </span>
-                    <span>Log out</span>
-                </button>
-            </form>
-        </div>
+        <div class="dashboard-sidebar-footer"></div>
     </aside>
 
     <main class="admin-main">
@@ -113,17 +102,30 @@
 
         <header class="admin-topbar admin-topbar-clean">
             <div class="admin-search-wrap">
-                <p style="margin:0;color:#64748b;font-size:14px;max-width:520px;line-height:1.5;">
+                <p style="margin:0;font-size:14px;max-width:520px;line-height:1.5;">
                     Manage mechanic verification, assign garages to open requests, and update statuses.
                 </p>
             </div>
 
             <div class="admin-top-actions">
                 <div class="admin-userbox">
-                    <div class="admin-avatar" th:text="${#strings.substring(currentUser.fullName,0,1)}">A</div>
-                    <div>
+                    <div class="admin-avatar" th:text="${currentUser.fullName != null ? #strings.substring(currentUser.fullName,0,1) : 'A'}">A</div>
+                    <div class="admin-user-details" style="display:flex; flex-direction:column; gap:2px;">
                         <div class="admin-user-name" th:text="${currentUser.fullName}">Admin User</div>
                         <div class="admin-user-role">Administrator</div>
+                    </div>
+
+                    <!-- Theme toggle + Logout inside the box for unified look -->
+                    <div class="topbar-controls" style="margin-left: auto; border-left: 1px solid #e5edf7; padding-left: 12px;">
+                        <button id="themeToggleBtn" title="Toggle Dark Mode" aria-label="Toggle Dark Mode" class="topbar-icon-btn">
+                            <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                            <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                        </button>
+                        <form th:action="@{/logout}" method="post" style="margin:0;">
+                            <button type="submit" class="topbar-icon-btn topbar-logout-btn" title="Log out" aria-label="Log out">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

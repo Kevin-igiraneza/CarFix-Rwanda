@@ -2,9 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Mechanic Dashboard - CarFix Rwanda</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" th:href="@{/style.css?v=18}">
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('cfr-theme') || 'light');</script>
     <script defer th:src="@{/app-dialogs.js}"></script>
     <script defer th:src="@{/dashboard-sidebar.js}"></script>
+    <script defer th:src="@{/theme-lang.js?v=18}"></script>
     <script>
         window.addEventListener("pageshow", function (event) {
             if (event.persisted) {
@@ -42,7 +44,7 @@
                             <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
                         </svg>
                     </span>
-                    <span>My jobs</span>
+                    <span data-i18n="dash.my_jobs">My jobs</span>
                 </a>
                 <a href="/mechanics" class="dashboard-menu-link">
                     <span class="dashboard-menu-icon" aria-hidden="true">
@@ -53,7 +55,7 @@
                             <path d="M23 11h-6"></path>
                         </svg>
                     </span>
-                    <span>Directory</span>
+                    <span data-i18n="dash.directory">Directory</span>
                 </a>
                 <a href="/real-mechanic-dashboard" class="dashboard-menu-link">
                     <span class="dashboard-menu-icon" aria-hidden="true">
@@ -62,7 +64,7 @@
                             <path d="M21 3v6h-6"></path>
                         </svg>
                     </span>
-                    <span>Refresh</span>
+                    <span data-i18n="dash.refresh">Refresh</span>
                 </a>
                 <a href="/help" class="dashboard-menu-link">
                     <span class="dashboard-menu-icon" aria-hidden="true">
@@ -72,25 +74,12 @@
                             <path d="M12 17h.01"></path>
                         </svg>
                     </span>
-                    <span>Help</span>
+                    <span data-i18n="nav.help">Help</span>
                 </a>
             </nav>
         </div>
 
-        <div class="dashboard-sidebar-footer">
-            <form th:action="@{/logout}" method="post" class="dashboard-logout-form">
-                <button type="submit" class="dashboard-logout-btn">
-                    <span class="dashboard-menu-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                            <path d="M16 17l5-5-5-5"></path>
-                            <path d="M21 12H9"></path>
-                        </svg>
-                    </span>
-                    <span>Log out</span>
-                </button>
-            </form>
-        </div>
+        <div class="dashboard-sidebar-footer"></div>
     </aside>
 
     <main class="mechanic-main">
@@ -103,26 +92,42 @@
         <header class="mechanic-topbar">
             <p class="mechanic-top-note">Review assigned jobs, update status as work progresses, and keep requests accurate.</p>
 
-            <div class="mechanic-profile-box" style="display:flex; align-items:center; gap:14px;">
-                <div class="mechanic-profile-avatar" th:text="${#strings.substring(currentUser.fullName,0,1)}">M</div>
-                <div class="mechanic-profile-name" th:text="${currentUser.fullName}">Name</div>
+            <div class="mechanic-profile-box">
+                <div class="mechanic-profile-avatar" th:text="${currentUser.fullName != null ? #strings.substring(currentUser.fullName,0,1) : 'M'}">M</div>
+                <div class="mechanic-profile-details" style="display:flex; flex-direction:column; gap:2px;">
+                    <div class="mechanic-profile-name" th:text="${currentUser.fullName}">Name</div>
+                    <div class="mechanic-profile-role">Mechanic account</div>
+                </div>
+
+                <!-- Theme toggle + Logout in topbar -->
+                <div class="topbar-controls" style="margin-left: auto; border-left: 1px solid #e5edf7; padding-left: 12px;">
+                    <button id="themeToggleBtn" title="Toggle Dark Mode" aria-label="Toggle Dark Mode" class="topbar-icon-btn">
+                        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    </button>
+                    <form th:action="@{/logout}" method="post" style="margin:0;">
+                        <button type="submit" class="topbar-icon-btn topbar-logout-btn" title="Log out" aria-label="Log out">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        </button>
+                    </form>
+                </div>
             </div>
         </header>
 
         <section class="mechanic-summary-simple">
             <div class="mechanic-mini-card">
                 <div class="mini-icon peach">🧰</div>
-                <p>ASSIGNED TO YOU</p>
+                <p data-i18n="dash.assigned_to_you">ASSIGNED TO YOU</p>
                 <h2 th:text="${requestCount}">0</h2>
             </div>
             <div class="mechanic-mini-card">
                 <div class="mini-icon blue">🛠️</div>
-                <p>OPEN (NOT DONE)</p>
+                <p data-i18n="dash.open_jobs">OPEN (NOT DONE)</p>
                 <h2 th:text="${openWorkCount}">0</h2>
             </div>
             <div class="mechanic-mini-card">
                 <div class="mini-icon gray">✓</div>
-                <p>COMPLETED</p>
+                <p data-i18n="dash.completed_jobs">COMPLETED</p>
                 <h2 th:text="${completedCount}">0</h2>
             </div>
         </section>
@@ -131,7 +136,7 @@
             <div class="mechanic-left-column">
                 <div class="mechanic-panel">
                     <div class="panel-header">
-                        <h3>Your service requests</h3>
+                        <h3 data-i18n="dash.assigned_jobs">Your service requests</h3>
                         <span class="live-badge" th:text="${inProgressCount} + ' in progress'">0 in progress</span>
                     </div>
 
@@ -237,7 +242,46 @@
                                             Delete request
                                         </button>
                                     </form>
+
+                                    <div th:if="${request.status.name() == 'COMPLETED' && !invoicedRequestIds.contains(request.id)}" style="margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0;">
+                                        <form th:action="@{/mechanic/generate-invoice}" method="post" style="display:flex; flex-direction:column; gap:8px;">
+                                            <input type="hidden" name="requestId" th:value="${request.id}">
+                                            <label style="font-size:12px; font-weight:bold; color:#334155;">Generate Invoice</label>
+                                            <input type="number" name="partsTotal" placeholder="Parts cost (RWF)" required style="padding:6px; border-radius:6px; border:1px solid #cbd5e1; font-size:13px;">
+                                            <input type="number" name="laborTotal" placeholder="Labor cost (RWF)" required style="padding:6px; border-radius:6px; border:1px solid #cbd5e1; font-size:13px;">
+                                            <button type="submit" style="padding:6px; background:#0b3b92; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">Generate Invoice</button>
+                                        </form>
+                                    </div>
+                                    <div th:if="${request.status.name() == 'COMPLETED' && invoicedRequestIds.contains(request.id)}" style="margin-top:8px;">
+                                        <span style="color:#16a34a; font-size:12px; font-weight:bold;">✓ Invoice Generated</span>
+                                    </div>
+
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mechanic-panel" style="margin-top: 16px;">
+                    <div class="panel-header">
+                        <h3 data-i18n="dash.generated_invoices">Generated Invoices</h3>
+                    </div>
+                    <p th:if="${invoices == null || invoices.isEmpty()}" style="color:#64748b;font-size:14px;line-height:1.6;">
+                        You have not generated any invoices yet.
+                    </p>
+                    <div class="repair-table" th:if="${invoices != null && !invoices.isEmpty()}" style="margin-top:16px;">
+                        <div class="repair-header" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+                            <span>Request ID</span>
+                            <span>Total (RWF)</span>
+                            <span>Status</span>
+                            <span>Action</span>
+                        </div>
+                        <div class="repair-row" th:each="invoice : ${invoices}" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+                            <span th:text="${'#RQ-' + invoice.serviceRequest.id}"></span>
+                            <span th:text="${invoice.grandTotal}"></span>
+                            <span th:text="${invoice.status}" th:style="${invoice.status.name() == 'PAID' ? 'color:#16a34a;font-weight:bold;' : 'color:#ea580c;font-weight:bold;'}"></span>
+                            <div>
+                                <a th:href="@{/invoice/{id}(id=${invoice.id})}" style="display:inline-block; padding:6px 10px; background:#334155; color:white; border-radius:6px; text-decoration:none; font-size:12px; font-weight:bold;">View Invoice</a>
                             </div>
                         </div>
                     </div>

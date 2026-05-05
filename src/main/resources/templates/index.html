@@ -1,9 +1,56 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>CarFix Rwanda</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <title>CarFix Rwanda — Find Verified Mechanics</title>
+    <link rel="stylesheet" th:href="@{/style.css?v=18}">
+    <!-- Apply saved theme instantly to prevent flash -->
+    <!-- Inline theme toggle — runs immediately so button works before defer scripts load -->
+    <script>
+        (function() {
+            // Apply saved theme right away (prevents flash)
+            var saved = localStorage.getItem('cfr-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+
+            // Define toggleTheme globally so onclick="toggleTheme()" always works
+            window.toggleTheme = function() {
+                var html = document.documentElement;
+                var current = html.getAttribute('data-theme') || 'light';
+                var next = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('cfr-theme', next);
+
+                // Update all toggle button icons
+                document.querySelectorAll('#themeToggleBtn, .topbar-icon-btn[aria-label*="Dark"], .topbar-icon-btn[aria-label*="Light"]').forEach(function(btn) {
+                    var moon = btn.querySelector('.moon-icon');
+                    var sun  = btn.querySelector('.sun-icon');
+                    if (moon && sun) {
+                        moon.style.display = next === 'dark' ? 'none' : 'inline-block';
+                        sun.style.display  = next === 'dark' ? 'inline-block' : 'none';
+                    }
+                    btn.title = next === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+                    btn.setAttribute('aria-label', next === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+                });
+            };
+
+            // Also sync icons once DOM is ready
+            document.addEventListener('DOMContentLoaded', function() {
+                var theme = localStorage.getItem('cfr-theme') || 'light';
+                document.querySelectorAll('#themeToggleBtn, .topbar-icon-btn').forEach(function(btn) {
+                    var moon = btn.querySelector('.moon-icon');
+                    var sun  = btn.querySelector('.sun-icon');
+                    if (moon && sun) {
+                        moon.style.display = theme === 'dark' ? 'none' : 'inline-block';
+                        sun.style.display  = theme === 'dark' ? 'inline-block' : 'none';
+                    }
+                    btn.querySelectorAll('svg, path, circle').forEach(function(el) {
+                        el.style.pointerEvents = 'none';
+                    });
+                });
+            });
+        })();
+    </script>
     <script defer th:src="@{/app-dialogs.js}"></script>
+    <script defer th:src="@{/theme-lang.js?v=18}"></script>
 </head>
 <body class="home-page">
 
@@ -41,8 +88,20 @@
         </div>
     </div>
     <div class="nav-right" th:unless="${navLoggedIn}">
-        <a href="/login" class="signin-link">Sign in</a>
-        <a href="/register" class="register-btn">Register</a>
+        <a href="/login" class="signin-link" data-i18n="nav.sign_in">Sign in</a>
+        <a href="/register" class="register-btn" data-i18n="nav.register">Register</a>
+    </div>
+
+    <!-- Theme & Language controls -->
+    <div class="tl-controls">
+        <button id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark Mode" aria-label="Toggle Dark Mode" style="background:transparent;border:none;cursor:pointer;color:inherit;display:inline-flex;align-items:center;justify-content:center;padding:6px;border-radius:10px;">
+    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:20px;height:20px;">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+    </svg>
+    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:none;width:20px;height:20px;">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+    </svg>
+</button>
     </div>
 </header>
 
@@ -51,69 +110,69 @@
 
     <div class="hero-inner">
         <div class="hero-text">
-            <h1>Expert care for your car, <span>anywhere</span> in Rwanda.</h1>
-            <p>
+            <h1 data-i18n="hero.headline">Expert care for your car, <span>anywhere</span> in Rwanda.</h1>
+            <p data-i18n="hero.subtitle">
                 Find verified mechanics by specialization and vehicle type, submit service requests,
                 and track status from one simple place.
             </p>
 
             <div class="hero-buttons">
-                <a href="/mechanics" class="primary-btn">Find a mechanic &rarr;</a>
-                <a href="/register?as=mechanic" class="secondary-btn">Join as a mechanic</a>
+                <a href="/mechanics" class="primary-btn" data-i18n="hero.find_mechanic">Find a mechanic &rarr;</a>
+                <a href="/register?as=mechanic" class="secondary-btn" data-i18n="hero.join_mechanic">Join as a mechanic</a>
             </div>
         </div>
 
         <div class="search-card">
-            <h2>Search mechanics</h2>
-            <p style="color:#cbd5e1;font-size:14px;margin-bottom:14px;line-height:1.5;">
+            <h2 data-i18n="hero.search_title">Search mechanics</h2>
+            <p style="color:#cbd5e1;font-size:14px;margin-bottom:14px;line-height:1.5;" data-i18n="hero.search_note">
                 Runs a real search on the public directory (verified garages only).
             </p>
 
             <form class="hero-search-form" id="heroQuickSearch" th:action="@{/mechanics}" method="get">
                 <div>
-                    <label for="hs-spec">Specialization</label>
-                    <input id="hs-spec" type="text" name="specialization" placeholder="e.g. Brakes, engine">
+                    <label for="hs-spec" data-i18n="hero.spec_label">Specialization</label>
+                    <input id="hs-spec" type="text" name="specialization" placeholder="e.g. Brakes, engine" data-i18n="hero.spec_placeholder">
                 </div>
                 <div>
-                    <label for="hs-model">Vehicle brand / model</label>
-                    <input id="hs-model" type="text" name="vehicleModel" placeholder="e.g. Toyota RAV4">
+                    <label for="hs-model" data-i18n="hero.model_label">Vehicle brand / model</label>
+                    <input id="hs-model" type="text" name="vehicleModel" placeholder="e.g. Toyota RAV4" data-i18n="hero.model_placeholder">
                 </div>
                 <div>
-                    <label for="hs-q">Keyword (optional)</label>
-                    <input id="hs-q" type="text" name="q" placeholder="Area, garage name">
+                    <label for="hs-q" data-i18n="hero.kw_label">Keyword (optional)</label>
+                    <input id="hs-q" type="text" name="q" placeholder="Area, garage name" data-i18n="hero.kw_placeholder">
                 </div>
-                <p id="hero-search-msg" style="display:none;color:#fecaca;font-size:12px;font-weight:700;">Enter at least one search field before searching.</p>
-                <button type="submit">Search</button>
+                <p id="hero-search-msg" style="display:none;color:#fecaca;font-size:12px;font-weight:700;" data-i18n="hero.search_warn">Enter at least one search field before searching.</p>
+                <button type="submit" data-i18n="hero.search_btn">Search</button>
             </form>
         </div>
     </div>
 </section>
 
 <section class="features">
-    <div class="section-tag">OUR EDGE</div>
-    <h2>Why CarFix Rwanda?</h2>
+    <div class="section-tag" data-i18n="feat.tag">OUR EDGE</div>
+    <h2 data-i18n="feat.title">Why CarFix Rwanda?</h2>
 
     <div class="feature-grid">
         <div class="feature-card">
             <div class="feature-icon blue">SM</div>
-            <h3>Specialized mechanics</h3>
-            <p>
+            <h3 data-i18n="feat.sm_title">Specialized mechanics</h3>
+            <p data-i18n="feat.sm_body">
                 Browse profiles with clear specialties and supported vehicle types before you book.
             </p>
         </div>
 
         <div class="feature-card">
             <div class="feature-icon gray">VL</div>
-            <h3>Verified listings</h3>
-            <p>
+            <h3 data-i18n="feat.vl_title">Verified listings</h3>
+            <p data-i18n="feat.vl_body">
                 Mechanics in the public directory are approved by an administrator after registration.
             </p>
         </div>
 
         <div class="feature-card">
             <div class="feature-icon peach">RT</div>
-            <h3>Request tracking</h3>
-            <p>
+            <h3 data-i18n="feat.rt_title">Request tracking</h3>
+            <p data-i18n="feat.rt_body">
                 Customers follow request status; mechanics update progress from their dashboard.
             </p>
         </div>
@@ -121,39 +180,39 @@
 </section>
 
 <section class="how-it-works" id="how-it-works">
-    <h2>How it works</h2>
-    <p class="section-subtitle">Three steps from search to tracked service.</p>
+    <h2 data-i18n="hiw.title">How it works</h2>
+    <p class="section-subtitle" data-i18n="hiw.subtitle">Three steps from search to tracked service.</p>
 
     <div class="steps-grid">
         <div class="step-card">
             <div class="step-number">1</div>
-            <h3>Search</h3>
-            <p>Use filters on the mechanics page to find a garage that fits your vehicle and repair need.</p>
-            <div class="step-image">Search</div>
+            <h3 data-i18n="hiw.step1_title">Search</h3>
+            <p data-i18n="hiw.step1_body">Use filters on the mechanics page to find a garage that fits your vehicle and repair need.</p>
+            <div class="step-image" data-i18n="hiw.step1_title">Search</div>
         </div>
 
         <div class="step-card">
             <div class="step-number">2</div>
-            <h3>Request</h3>
-            <p>Sign in as a customer, register your vehicle, and submit a service request (optional preferred mechanic).</p>
-            <div class="step-image">Request</div>
+            <h3 data-i18n="hiw.step2_title">Request</h3>
+            <p data-i18n="hiw.step2_body">Sign in as a customer, register your vehicle, and submit a service request (optional preferred mechanic).</p>
+            <div class="step-image" data-i18n="hiw.step2_title">Request</div>
         </div>
 
         <div class="step-card">
             <div class="step-number">3</div>
-            <h3>Track</h3>
-            <p>Watch status updates on your dashboard. Admins can assign a mechanic if you did not pick one.</p>
-            <div class="step-image">Track</div>
+            <h3 data-i18n="hiw.step3_title">Track</h3>
+            <p data-i18n="hiw.step3_body">Watch status updates on your dashboard. Admins can assign a mechanic if you did not pick one.</p>
+            <div class="step-image" data-i18n="hiw.step3_title">Track</div>
         </div>
     </div>
 </section>
 
 <section class="cta-section">
     <div class="cta-box">
-        <h2>Ready to find the right mechanic?</h2>
+        <h2 data-i18n="cta.title">Ready to find the right mechanic?</h2>
         <div class="cta-buttons">
-            <a href="/mechanics" class="light-btn">Browse directory</a>
-            <a href="/help" class="outline-btn">Help &amp; contact</a>
+            <a href="/mechanics" class="light-btn" data-i18n="cta.browse">Browse directory</a>
+            <a href="/help" class="outline-btn" data-i18n="cta.help">Help &amp; contact</a>
         </div>
     </div>
 </section>
@@ -162,31 +221,31 @@
     <div class="footer-grid">
         <div>
             <h3>CarFix Rwanda</h3>
-            <p>
+            <p data-i18n="footer.brand_body">
                 A practical platform for matching vehicle owners with mechanics by specialization and vehicle support.
             </p>
         </div>
 
         <div>
-            <h4>Platform</h4>
-            <a href="/register">Create account</a>
-            <a href="/login">Sign in</a>
-            <a href="/help">Help</a>
+            <h4 data-i18n="footer.platform">Platform</h4>
+            <a href="/register" data-i18n="footer.create_account">Create account</a>
+            <a href="/login" data-i18n="footer.sign_in">Sign in</a>
+            <a href="/help" data-i18n="footer.help">Help</a>
         </div>
 
         <div>
-            <h4>Support</h4>
-            <a href="/help">Help center</a>
-            <a href="/mechanics">Find a mechanic</a>
+            <h4 data-i18n="footer.support">Support</h4>
+            <a href="/help" data-i18n="footer.help_center">Help center</a>
+            <a href="/mechanics" data-i18n="footer.find_mechanic">Find a mechanic</a>
         </div>
 
         <div>
-            <h4>Get started</h4>
-            <p style="color:#94a3b8;font-size:14px;line-height:1.6;">Register as a customer or mechanic, then use the matching login tab.</p>
+            <h4 data-i18n="footer.get_started">Get started</h4>
+            <p style="color:#94a3b8;font-size:14px;line-height:1.6;" data-i18n="footer.get_started_body">Register as a customer or mechanic, then use the matching login tab.</p>
         </div>
     </div>
 
-    <div class="footer-bottom">
+    <div class="footer-bottom" data-i18n="footer.copy">
         &copy; 2026 CarFix Rwanda
     </div>
 </footer>

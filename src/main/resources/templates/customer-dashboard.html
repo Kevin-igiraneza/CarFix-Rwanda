@@ -2,9 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Customer Dashboard - CarFix Rwanda</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" th:href="@{/style.css?v=18}">
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('cfr-theme') || 'light');</script>
     <script defer th:src="@{/app-dialogs.js}"></script>
     <script defer th:src="@{/dashboard-sidebar.js}"></script>
+    <script defer th:src="@{/theme-lang.js?v=18}"></script>
     <script>
         window.addEventListener("pageshow", function (event) {
             if (event.persisted) {
@@ -42,7 +44,7 @@
                             <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
                         </svg>
                     </span>
-                    <span>Overview</span>
+                    <span data-i18n="dash.overview">Overview</span>
                 </a>
                 <a href="/vehicle-registration" class="dashboard-menu-link">
                     <span class="dashboard-menu-icon" aria-hidden="true">
@@ -55,7 +57,7 @@
                             <circle cx="16.5" cy="16.5" r="1.5"></circle>
                         </svg>
                     </span>
-                    <span>My vehicles</span>
+                    <span data-i18n="dash.my_vehicles">My vehicles</span>
                 </a>
                 <a href="/service-request" class="dashboard-menu-link">
                     <span class="dashboard-menu-icon" aria-hidden="true">
@@ -65,7 +67,7 @@
                             <path d="M19 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6"></path>
                         </svg>
                     </span>
-                    <span>New request</span>
+                    <span data-i18n="nav.new_request">New request</span>
                 </a>
                 <a href="/mechanics" class="dashboard-menu-link">
                     <span class="dashboard-menu-icon" aria-hidden="true">
@@ -76,7 +78,7 @@
                             <path d="M8 11h6"></path>
                         </svg>
                     </span>
-                    <span>Find mechanics</span>
+                    <span data-i18n="nav.find_mechanics">Find mechanics</span>
                 </a>
                 <a href="/help" class="dashboard-menu-link">
                     <span class="dashboard-menu-icon" aria-hidden="true">
@@ -86,25 +88,12 @@
                             <path d="M12 17h.01"></path>
                         </svg>
                     </span>
-                    <span>Help</span>
+                    <span data-i18n="nav.help">Help</span>
                 </a>
             </nav>
         </div>
 
-        <div class="dashboard-sidebar-footer">
-            <form th:action="@{/logout}" method="post" class="dashboard-logout-form">
-                <button type="submit" class="dashboard-logout-btn">
-                    <span class="dashboard-menu-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                            <path d="M16 17l5-5-5-5"></path>
-                            <path d="M21 12H9"></path>
-                        </svg>
-                    </span>
-                    <span>Log out</span>
-                </button>
-            </form>
-        </div>
+        <div class="dashboard-sidebar-footer"></div>
     </aside>
 
     <main class="customer-main">
@@ -116,7 +105,7 @@
 
         <header class="customer-topbar">
             <p class="customer-top-note customer-top-note--welcome">
-                Welcome back,
+                <span data-i18n="dash.welcome">Welcome back</span>,
                 <span th:text="${currentUser.fullName != null && !currentUser.fullName.isEmpty() ? currentUser.fullName : 'Customer'}">Customer</span>
             </p>
 
@@ -127,6 +116,19 @@
                 <div class="customer-profile-details">
                     <div class="customer-profile-name" th:text="${currentUser.fullName != null ? currentUser.fullName : 'User'}">Ange User</div>
                     <div class="customer-profile-role">Customer account</div>
+                </div>
+
+                <!-- Theme toggle + Logout inside the box for unified look -->
+                <div class="topbar-controls" style="margin-left: auto; border-left: 1px solid #e5edf7; padding-left: 12px;">
+                    <button id="themeToggleBtn" title="Toggle Dark Mode" aria-label="Toggle Dark Mode" class="topbar-icon-btn">
+                        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    </button>
+                    <form th:action="@{/logout}" method="post" style="margin:0;">
+                        <button type="submit" class="topbar-icon-btn topbar-logout-btn" title="Log out" aria-label="Log out">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        </button>
+                    </form>
                 </div>
             </div>
         </header>
@@ -159,11 +161,11 @@
 
                 <div class="customer-panel">
                     <div class="panel-header">
-                        <h3>My Vehicles</h3>
-                        <a href="/vehicle-registration">Add Vehicle</a>
+                        <h3 data-i18n="dash.my_vehicles">My Vehicles</h3>
+                        <a href="/vehicle-registration" data-i18n="dash.add_vehicle">Add Vehicle</a>
                     </div>
 
-                    <p th:if="${vehicles == null || vehicles.isEmpty()}" style="color:#64748b;font-size:14px;line-height:1.6;">
+                    <p th:if="${vehicles == null || vehicles.isEmpty()}" style="font-size:14px;line-height:1.6;">
                         You have not registered any vehicle yet.
                     </p>
 
@@ -188,11 +190,11 @@
 
                 <div class="customer-panel">
                     <div class="panel-header">
-                        <h3>My Service Requests</h3>
-                        <a href="/service-request">Create New</a>
+                        <h3 data-i18n="dash.my_requests">My Service Requests</h3>
+                        <a href="/service-request" data-i18n="dash.new_request">Create New</a>
                     </div>
 
-                    <p th:if="${requests == null || requests.isEmpty()}" style="color:#64748b;font-size:14px;line-height:1.6;">
+                    <p th:if="${requests == null || requests.isEmpty()}" style="font-size:14px;line-height:1.6;">
                         You have no service requests yet.
                     </p>
 
@@ -271,9 +273,40 @@
                                         </button>
                                     </form>
 
-                                    <span th:if="${!request.cancellationRequested && !request.hasCancellationResponseMessage() && (request.status != null && request.status.name() == 'COMPLETED')}"
-                                          style="color:#94a3b8;font-size:13px;">&mdash;</span>
+                                    <div th:if="${!request.cancellationRequested && !request.hasCancellationResponseMessage() && (request.status != null && request.status.name() == 'COMPLETED')}">
+                                        <a th:if="${!reviewedRequestIds.contains(request.id)}" th:href="@{/customer/review(requestId=${request.id})}" style="display:inline-block; padding:6px 10px; background:#0b3b92; color:white; border-radius:6px; text-decoration:none; font-size:12px; font-weight:bold;">Leave a Review</a>
+                                        <span th:if="${reviewedRequestIds.contains(request.id)}" style="color:#16a34a; font-size:12px; font-weight:bold;">✓ Reviewed</span>
+                                    </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="customer-panel">
+                    <div class="panel-header">
+                        <h3 data-i18n="dash.my_invoices">My Invoices</h3>
+                    </div>
+                    <p th:if="${invoices == null || invoices.isEmpty()}" style="font-size:14px;line-height:1.6;">
+                        You have no invoices yet.
+                    </p>
+                    <div class="customer-request-table" th:if="${invoices != null && !invoices.isEmpty()}" style="margin-top:16px;">
+                        <div class="customer-request-header" style="grid-template-columns: 1fr 1fr 1fr 1.5fr;">
+                            <span>Request</span>
+                            <span>Total</span>
+                            <span>Status</span>
+                            <span>Action</span>
+                        </div>
+                        <div class="customer-request-row" th:each="invoice : ${invoices}" style="grid-template-columns: 1fr 1fr 1fr 1.5fr;">
+                            <span th:text="${'#RQ-' + invoice.serviceRequest.id}"></span>
+                            <span th:text="${invoice.grandTotal + ' RWF'}"></span>
+                            <span th:text="${invoice.status}" th:style="${invoice.status.name() == 'PAID' ? 'color:#16a34a;font-weight:bold;' : 'color:#ea580c;font-weight:bold;'}"></span>
+                            <div>
+                                <a th:href="@{/invoice/{id}(id=${invoice.id})}" style="display:inline-block; padding:6px 10px; background:#334155; color:white; border-radius:6px; text-decoration:none; font-size:12px; font-weight:bold;">View</a>
+                                <form th:if="${invoice.status.name() == 'PENDING'}" th:action="@{/customer/pay-invoice}" method="post" style="display:inline-block; margin-left:4px;">
+                                    <input type="hidden" name="invoiceId" th:value="${invoice.id}">
+                                    <button type="submit" style="padding:6px 10px; background:#16a34a; color:white; border:none; border-radius:6px; font-size:12px; font-weight:bold; cursor:pointer;" data-confirm="Simulate payment for this invoice?" data-confirm-title="Confirm Payment" data-confirm-accept="Pay Now">Pay Now</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -284,9 +317,9 @@
             <div class="customer-right-column">
 
                 <div class="customer-panel">
-                    <h3>Service Progress</h3>
+                    <h3 data-i18n="dash.service_progress">Service Progress</h3>
 
-                    <p th:if="${progressRequests == null || progressRequests.isEmpty()}" style="color:#94a3b8;font-size:14px;line-height:1.6;">
+                    <p th:if="${progressRequests == null || progressRequests.isEmpty()}" style="font-size:14px;line-height:1.6;">
                         No active service requests to track right now.
                     </p>
 
@@ -314,7 +347,7 @@
                 </div>
 
                 <div class="customer-panel">
-                    <h3>Recommended Mechanics</h3>
+                    <h3 data-i18n="dash.recommended">Recommended Mechanics</h3>
 
                     <div class="recommended-mechanic" th:each="mechanic, stat : ${mechanics}">
                         <div class="rec-avatar" th:classappend="${stat.index % 2 == 1} ? ' alt' : ''">

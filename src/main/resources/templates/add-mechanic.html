@@ -2,8 +2,54 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Add Mechanic - CarFix Rwanda</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" th:href="@{/style.css?v=18}">
+    <!-- Inline theme toggle — runs immediately so button works before defer scripts load -->
+    <script>
+        (function() {
+            // Apply saved theme right away (prevents flash)
+            var saved = localStorage.getItem('cfr-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+
+            // Define toggleTheme globally so onclick="toggleTheme()" always works
+            window.toggleTheme = function() {
+                var html = document.documentElement;
+                var current = html.getAttribute('data-theme') || 'light';
+                var next = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('cfr-theme', next);
+
+                // Update all toggle button icons
+                document.querySelectorAll('#themeToggleBtn, .topbar-icon-btn[aria-label*="Dark"], .topbar-icon-btn[aria-label*="Light"]').forEach(function(btn) {
+                    var moon = btn.querySelector('.moon-icon');
+                    var sun  = btn.querySelector('.sun-icon');
+                    if (moon && sun) {
+                        moon.style.display = next === 'dark' ? 'none' : 'inline-block';
+                        sun.style.display  = next === 'dark' ? 'inline-block' : 'none';
+                    }
+                    btn.title = next === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+                    btn.setAttribute('aria-label', next === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+                });
+            };
+
+            // Also sync icons once DOM is ready
+            document.addEventListener('DOMContentLoaded', function() {
+                var theme = localStorage.getItem('cfr-theme') || 'light';
+                document.querySelectorAll('#themeToggleBtn, .topbar-icon-btn').forEach(function(btn) {
+                    var moon = btn.querySelector('.moon-icon');
+                    var sun  = btn.querySelector('.sun-icon');
+                    if (moon && sun) {
+                        moon.style.display = theme === 'dark' ? 'none' : 'inline-block';
+                        sun.style.display  = theme === 'dark' ? 'inline-block' : 'none';
+                    }
+                    btn.querySelectorAll('svg, path, circle').forEach(function(el) {
+                        el.style.pointerEvents = 'none';
+                    });
+                });
+            });
+        })();
+    </script>
     <script defer th:src="@{/app-dialogs.js}"></script>
+    <script defer th:src="@{/theme-lang.js?v=18}"></script>
     <style>
         body {
             min-height: 100vh;

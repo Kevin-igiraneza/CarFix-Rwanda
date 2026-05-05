@@ -2,15 +2,70 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Help &amp; contact - CarFix Rwanda</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" th:href="@{/style.css?v=18}">
+    <!-- Inline theme toggle — runs immediately so button works before defer scripts load -->
+    <script>
+        (function() {
+            // Apply saved theme right away (prevents flash)
+            var saved = localStorage.getItem('cfr-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+
+            // Define toggleTheme globally so onclick="toggleTheme()" always works
+            window.toggleTheme = function() {
+                var html = document.documentElement;
+                var current = html.getAttribute('data-theme') || 'light';
+                var next = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('cfr-theme', next);
+
+                // Update all toggle button icons
+                document.querySelectorAll('#themeToggleBtn, .topbar-icon-btn[aria-label*="Dark"], .topbar-icon-btn[aria-label*="Light"]').forEach(function(btn) {
+                    var moon = btn.querySelector('.moon-icon');
+                    var sun  = btn.querySelector('.sun-icon');
+                    if (moon && sun) {
+                        moon.style.display = next === 'dark' ? 'none' : 'inline-block';
+                        sun.style.display  = next === 'dark' ? 'inline-block' : 'none';
+                    }
+                    btn.title = next === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+                    btn.setAttribute('aria-label', next === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+                });
+            };
+
+            // Also sync icons once DOM is ready
+            document.addEventListener('DOMContentLoaded', function() {
+                var theme = localStorage.getItem('cfr-theme') || 'light';
+                document.querySelectorAll('#themeToggleBtn, .topbar-icon-btn').forEach(function(btn) {
+                    var moon = btn.querySelector('.moon-icon');
+                    var sun  = btn.querySelector('.sun-icon');
+                    if (moon && sun) {
+                        moon.style.display = theme === 'dark' ? 'none' : 'inline-block';
+                        sun.style.display  = theme === 'dark' ? 'inline-block' : 'none';
+                    }
+                    btn.querySelectorAll('svg, path, circle').forEach(function(el) {
+                        el.style.pointerEvents = 'none';
+                    });
+                });
+            });
+        })();
+    </script>
     <script defer th:src="@{/app-dialogs.js}"></script>
+    <script defer th:src="@{/theme-lang.js?v=18}"></script>
     <style>
         .help-wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; }
-        .help-wrap h1 { font-size: 32px; color: #0b3b92; margin-bottom: 12px; }
+        .help-wrap h1 { font-size: 32px; color: #0b3b92; margin-bottom: 12px; font-weight: 800; }
         .help-wrap p { color: #475569; line-height: 1.65; margin-bottom: 16px; }
         .help-card { background: #fff; border-radius: 18px; padding: 22px 24px; margin-top: 20px; border: 1px solid #e5edf7; box-shadow: 0 8px 24px rgba(15,23,42,0.05); }
-        .help-card h2 { font-size: 18px; margin-bottom: 10px; color: #0f172a; }
+        .help-card h2 { font-size: 18px; margin-bottom: 10px; color: #0f172a; font-weight: 700; }
         .help-back { display: inline-block; margin-bottom: 20px; color: #0b3b92; font-weight: 700; }
+
+        /* ── Dark mode overrides ── */
+        [data-theme="dark"] .help-wrap h1 { color: #93c5fd !important; }
+        [data-theme="dark"] .help-wrap p  { color: #a8bdd4 !important; }
+        [data-theme="dark"] .help-back    { color: #60a5fa !important; }
+        [data-theme="dark"] .help-card    { background: #0e1a2e !important; border-color: #1e3a5f !important; }
+        [data-theme="dark"] .help-card h2 { color: #e2eeff !important; }
+        [data-theme="dark"] .help-card p  { color: #94b8d4 !important; }
+        [data-theme="dark"] .help-card strong { color: #93c5fd !important; }
     </style>
 </head>
 <body class="app-page help-page">
@@ -33,6 +88,17 @@
     <div class="nav-right" th:unless="${navLoggedIn}">
         <a href="/login" class="signin-link">Sign in</a>
         <a href="/register" class="register-btn">Register</a>
+    </div>
+    <!-- Theme & Language -->
+    <div class="tl-controls">
+        <button id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark Mode" aria-label="Toggle Dark Mode" style="background:transparent;border:none;cursor:pointer;color:inherit;display:inline-flex;align-items:center;justify-content:center;padding:6px;border-radius:10px;">
+    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:20px;height:20px;">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+    </svg>
+    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:none;width:20px;height:20px;">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+    </svg>
+</button>
     </div>
 </header>
 

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Error - CarFix Rwanda</title>
+    <link rel="stylesheet" th:href="@{/style.css?v=18}">
+    <style>
+        .error-container {
+            max-width: 600px;
+            margin: 100px auto;
+            text-align: center;
+            padding: 40px;
+            background: var(--card-bg, #fff);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .error-title {
+            color: var(--danger-color, #e74c3c);
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        .error-message {
+            font-size: 1.2rem;
+            color: var(--text-color, #333);
+            margin-bottom: 30px;
+        }
+        .home-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--primary-color, #3498db);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+    </style>
+    <!-- Inline theme toggle — runs immediately so button works before defer scripts load -->
+    <script>
+        (function() {
+            // Apply saved theme right away (prevents flash)
+            var saved = localStorage.getItem('cfr-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+
+            // Define toggleTheme globally so onclick="toggleTheme()" always works
+            window.toggleTheme = function() {
+                var html = document.documentElement;
+                var current = html.getAttribute('data-theme') || 'light';
+                var next = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('cfr-theme', next);
+
+                // Update all toggle button icons
+                document.querySelectorAll('#themeToggleBtn, .topbar-icon-btn[aria-label*="Dark"], .topbar-icon-btn[aria-label*="Light"]').forEach(function(btn) {
+                    var moon = btn.querySelector('.moon-icon');
+                    var sun  = btn.querySelector('.sun-icon');
+                    if (moon && sun) {
+                        moon.style.display = next === 'dark' ? 'none' : 'inline-block';
+                        sun.style.display  = next === 'dark' ? 'inline-block' : 'none';
+                    }
+                    btn.title = next === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+                    btn.setAttribute('aria-label', next === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+                });
+            };
+
+            // Also sync icons once DOM is ready
+            document.addEventListener('DOMContentLoaded', function() {
+                var theme = localStorage.getItem('cfr-theme') || 'light';
+                document.querySelectorAll('#themeToggleBtn, .topbar-icon-btn').forEach(function(btn) {
+                    var moon = btn.querySelector('.moon-icon');
+                    var sun  = btn.querySelector('.sun-icon');
+                    if (moon && sun) {
+                        moon.style.display = theme === 'dark' ? 'none' : 'inline-block';
+                        sun.style.display  = theme === 'dark' ? 'inline-block' : 'none';
+                    }
+                    btn.querySelectorAll('svg, path, circle').forEach(function(el) {
+                        el.style.pointerEvents = 'none';
+                    });
+                });
+            });
+        })();
+    </script>
+</head>
+<body class="dashboard-body">
+
+    <div class="error-container">
+        <h1 class="error-title">Oops! Something went wrong.</h1>
+        <p class="error-message" th:text="${error}">An unexpected error occurred.</p>
+        <a href="/" class="home-btn">Return to Home</a>
+    </div>
+
+</body>
+</html>

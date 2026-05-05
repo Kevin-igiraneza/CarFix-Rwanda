@@ -23,13 +23,16 @@ public class MechanicDashboardController {
     private final ServiceRequestService serviceRequestService;
     private final UserRepository userRepository;
     private final MechanicService mechanicService;
+    private final com.carfix.carfixrwanda.service.InvoiceService invoiceService;
 
     public MechanicDashboardController(ServiceRequestService serviceRequestService,
                                        UserRepository userRepository,
-                                       MechanicService mechanicService) {
+                                       MechanicService mechanicService,
+                                       com.carfix.carfixrwanda.service.InvoiceService invoiceService) {
         this.serviceRequestService = serviceRequestService;
         this.userRepository = userRepository;
         this.mechanicService = mechanicService;
+        this.invoiceService = invoiceService;
     }
 
     @GetMapping("/real-mechanic-dashboard")
@@ -53,9 +56,16 @@ public class MechanicDashboardController {
                 .filter(r -> r.getStatus() == RequestStatus.COMPLETED)
                 .count();
 
-        model.addAttribute("currentUser", currentUser);
-        model.addAttribute("mechanicProfile", mechanic);
-        model.addAttribute("assignedRequests", assignedRequests);
+        model.addAttribute("currentUser", com.carfix.carfixrwanda.dto.DtoMapper.toUserDto(currentUser));
+        model.addAttribute("mechanicProfile", com.carfix.carfixrwanda.dto.DtoMapper.toMechanicDto(mechanic));
+        model.addAttribute("assignedRequests", com.carfix.carfixrwanda.dto.DtoMapper.toServiceRequestDtoList(assignedRequests));
+        java.util.List<com.carfix.carfixrwanda.model.Invoice> invoices = invoiceService.getMechanicInvoices(mechanic.getId());
+        java.util.List<Long> invoicedRequestIds = invoices.stream()
+            .map(i -> i.getServiceRequest().getId())
+            .collect(java.util.stream.Collectors.toList());
+
+        model.addAttribute("invoices", invoices);
+        model.addAttribute("invoicedRequestIds", invoicedRequestIds);
         model.addAttribute("requestCount", assignedRequests.size());
         model.addAttribute("inProgressCount", inProgressCount);
         model.addAttribute("openWorkCount", openCount);

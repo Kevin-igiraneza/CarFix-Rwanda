@@ -3,7 +3,9 @@
 <head>
     <title>Register - CarFix Rwanda</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('cfr-theme') || 'light');</script>
     <script defer th:src="@{/app-dialogs.js}"></script>
+    <script defer th:src="@{/theme-lang.js}"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -171,20 +173,30 @@
 </head>
 <body class="app-page auth-page register-page">
 
+<!-- Theme & Language controls (floating) -->
+<div style="position:fixed;top:16px;right:16px;z-index:9999;" class="tl-controls">
+    <button id="themeToggleBtn" onclick="toggleTheme()" title="Dark mode" aria-label="Switch to dark mode">🌙</button>
+    <div class="lang-switcher" role="group" aria-label="Language">
+        <button class="lang-option active" data-lang-code="en" onclick="switchLanguage('en')">EN</button>
+        <button class="lang-option" data-lang-code="fr" onclick="switchLanguage('fr')">FR</button>
+        <button class="lang-option" data-lang-code="rw" onclick="switchLanguage('rw')">RW</button>
+    </div>
+</div>
+
 <div class="auth-card">
     <div style="margin-bottom:14px;">
-        <a href="/" class="auth-back-link">&larr; Back to home</a>
+        <a href="/" class="auth-back-link" data-i18n="reg.back">&larr; Back to home</a>
     </div>
-    <h1>Create account</h1>
-    <p>Choose <strong>Customer</strong> to book services and manage vehicles, or <strong>Mechanic</strong> to list your garage (admin verification required before you appear in the public directory).</p>
+    <h1 data-i18n="reg.title">Create account</h1>
+    <p data-i18n="reg.subtitle">Choose <strong>Customer</strong> to book services and manage vehicles, or <strong>Mechanic</strong> to list your garage (admin verification required before you appear in the public directory).</p>
 
     <div th:if="${errorMessage}" class="auth-error">
         <span th:text="${errorMessage}"></span>
     </div>
 
     <div class="register-tabs">
-        <button type="button" class="tab-btn active" id="tabCustomer" onclick="selectRole('CUSTOMER', this)">Customer</button>
-        <button type="button" class="tab-btn" id="tabMechanic" onclick="selectRole('MECHANIC', this)">Mechanic</button>
+        <button type="button" class="tab-btn active" id="tabCustomer" onclick="selectRole('CUSTOMER', this)" data-i18n="reg.tab_customer">Customer</button>
+        <button type="button" class="tab-btn" id="tabMechanic" onclick="selectRole('MECHANIC', this)" data-i18n="reg.tab_mechanic">Mechanic</button>
     </div>
 
     <form th:action="@{/register}" method="post" class="auth-form" id="registerForm">
@@ -192,47 +204,47 @@
                th:value="${defaultAccountType != null ? defaultAccountType : 'CUSTOMER'}">
 
         <div class="form-group">
-            <label>Full name</label>
-            <input type="text" name="fullName" placeholder="Your full name" required>
+            <label data-i18n="reg.label_name">Full name</label>
+            <input type="text" name="fullName" placeholder="Your full name" data-i18n="reg.placeholder_name" required>
         </div>
 
         <div class="form-group">
-            <label>Email</label>
-            <input type="email" name="email" placeholder="you@example.com" required>
+            <label data-i18n="reg.label_email">Email</label>
+            <input type="email" name="email" placeholder="you@example.com" data-i18n="reg.placeholder_email" required>
         </div>
 
         <div class="form-group">
-            <label>Password</label>
-            <input type="password" name="password" placeholder="Create a secure password" required minlength="6">
+            <label data-i18n="reg.label_password">Password</label>
+            <input type="password" name="password" placeholder="Create a secure password" data-i18n="reg.placeholder_password" required minlength="6">
         </div>
 
         <div class="form-group">
-            <label>Phone number</label>
-            <input type="tel" name="phone" placeholder="e.g. 0780000000" required>
+            <label data-i18n="reg.label_phone">Phone number</label>
+            <input type="tel" name="phone" placeholder="e.g. 0780000000" data-i18n="reg.placeholder_phone" required>
         </div>
 
         <div id="mechanicFields">
-            <p class="hint">Mechanic accounts need a short garage profile. An administrator will review and approve your listing.</p>
+            <p class="hint" data-i18n="reg.mech_hint">Mechanic accounts need a short garage profile. An administrator will review and approve your listing.</p>
             <div class="form-group">
-                <label>Specialization</label>
-                <input type="text" name="specialization" id="specialization" placeholder="e.g. Engine repair, brakes">
+                <label data-i18n="reg.label_spec">Specialization</label>
+                <input type="text" name="specialization" id="specialization" placeholder="e.g. Engine repair, brakes" data-i18n="reg.placeholder_spec">
             </div>
             <div class="form-group">
-                <label>Supported vehicle models / brands</label>
-                <input type="text" name="supportedVehicleModel" id="supportedVehicleModel" placeholder="e.g. Toyota, BMW, Volkswagen">
+                <label data-i18n="reg.label_vehicles">Supported vehicle models / brands</label>
+                <input type="text" name="supportedVehicleModel" id="supportedVehicleModel" placeholder="e.g. Toyota, BMW, Volkswagen" data-i18n="reg.placeholder_vehicles">
             </div>
             <div class="form-group">
-                <label>Garage location</label>
-                <input type="text" name="garageLocation" id="garageLocation" placeholder="e.g. Kigali, Remera">
+                <label data-i18n="reg.label_location">Garage location</label>
+                <input type="text" name="garageLocation" id="garageLocation" placeholder="e.g. Kigali, Remera" data-i18n="reg.placeholder_location">
             </div>
         </div>
 
-        <button type="submit" class="auth-btn">Create account</button>
+        <button type="submit" class="auth-btn" data-i18n="reg.submit">Create account</button>
     </form>
 
     <div class="auth-link-text">
-        Already have an account?
-        <a href="/login">Sign in</a>
+        <span data-i18n="reg.have_account">Already have an account?</span>
+        <a href="/login" data-i18n="reg.sign_in">Sign in</a>
     </div>
 </div>
 

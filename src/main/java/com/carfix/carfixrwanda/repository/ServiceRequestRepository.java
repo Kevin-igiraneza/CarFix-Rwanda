@@ -8,7 +8,7 @@ import java.util.List;
 public interface ServiceRequestRepository extends JpaRepository<ServiceRequest, Long> {
     List<ServiceRequest> findByCustomerVehicleId(Long vehicleId);
 
-    List<ServiceRequest> findByCustomerVehicleUserId(Long userId);
+    List<ServiceRequest> findByCustomerVehicleUserIdAndHiddenByCustomerFalse(Long userId);
 
-    List<ServiceRequest> findByPreferredMechanicId(Long mechanicId);
+    List<ServiceRequest> findByPreferredMechanicIdAndHiddenByMechanicFalse(Long mechanicId);
 }

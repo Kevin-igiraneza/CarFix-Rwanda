@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "service_request_status_history")
-public class ServiceRequestStatusHistory {
+public class ServiceRequestStatusHistory extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

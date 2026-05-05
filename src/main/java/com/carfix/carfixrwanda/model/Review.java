@@ -1,0 +1,42 @@
+package com.carfix.carfixrwanda.model;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "reviews")
+public class Review extends Auditable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne
+    @JoinColumn(name = "service_request_id", nullable = false, unique = true)
+    private ServiceRequest serviceRequest;
+
+    @ManyToOne
+    @JoinColumn(name = "mechanic_id", nullable = false)
+    private Mechanic mechanic;
+
+    @Column(nullable = false)
+    private Integer rating; // 1 to 5
+
+    @Column(length = 1000)
+    private String comment;
+
+    public Review() {}
+
+    public Long getId() { return id; }
+
+    public ServiceRequest getServiceRequest() { return serviceRequest; }
+    public void setServiceRequest(ServiceRequest serviceRequest) { this.serviceRequest = serviceRequest; }
+
+    public Mechanic getMechanic() { return mechanic; }
+    public void setMechanic(Mechanic mechanic) { this.mechanic = mechanic; }
+
+    public Integer getRating() { return rating; }
+    public void setRating(Integer rating) { this.rating = rating; }
+
+    public String getComment() { return comment; }
+    public void setComment(String comment) { this.comment = comment; }
+}

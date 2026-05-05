@@ -10,7 +10,7 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name = "service_requests")
-public class ServiceRequest {
+public class ServiceRequest extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,6 +49,12 @@ public class ServiceRequest {
 
     @Column(name = "cancellation_response_message", length = 500)
     private String cancellationResponseMessage;
+
+    @Column(name = "hidden_by_customer")
+    private boolean hiddenByCustomer = false;
+
+    @Column(name = "hidden_by_mechanic")
+    private boolean hiddenByMechanic = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -179,6 +185,22 @@ public class ServiceRequest {
 
     public void setCancellationResponseMessage(String cancellationResponseMessage) {
         this.cancellationResponseMessage = cancellationResponseMessage;
+    }
+
+    public boolean isHiddenByCustomer() {
+        return hiddenByCustomer;
+    }
+
+    public void setHiddenByCustomer(boolean hiddenByCustomer) {
+        this.hiddenByCustomer = hiddenByCustomer;
+    }
+
+    public boolean isHiddenByMechanic() {
+        return hiddenByMechanic;
+    }
+
+    public void setHiddenByMechanic(boolean hiddenByMechanic) {
+        this.hiddenByMechanic = hiddenByMechanic;
     }
 
     @Transient

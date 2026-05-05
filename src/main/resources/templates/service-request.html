@@ -3,10 +3,23 @@
 <head>
     <title>Service Request - CarFix Rwanda</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('cfr-theme') || 'light');</script>
     <script defer th:src="@{/app-dialogs.js}"></script>
     <script defer th:src="@{/form-pickers.js}"></script>
+    <script defer th:src="@{/theme-lang.js}"></script>
 </head>
 <body class="app-page request-page">
+
+<!-- Theme & Language (floating) -->
+<div style="position:fixed;top:16px;right:16px;z-index:9999;" class="tl-controls">
+    <button id="themeToggleBtn" onclick="toggleTheme()" title="Dark mode" aria-label="Switch to dark mode">🌙</button>
+    <div class="lang-switcher" role="group" aria-label="Language">
+        <button class="lang-option active" data-lang-code="en" onclick="switchLanguage('en')">EN</button>
+        <button class="lang-option" data-lang-code="fr" onclick="switchLanguage('fr')">FR</button>
+        <button class="lang-option" data-lang-code="rw" onclick="switchLanguage('rw')">RW</button>
+    </div>
+</div>
+
 
 <div class="service-request-page">
     <div class="service-request-wrapper">

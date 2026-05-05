@@ -26,13 +26,16 @@ public class ServiceRequestService {
     private final ServiceRequestRepository serviceRequestRepository;
     private final ServiceRequestStatusHistoryRepository statusHistoryRepository;
     private final MechanicService mechanicService;
+    private final com.carfix.carfixrwanda.service.NotificationService notificationService;
 
     public ServiceRequestService(ServiceRequestRepository serviceRequestRepository,
                                  ServiceRequestStatusHistoryRepository statusHistoryRepository,
-                                 MechanicService mechanicService) {
+                                 MechanicService mechanicService,
+                                 com.carfix.carfixrwanda.service.NotificationService notificationService) {
         this.serviceRequestRepository = serviceRequestRepository;
         this.statusHistoryRepository = statusHistoryRepository;
         this.mechanicService = mechanicService;
+        this.notificationService = notificationService;
     }
 
     public ServiceRequest saveRequest(ServiceRequest serviceRequest, String actor) {
@@ -53,11 +56,11 @@ public class ServiceRequestService {
     }
 
     public List<ServiceRequest> getRequestsByUserId(Long userId) {
-        return serviceRequestRepository.findByCustomerVehicleUserId(userId);
+        return serviceRequestRepository.findByCustomerVehicleUserIdAndHiddenByCustomerFalse(userId);
     }
 
     public List<ServiceRequest> getRequestsForMechanic(Mechanic mechanic) {
-        return serviceRequestRepository.findByPreferredMechanicId(mechanic.getId());
+        return serviceRequestRepository.findByPreferredMechanicIdAndHiddenByMechanicFalse(mechanic.getId());
     }
 
     public List<ServiceRequestStatusHistory> getRecentStatusHistory() {
@@ -290,7 +293,8 @@ public class ServiceRequestService {
         if (request.getStatus() != RequestStatus.CANCELLED) {
             throw new IllegalStateException("Only cancelled requests can be deleted from the dashboard.");
         }
-        deleteRequestWithHistory(request);
+        request.setHiddenByCustomer(true);
+        serviceRequestRepository.save(request);
     }
 
     @Transactional
@@ -304,7 +308,8 @@ public class ServiceRequestService {
         if (request.getStatus() != RequestStatus.CANCELLED) {
             throw new IllegalStateException("Only cancelled requests can be deleted from the dashboard.");
         }
-        deleteRequestWithHistory(request);
+        request.setHiddenByMechanic(true);
+        serviceRequestRepository.save(request);
     }
 
     private void normalizeAndValidateNewRequest(ServiceRequest request) {
@@ -331,6 +336,7 @@ public class ServiceRequestService {
     private void auditStatusChange(ServiceRequest request, String actor) {
         request.setStatusUpdatedAt(LocalDateTime.now());
         request.setStatusUpdatedBy(actor == null || actor.isBlank() ? "SYSTEM" : actor.trim());
+        notificationService.notifyStatusChange(request);
     }
 
     private void deleteRequestWithHistory(ServiceRequest request) {

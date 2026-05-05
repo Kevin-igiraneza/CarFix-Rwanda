@@ -3,7 +3,9 @@
 <head>
     <title>Login - CarFix Rwanda</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('cfr-theme') || 'light');</script>
     <script defer th:src="@{/app-dialogs.js}"></script>
+    <script defer th:src="@{/theme-lang.js}"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -166,24 +168,34 @@
 </head>
 <body class="app-page auth-page login-page">
 
+<!-- Theme & Language controls (floating) -->
+<div style="position:fixed;top:16px;right:16px;z-index:9999;" class="tl-controls">
+    <button id="themeToggleBtn" onclick="toggleTheme()" title="Dark mode" aria-label="Switch to dark mode">🌙</button>
+    <div class="lang-switcher" role="group" aria-label="Language">
+        <button class="lang-option active" data-lang-code="en" onclick="switchLanguage('en')">EN</button>
+        <button class="lang-option" data-lang-code="fr" onclick="switchLanguage('fr')">FR</button>
+        <button class="lang-option" data-lang-code="rw" onclick="switchLanguage('rw')">RW</button>
+    </div>
+</div>
+
 <div class="auth-card">
     <div style="margin-bottom:14px;">
-        <a href="/" class="auth-back-link">&larr; Back to home</a>
+        <a href="/" class="auth-back-link" data-i18n="login.back">&larr; Back to home</a>
     </div>
     <div class="login-tabs">
-        <button type="button" class="tab-btn active" onclick="switchTab('CUSTOMER', this)">Customer</button>
-        <button type="button" class="tab-btn" onclick="switchTab('MECHANIC', this)">Mechanic</button>
-        <button type="button" class="tab-btn" onclick="switchTab('ADMIN', this)">Admin</button>
+        <button type="button" class="tab-btn active" onclick="switchTab('CUSTOMER', this)" data-i18n="login.tab_customer">Customer</button>
+        <button type="button" class="tab-btn" onclick="switchTab('MECHANIC', this)" data-i18n="login.tab_mechanic">Mechanic</button>
+        <button type="button" class="tab-btn" onclick="switchTab('ADMIN', this)" data-i18n="login.tab_admin">Admin</button>
     </div>
 
-    <h1 id="login-title">Customer Login</h1>
-    <p id="login-desc" style="margin-bottom: 24px; color: #64748b; font-size: 16px; line-height: 1.6;">Sign in to book repairs and manage your vehicles.</p>
+    <h1 id="login-title" data-i18n="login.customer_title">Customer Login</h1>
+    <p id="login-desc" style="margin-bottom: 24px; color: #64748b; font-size: 16px; line-height: 1.6;" data-i18n="login.customer_desc">Sign in to book repairs and manage your vehicles.</p>
 
-    <div th:if="${param.error}" class="auth-error">
+    <div th:if="${param.error}" class="auth-error" data-i18n="login.error">
         Invalid email or password.
     </div>
 
-    <div th:if="${param.logout}" class="auth-success">
+    <div th:if="${param.logout}" class="auth-success" data-i18n="login.logout_ok">
         You have been logged out successfully.
     </div>
 
@@ -194,46 +206,58 @@
     <form th:action="@{/login}" method="post" class="auth-form">
         <input type="hidden" name="loginRole" id="loginRoleInput" value="CUSTOMER">
         <div class="form-group">
-            <label>Email</label>
-            <input type="email" name="username" placeholder="Enter your email" required>
+            <label data-i18n="login.label_email">Email</label>
+            <input type="email" name="username" placeholder="Enter your email" data-i18n="login.placeholder_email" required>
         </div>
 
         <div class="form-group">
-            <label>Password</label>
-            <input type="password" name="password" placeholder="Enter your password" required>
+            <label data-i18n="login.label_password">Password</label>
+            <input type="password" name="password" placeholder="Enter your password" data-i18n="login.placeholder_password" required>
         </div>
 
-        <button type="submit" class="auth-btn">Sign In</button>
+        <button type="submit" class="auth-btn" data-i18n="login.submit">Sign In</button>
     </form>
 
     <div class="auth-link-text">
-        Don’t have an account?
-        <a href="/register">Create one</a>
+        <span data-i18n="login.no_account">Don't have an account?</span>
+        <a href="/register" data-i18n="login.create_one">Create one</a>
     </div>
 </div>
 
 <script>
+    var LANG_TITLES = {
+        CUSTOMER: { en: 'Customer Login', fr: 'Connexion Client', rw: "Kwinjira nk'Umukiriya" },
+        MECHANIC: { en: 'Mechanic Portal', fr: 'Portail Mécanicien', rw: "Irembo ry'Imekaniki" },
+        ADMIN:    { en: 'Admin Console',   fr: 'Console Administrateur', rw: 'Aho Ubuyobozi Bukora' }
+    };
+    var LANG_DESCS = {
+        CUSTOMER: { en: 'Sign in to book repairs and manage your vehicles.', fr: 'Connectez-vous pour réserver des réparations et gérer vos véhicules.', rw: 'Injira kugira ngo ubone gufata ibyemezo no gucunga imodoka zawe.' },
+        MECHANIC: { en: 'Sign in to accept jobs and update service progress.', fr: 'Connectez-vous pour accepter des travaux et mettre à jour la progression.', rw: 'Injira kugira ngo wemere imirimo no gutanga aho akazi kegeze.' },
+        ADMIN:    { en: 'Sign in with your administrator credentials.', fr: 'Connectez-vous avec vos identifiants administrateur.', rw: "Injira ukoresheje amakuru yawe y'ubuyobozi." }
+    };
+
+    var currentRole = 'CUSTOMER';
+
     function switchTab(role, btn) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        currentRole = role;
+        document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
         btn.classList.add('active');
-
-        const title = document.getElementById('login-title');
-        const desc = document.getElementById('login-desc');
-
-        if(role === 'CUSTOMER') {
-            document.getElementById('loginRoleInput').value = 'CUSTOMER';
-            title.innerText = 'Customer Login';
-            desc.innerText = 'Sign in to book repairs and manage your vehicles.';
-        } else if(role === 'MECHANIC') {
-            document.getElementById('loginRoleInput').value = 'MECHANIC';
-            title.innerText = 'Mechanic Portal';
-            desc.innerText = 'Sign in to accept jobs and update service progress.';
-        } else if(role === 'ADMIN') {
-            document.getElementById('loginRoleInput').value = 'ADMIN';
-            title.innerText = 'Admin Console';
-            desc.innerText = 'Sign in with your administrator credentials.';
-        }
+        document.getElementById('loginRoleInput').value = role;
+        var lang = document.documentElement.getAttribute('lang') || 'en';
+        var safeL = LANG_TITLES[role][lang] ? lang : 'en';
+        document.getElementById('login-title').innerText = LANG_TITLES[role][safeL];
+        document.getElementById('login-desc').innerText  = LANG_DESCS[role][safeL];
     }
+
+    // Hook called by theme-lang.js after every applyLanguage() call
+    // theme-lang.js checks window._afterLangApply if it exists
+    window._afterLangApply = function(lang) {
+        var safeL = LANG_TITLES[currentRole][lang] ? lang : 'en';
+        var titleEl = document.getElementById('login-title');
+        var descEl  = document.getElementById('login-desc');
+        if (titleEl) titleEl.innerText = LANG_TITLES[currentRole][safeL];
+        if (descEl)  descEl.innerText  = LANG_DESCS[currentRole][safeL];
+    };
 </script>
 
 </body>

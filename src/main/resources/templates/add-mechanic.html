@@ -3,7 +3,9 @@
 <head>
     <title>Add Mechanic - CarFix Rwanda</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('cfr-theme') || 'light');</script>
     <script defer th:src="@{/app-dialogs.js}"></script>
+    <script defer th:src="@{/theme-lang.js}"></script>
     <style>
         body {
             min-height: 100vh;

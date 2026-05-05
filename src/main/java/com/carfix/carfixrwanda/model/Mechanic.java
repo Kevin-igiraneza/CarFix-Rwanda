@@ -7,7 +7,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 @Entity
-public class Mechanic {
+public class Mechanic extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

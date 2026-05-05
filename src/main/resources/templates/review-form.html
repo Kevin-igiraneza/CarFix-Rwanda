@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Leave a Review - CarFix Rwanda</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('cfr-theme') || 'light');</script>
+    <script defer th:src="@{/theme-lang.js}"></script>
+    <style>
+        .review-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: var(--card-bg, #fff);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .review-container h2 {
+            margin-top: 0;
+            color: var(--text-color, #1e293b);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color, #333);
+        }
+        .rating-stars {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .rating-stars input[type="radio"] {
+            display: none;
+        }
+        .rating-stars label {
+            font-size: 2rem;
+            color: #ccc;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .rating-stars input[type="radio"]:checked ~ label,
+        .rating-stars label:hover,
+        .rating-stars label:hover ~ label {
+            color: #f59e0b;
+        }
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color, #cbd5e1);
+            border-radius: 6px;
+            background: var(--bg-alt, #f8fafc);
+            color: var(--text-color, #333);
+            resize: vertical;
+        }
+        .btn-submit {
+            background: var(--primary-color, #2563eb);
+            color: #fff;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+        .btn-submit:hover { opacity: 0.9; }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: var(--primary-color, #2563eb);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body class="dashboard-body">
+
+    <div class="review-container">
+        <h2>Leave a Review</h2>
+        <p style="margin-bottom: 20px; color: var(--text-muted, #64748b);">
+            How was the service for your <strong th:text="${request.customerVehicle.vehicleName}">Toyota</strong> by <strong th:text="${request.preferredMechanic.user.fullName}">Mechanic</strong>?
+        </p>
+
+        <form th:action="@{/review/submit}" method="post">
+            <input type="hidden" name="requestId" th:value="${request.id}">
+
+            <div class="form-group">
+                <label>Rating</label>
+                <div class="rating-stars">
+                    <input type="radio" id="star5" name="rating" value="5" required />
+                    <label for="star5" title="5 stars">&#9733;</label>
+                    
+                    <input type="radio" id="star4" name="rating" value="4" />
+                    <label for="star4" title="4 stars">&#9733;</label>
+                    
+                    <input type="radio" id="star3" name="rating" value="3" />
+                    <label for="star3" title="3 stars">&#9733;</label>
+                    
+                    <input type="radio" id="star2" name="rating" value="2" />
+                    <label for="star2" title="2 stars">&#9733;</label>
+                    
+                    <input type="radio" id="star1" name="rating" value="1" />
+                    <label for="star1" title="1 star">&#9733;</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="comment">Comment (Optional)</label>
+                <textarea id="comment" name="comment" rows="4" placeholder="Tell us about your experience..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Submit Review</button>
+        </form>
+
+        <a href="/customer-dashboard" class="back-link">&larr; Back to Dashboard</a>
+    </div>
+
+</body>
+</html>

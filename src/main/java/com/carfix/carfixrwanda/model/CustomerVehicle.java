@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "customer_vehicles")
-public class CustomerVehicle {
+public class CustomerVehicle extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

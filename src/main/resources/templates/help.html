@@ -3,7 +3,9 @@
 <head>
     <title>Help &amp; contact - CarFix Rwanda</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('cfr-theme') || 'light');</script>
     <script defer th:src="@{/app-dialogs.js}"></script>
+    <script defer th:src="@{/theme-lang.js}"></script>
     <style>
         .help-wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; }
         .help-wrap h1 { font-size: 32px; color: #0b3b92; margin-bottom: 12px; }
@@ -33,6 +35,15 @@
     <div class="nav-right" th:unless="${navLoggedIn}">
         <a href="/login" class="signin-link">Sign in</a>
         <a href="/register" class="register-btn">Register</a>
+    </div>
+    <!-- Theme & Language -->
+    <div class="tl-controls">
+        <button id="themeToggleBtn" onclick="toggleTheme()" title="Dark mode" aria-label="Switch to dark mode">🌙</button>
+        <div class="lang-switcher" role="group" aria-label="Language">
+            <button class="lang-option active" data-lang-code="en" onclick="switchLanguage('en')">EN</button>
+            <button class="lang-option" data-lang-code="fr" onclick="switchLanguage('fr')">FR</button>
+            <button class="lang-option" data-lang-code="rw" onclick="switchLanguage('rw')">RW</button>
+        </div>
     </div>
 </header>
 

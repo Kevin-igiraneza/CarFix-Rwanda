@@ -27,15 +27,21 @@ public class CustomerDashboardController {
     private final ServiceRequestService serviceRequestService;
     private final MechanicService mechanicService;
     private final UserRepository userRepository;
+    private final com.carfix.carfixrwanda.service.InvoiceService invoiceService;
+    private final com.carfix.carfixrwanda.service.ReviewService reviewService;
 
     public CustomerDashboardController(CustomerVehicleService customerVehicleService,
                                        ServiceRequestService serviceRequestService,
                                        MechanicService mechanicService,
-                                       UserRepository userRepository) {
+                                       UserRepository userRepository,
+                                       com.carfix.carfixrwanda.service.InvoiceService invoiceService,
+                                       com.carfix.carfixrwanda.service.ReviewService reviewService) {
         this.customerVehicleService = customerVehicleService;
         this.serviceRequestService = serviceRequestService;
         this.mechanicService = mechanicService;
         this.userRepository = userRepository;
+        this.invoiceService = invoiceService;
+        this.reviewService = reviewService;
     }
 
     @GetMapping("/customer-dashboard")
@@ -54,13 +60,28 @@ public class CustomerDashboardController {
                 .filter(r -> r.getStatus() != RequestStatus.COMPLETED && r.getStatus() != RequestStatus.CANCELLED)
                 .collect(Collectors.toList());
 
-        model.addAttribute("currentUser", currentUser);
-        model.addAttribute("vehicles", vehicles);
+        model.addAttribute("currentUser", com.carfix.carfixrwanda.dto.DtoMapper.toUserDto(currentUser));
+        model.addAttribute("vehicles", com.carfix.carfixrwanda.dto.DtoMapper.toCustomerVehicleDtoList(vehicles));
         model.addAttribute("vehicleCount", vehicles.size());
-        model.addAttribute("requests", requests);
+        model.addAttribute("requests", com.carfix.carfixrwanda.dto.DtoMapper.toServiceRequestDtoList(requests));
+        
+        java.util.List<com.carfix.carfixrwanda.model.Invoice> invoices = invoiceService.getCustomerInvoices(currentUser.getId());
+        model.addAttribute("invoices", invoices);
+        
+        // Find all completed requests by this user that have already been reviewed.
+        // It's easier to just fetch all reviews from the DB for this user, but for now we can iterate over completed requests and check.
+        java.util.List<Long> reviewedRequestIds = new java.util.ArrayList<>();
+        for (com.carfix.carfixrwanda.model.ServiceRequest req : requests) {
+            if (req.getStatus() == com.carfix.carfixrwanda.enums.RequestStatus.COMPLETED) {
+                if (reviewService.hasReviewForServiceRequest(req.getId())) {
+                    reviewedRequestIds.add(req.getId());
+                }
+            }
+        }
+        model.addAttribute("reviewedRequestIds", reviewedRequestIds);
         model.addAttribute("requestCount", activeRequestCount);
-        model.addAttribute("progressRequests", progressRequests);
-        model.addAttribute("mechanics", mechanics);
+        model.addAttribute("progressRequests", com.carfix.carfixrwanda.dto.DtoMapper.toServiceRequestDtoList(progressRequests));
+        model.addAttribute("mechanics", com.carfix.carfixrwanda.dto.DtoMapper.toMechanicDtoList(mechanics));
 
         return "customer-dashboard";
     }

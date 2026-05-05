@@ -3,8 +3,10 @@
 <head>
     <title>Admin Dashboard - CarFix Rwanda</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('cfr-theme') || 'light');</script>
     <script defer th:src="@{/app-dialogs.js}"></script>
     <script defer th:src="@{/dashboard-sidebar.js}"></script>
+    <script defer th:src="@{/theme-lang.js}"></script>
     <script>
         window.addEventListener("pageshow", function (event) {
             if (event.persisted) {
@@ -101,6 +103,15 @@
                     <span>Log out</span>
                 </button>
             </form>
+            <!-- Theme & Language -->
+            <div class="tl-controls" style="margin-top:14px;justify-content:center;">
+                <button id="themeToggleBtn" onclick="toggleTheme()" title="Dark mode" aria-label="Switch to dark mode">🌙</button>
+                <div class="lang-switcher" role="group" aria-label="Language">
+                    <button class="lang-option active" data-lang-code="en" onclick="switchLanguage('en')">EN</button>
+                    <button class="lang-option" data-lang-code="fr" onclick="switchLanguage('fr')">FR</button>
+                    <button class="lang-option" data-lang-code="rw" onclick="switchLanguage('rw')">RW</button>
+                </div>
+            </div>
         </div>
     </aside>
 

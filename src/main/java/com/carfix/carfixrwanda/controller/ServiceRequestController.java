@@ -49,8 +49,8 @@ public class ServiceRequestController {
         List<CustomerVehicle> vehicles = customerVehicleService.getVehiclesByUserId(user.getId());
         List<Mechanic> mechanics = mechanicService.getVerifiedMechanics();
 
-        model.addAttribute("vehicles", vehicles);
-        model.addAttribute("mechanics", mechanics);
+        model.addAttribute("vehicles", com.carfix.carfixrwanda.dto.DtoMapper.toCustomerVehicleDtoList(vehicles));
+        model.addAttribute("mechanics", com.carfix.carfixrwanda.dto.DtoMapper.toMechanicDtoList(mechanics));
         model.addAttribute("preselectedMechanicId", mechanicId);
         return "service-request";
     }

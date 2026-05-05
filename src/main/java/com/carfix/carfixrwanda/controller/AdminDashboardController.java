@@ -55,12 +55,12 @@ public class AdminDashboardController {
                 .limit(6)
                 .toList();
 
-        model.addAttribute("currentUser", currentUser);
-        model.addAttribute("mechanics", mechanics);
-        model.addAttribute("requests", requests);
-        model.addAttribute("recentStatusHistory", recentStatusHistory);
-        model.addAttribute("vehicles", vehicles);
-        model.addAttribute("recentUsers", recentUsers);
+        model.addAttribute("currentUser", com.carfix.carfixrwanda.dto.DtoMapper.toUserDto(currentUser));
+        model.addAttribute("mechanics", com.carfix.carfixrwanda.dto.DtoMapper.toMechanicDtoList(mechanics));
+        model.addAttribute("requests", com.carfix.carfixrwanda.dto.DtoMapper.toServiceRequestDtoList(requests));
+        model.addAttribute("recentStatusHistory", recentStatusHistory); // keeping entity for now to avoid creating another DTO unless necessary
+        model.addAttribute("vehicles", com.carfix.carfixrwanda.dto.DtoMapper.toCustomerVehicleDtoList(vehicles));
+        model.addAttribute("recentUsers", com.carfix.carfixrwanda.dto.DtoMapper.toUserDtoList(recentUsers));
 
         model.addAttribute("mechanicCount", mechanics.size());
         long activeRequestCount = requests.stream()

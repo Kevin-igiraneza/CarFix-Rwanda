@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Invoice - CarFix Rwanda</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('cfr-theme') || 'light');</script>
+    <script defer th:src="@{/theme-lang.js}"></script>
+    <style>
+        .invoice-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: var(--card-bg, #fff);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color, #e2e8f0);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .invoice-brand h2 {
+            margin: 0;
+            color: var(--primary-color, #2563eb);
+        }
+        .invoice-meta {
+            text-align: right;
+        }
+        .invoice-meta p {
+            margin: 5px 0;
+            color: var(--text-muted, #64748b);
+        }
+        .invoice-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .status-paid { background: #dcfce7; color: #16a34a; }
+        .status-pending { background: #fef9c3; color: #ca8a04; }
+        .invoice-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+        .invoice-to, .invoice-from {
+            width: 45%;
+        }
+        .invoice-to h4, .invoice-from h4 {
+            margin-bottom: 10px;
+            color: var(--text-color, #1e293b);
+        }
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .invoice-table th, .invoice-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color, #e2e8f0);
+            color: var(--text-color, #333);
+        }
+        .invoice-table th {
+            background: var(--bg-alt, #f8fafc);
+            font-weight: 600;
+        }
+        .invoice-totals {
+            width: 50%;
+            margin-left: auto;
+            margin-bottom: 40px;
+        }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color, #e2e8f0);
+            color: var(--text-color, #333);
+        }
+        .total-row.grand-total {
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-bottom: none;
+            color: var(--primary-color, #2563eb);
+        }
+        .payment-section {
+            background: var(--bg-alt, #f8fafc);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .payment-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        .btn-pay {
+            background: var(--primary-color, #2563eb);
+            color: #fff;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-pay:hover { opacity: 0.9; }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--primary-color, #2563eb);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body class="dashboard-body">
+
+    <div class="invoice-container">
+        <div class="invoice-header">
+            <div class="invoice-brand">
+                <h2>CarFix Rwanda</h2>
+                <p>Kigali, Rwanda</p>
+            </div>
+            <div class="invoice-meta">
+                <p><strong>Invoice #</strong> <span th:text="${'INV-' + invoice.id}">INV-1</span></p>
+                <p><strong>Date:</strong> <span th:text="${#temporals.format(invoice.createdAt, 'dd MMM yyyy')}">05 May 2026</span></p>
+                <div class="invoice-status" 
+                     th:classappend="${invoice.status.name() == 'PAID' ? 'status-paid' : 'status-pending'}"
+                     th:text="${invoice.status}">PENDING</div>
+            </div>
+        </div>
+
+        <div class="invoice-details">
+            <div class="invoice-to">
+                <h4>Bill To:</h4>
+                <p><strong th:text="${invoice.serviceRequest.customerVehicle.user.fullName}">Customer Name</strong></p>
+                <p th:text="${invoice.serviceRequest.customerVehicle.user.phone}">0780000000</p>
+                <p th:text="${invoice.serviceRequest.customerVehicle.user.email}">customer@example.com</p>
+            </div>
+            <div class="invoice-from">
+                <h4>Service By:</h4>
+                <p><strong th:text="${invoice.serviceRequest.preferredMechanic != null ? invoice.serviceRequest.preferredMechanic.user.fullName : 'CarFix Rwanda'}">Mechanic Name</strong></p>
+                <p th:text="${invoice.serviceRequest.preferredMechanic != null ? invoice.serviceRequest.preferredMechanic.garageLocation : ''}">Garage Location</p>
+            </div>
+        </div>
+
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th style="text-align: right;">Amount (RWF)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <strong th:text="${invoice.serviceRequest.problemTitle}">Service Title</strong>
+                        <br>
+                        <small th:text="${invoice.serviceRequest.customerVehicle.vehicleName}">Toyota RAV4</small>
+                    </td>
+                    <td style="text-align: right;" th:text="${#numbers.formatDecimal(invoice.laborTotal, 0, 'COMMA', 0, 'POINT')}">10,000</td>
+                </tr>
+                <tr>
+                    <td>Spare Parts</td>
+                    <td style="text-align: right;" th:text="${#numbers.formatDecimal(invoice.partsTotal, 0, 'COMMA', 0, 'POINT')}">25,000</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="invoice-totals">
+            <div class="total-row">
+                <span>Subtotal</span>
+                <span th:text="${#numbers.formatDecimal(invoice.partsTotal + invoice.laborTotal, 0, 'COMMA', 0, 'POINT')}">35,000</span>
+            </div>
+            <div class="total-row">
+                <span>Tax (18%)</span>
+                <span th:text="${#numbers.formatDecimal(invoice.taxTotal, 0, 'COMMA', 0, 'POINT')}">6,300</span>
+            </div>
+            <div class="total-row grand-total">
+                <span>Total Due</span>
+                <span th:text="${#numbers.formatDecimal(invoice.grandTotal, 0, 'COMMA', 0, 'POINT')} + ' RWF'">41,300 RWF</span>
+            </div>
+        </div>
+
+        <div class="payment-section" th:if="${isCustomer && invoice.status.name() == 'PENDING'}">
+            <h3>Complete Payment</h3>
+            <p style="margin-bottom: 20px; color: var(--text-muted, #64748b);">Select your preferred payment method.</p>
+            <form class="payment-form" th:action="@{/customer/pay-invoice}" method="post">
+                <input type="hidden" name="invoiceId" th:value="${invoice.id}">
+                <select name="paymentMethod" required style="padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+                    <option value="MOMO">Mobile Money (MoMo)</option>
+                    <option value="CARD">Credit/Debit Card</option>
+                    <option value="CASH">Cash on Delivery</option>
+                </select>
+                <button type="submit" class="btn-pay">Pay Now</button>
+            </form>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="javascript:history.back()" class="back-link">&larr; Back to Dashboard</a>
+        </div>
+    </div>
+
+</body>
+</html>

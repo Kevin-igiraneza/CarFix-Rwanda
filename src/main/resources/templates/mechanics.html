@@ -2,10 +2,75 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Find Mechanics - CarFix Rwanda</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
-    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('cfr-theme') || 'light');</script>
+    <link rel="stylesheet" th:href="@{/style.css?v=18}">
+    <!-- Inline theme toggle — runs immediately so button works before defer scripts load -->
+    <script>
+        (function() {
+            // Apply saved theme right away (prevents flash)
+            var saved = localStorage.getItem('cfr-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+
+            // Define toggleTheme globally so onclick="toggleTheme()" always works
+            window.toggleTheme = function() {
+                var html = document.documentElement;
+                var current = html.getAttribute('data-theme') || 'light';
+                var next = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('cfr-theme', next);
+
+                // Update all toggle button icons
+                document.querySelectorAll('#themeToggleBtn, .topbar-icon-btn[aria-label*="Dark"], .topbar-icon-btn[aria-label*="Light"]').forEach(function(btn) {
+                    var moon = btn.querySelector('.moon-icon');
+                    var sun  = btn.querySelector('.sun-icon');
+                    if (moon && sun) {
+                        moon.style.display = next === 'dark' ? 'none' : 'inline-block';
+                        sun.style.display  = next === 'dark' ? 'inline-block' : 'none';
+                    }
+                    btn.title = next === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+                    btn.setAttribute('aria-label', next === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+                });
+            };
+
+            // Also sync icons once DOM is ready
+            document.addEventListener('DOMContentLoaded', function() {
+                var theme = localStorage.getItem('cfr-theme') || 'light';
+                document.querySelectorAll('#themeToggleBtn, .topbar-icon-btn').forEach(function(btn) {
+                    var moon = btn.querySelector('.moon-icon');
+                    var sun  = btn.querySelector('.sun-icon');
+                    if (moon && sun) {
+                        moon.style.display = theme === 'dark' ? 'none' : 'inline-block';
+                        sun.style.display  = theme === 'dark' ? 'inline-block' : 'none';
+                    }
+                    btn.querySelectorAll('svg, path, circle').forEach(function(el) {
+                        el.style.pointerEvents = 'none';
+                    });
+                });
+
+                // Force search form label colors — overrides any CSS rule including !important
+                document.querySelectorAll('.mechanics-search-form label').forEach(function(label) {
+                    if (theme === 'dark') {
+                        label.style.setProperty('color', '#c0d4ed', 'important');
+                    } else {
+                        label.style.setProperty('color', '#1e293b', 'important');
+                        label.style.fontWeight = '700';
+                        label.style.fontSize = '13px';
+                    }
+                });
+
+                // Re-apply on theme toggle for this page
+                var origToggle = window.toggleTheme;
+                window.toggleTheme = function() {
+                    origToggle && origToggle();
+                    var t = localStorage.getItem('cfr-theme') || 'light';
+                    document.querySelectorAll('.mechanics-search-form label').forEach(function(label) {
+                        label.style.setProperty('color', t === 'dark' ? '#c0d4ed' : '#1e293b', 'important');
+                    });
+                };
+            });
+        })();
+    </script>
     <script defer th:src="@{/app-dialogs.js}"></script>
-    <script defer th:src="@{/theme-lang.js}"></script>
+    <script defer th:src="@{/theme-lang.js?v=18}"></script>
     <style>
         .mechanics-container {
             padding: 56px 24px 72px;
@@ -133,13 +198,41 @@
             margin: 0 auto 24px;
         }
 
+        .mechanics-search-form label {
+            font-weight: 700;
+            font-size: 13px;
+            color: #1e293b !important;
+        }
+
         .mechanics-search-form input {
             height: 44px;
             border-radius: 12px;
-            border: 1px solid #dbe4f0;
+            border: 1px solid #c8d6e8;
             padding: 0 12px;
             font-size: 14px;
             width: 100%;
+            color: #0f172a;
+            background: #ffffff;
+        }
+
+        .mechanics-search-form input::placeholder {
+            color: #64748b !important;
+            opacity: 1 !important;
+        }
+
+        [data-theme="dark"] .mechanics-container {
+            background: #0e1420;
+        }
+        [data-theme="dark"] .mechanics-search-form label {
+            color: #c0d4ed !important;
+        }
+        [data-theme="dark"] .mechanics-search-form input {
+            background: #0e1a2e !important;
+            border-color: #2d4060 !important;
+            color: #d0e1f9 !important;
+        }
+        [data-theme="dark"] .mechanics-search-form input::placeholder {
+            color: #4a6b8a !important;
         }
 
         .mechanics-search-form button[type="submit"],
@@ -183,6 +276,17 @@
             font-weight: 700;
             font-size: 14px;
         }
+
+        /* ── Dark mode: mechanics page ── */
+        [data-theme="dark"] .page-header h1        { color: #93c5fd !important; }
+        [data-theme="dark"] .page-header p          { color: #94b8d4 !important; }
+        [data-theme="dark"] .m-card                 { background: #0e1a2e !important; border: 1px solid #1e3a5f !important; box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important; }
+        [data-theme="dark"] .m-info h3              { color: #e2eeff !important; }
+        [data-theme="dark"] .m-detail-item          { color: #94b8d4 !important; }
+        [data-theme="dark"] .m-card-actions         { border-top-color: #1e3a5f !important; }
+        [data-theme="dark"] .m-avatar               { background: #1a3055 !important; color: #60a5fa !important; }
+        [data-theme="dark"] .mechanics-search-form .reset-link { background: #0e1a2e !important; color: #93c5fd !important; border-color: #2d4060 !important; }
+        [data-theme="dark"] p[style*="color:#64748b"] { color: #94b8d4 !important; }
     </style>
 </head>
 <body class="app-page directory-page">
@@ -227,12 +331,14 @@
 
     <!-- Theme & Language -->
     <div class="tl-controls">
-        <button id="themeToggleBtn" onclick="toggleTheme()" title="Dark mode" aria-label="Switch to dark mode">🌙</button>
-        <div class="lang-switcher" role="group" aria-label="Language">
-            <button class="lang-option active" data-lang-code="en" onclick="switchLanguage('en')">EN</button>
-            <button class="lang-option" data-lang-code="fr" onclick="switchLanguage('fr')">FR</button>
-            <button class="lang-option" data-lang-code="rw" onclick="switchLanguage('rw')">RW</button>
-        </div>
+        <button id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark Mode" aria-label="Toggle Dark Mode" style="background:transparent;border:none;cursor:pointer;color:inherit;display:inline-flex;align-items:center;justify-content:center;padding:6px;border-radius:10px;">
+    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:20px;height:20px;">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+    </svg>
+    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:none;width:20px;height:20px;">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+    </svg>
+</button>
     </div>
 </header>
 
@@ -245,16 +351,19 @@
     <div class="mechanics-search-wrap">
         <form class="mechanics-search-form" th:action="@{/mechanics}" method="get">
             <div class="form-group" style="display:flex;flex-direction:column;gap:6px;">
-                <label style="font-weight:700;font-size:13px;color:#334155;">Specialization</label>
-                <input type="text" name="specialization" th:value="${filterSpecialization}" placeholder="e.g. Engine repair">
+                <label style="font-weight:700;font-size:13px;color:#1e293b;letter-spacing:0.03em;">Specialization</label>
+                <input type="text" name="specialization" th:value="${filterSpecialization}" placeholder="e.g. Engine repair"
+                       style="height:44px;border-radius:12px;border:1.5px solid #b8cde0;padding:0 12px;font-size:14px;width:100%;color:#0f172a;background:#ffffff;">
             </div>
             <div class="form-group" style="display:flex;flex-direction:column;gap:6px;">
-                <label style="font-weight:700;font-size:13px;color:#334155;">Vehicle model / brand</label>
-                <input type="text" name="vehicleModel" th:value="${filterVehicleModel}" placeholder="e.g. Toyota RAV4">
+                <label style="font-weight:700;font-size:13px;color:#1e293b;letter-spacing:0.03em;">Vehicle model / brand</label>
+                <input type="text" name="vehicleModel" th:value="${filterVehicleModel}" placeholder="e.g. Toyota RAV4"
+                       style="height:44px;border-radius:12px;border:1.5px solid #b8cde0;padding:0 12px;font-size:14px;width:100%;color:#0f172a;background:#ffffff;">
             </div>
             <div class="form-group" style="display:flex;flex-direction:column;gap:6px;">
-                <label style="font-weight:700;font-size:13px;color:#334155;">Keyword</label>
-                <input type="text" name="q" th:value="${filterKeyword}" placeholder="Name, area">
+                <label style="font-weight:700;font-size:13px;color:#1e293b;letter-spacing:0.03em;">Keyword</label>
+                <input type="text" name="q" th:value="${filterKeyword}" placeholder="Name, area"
+                       style="height:44px;border-radius:12px;border:1.5px solid #b8cde0;padding:0 12px;font-size:14px;width:100%;color:#0f172a;background:#ffffff;">
             </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;">
                 <button type="submit">Search</button>

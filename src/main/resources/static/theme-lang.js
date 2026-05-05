@@ -386,8 +386,19 @@ function applyTheme(theme) {
     localStorage.setItem('cfr-theme', theme);
     var btns = document.querySelectorAll('#themeToggleBtn');
     btns.forEach(function(btn) {
-        btn.innerHTML     = theme === 'dark' ? '&#9728;&#65039;' : '&#127769;';
-        btn.title         = theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+        var moon = btn.querySelector('.moon-icon');
+        var sun  = btn.querySelector('.sun-icon');
+        // Make SVG children non-interactive so every click reaches the button
+        btn.querySelectorAll('svg, path').forEach(function(el) {
+            el.style.pointerEvents = 'none';
+        });
+        if (moon && sun) {
+            moon.style.display = (theme === 'dark') ? 'none'  : 'inline-block';
+            sun.style.display  = (theme === 'dark') ? 'inline-block' : 'none';
+        } else {
+            btn.innerHTML = theme === 'dark' ? '&#9728;&#65039;' : '&#127769;';
+        }
+        btn.title = theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
         btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
     });
 }
@@ -395,6 +406,23 @@ function applyTheme(theme) {
 function toggleTheme() {
     var current = document.documentElement.getAttribute('data-theme') || 'light';
     applyTheme(current === 'dark' ? 'light' : 'dark');
+}
+
+// Attach click listeners to every toggle button on the page.
+// This is more reliable than inline onclick="toggleTheme()" on all browsers.
+function bindThemeButtons() {
+    document.querySelectorAll('#themeToggleBtn').forEach(function(btn) {
+        // Remove existing onclick to avoid double-firing
+        btn.removeAttribute('onclick');
+        // Only bind once (guard flag)
+        if (btn.dataset.themeBound) return;
+        btn.dataset.themeBound = '1';
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleTheme();
+        });
+    });
 }
 
 // ─────────────────────────────────────────────
@@ -441,25 +469,23 @@ function switchLanguage(lang) {
 // Also schedules a safety re-run after DOMContentLoaded in case of edge cases.
 // ─────────────────────────────────────────────
 function cfrInit() {
-    // One-time migration: clear old forced-dark default
-    if (!localStorage.getItem('cfr-v3')) {
-        localStorage.removeItem('cfr-theme');
-        localStorage.removeItem('cfr-theme-v2');
-        localStorage.setItem('cfr-v3', '1');
-    }
-
     var savedTheme = localStorage.getItem('cfr-theme') || 'light';
     var savedLang  = localStorage.getItem('cfr-lang')  || 'en';
     applyTheme(savedTheme);
     applyLanguage(savedLang);
+    bindThemeButtons();
 }
 
-// Run immediately (covers defer case where DOM is ready)
+// Run immediately (defer = DOM already parsed when this executes)
 cfrInit();
 
-// Safety net: also run when DOM is fully ready in case of fast-load edge cases
+// Safety net for any edge-case timing issues
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', cfrInit);
+    document.addEventListener('DOMContentLoaded', function() {
+        applyTheme(localStorage.getItem('cfr-theme') || 'light');
+        bindThemeButtons();
+    });
 } else {
-    cfrInit(); // DOM already ready (e.g. script placed at end of body)
+    // DOM already ready — just re-bind in case new buttons appeared
+    bindThemeButtons();
 }

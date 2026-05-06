@@ -63,7 +63,7 @@
                 </form>
             </div>
 
-            <div th:each="n : ${notifications}" class="notification-card" th:classappend="${!n.isRead ? 'unread' : ''}">
+            <div th:each="n : ${notifications}" class="notification-card" th:classappend="${!n.read ? 'unread' : ''}">
                 <div class="notification-icon" th:classappend="${n.type.name() == 'REQUEST_ASSIGNED' ? 'blue' : 'blue'}">
                     <i class="fas fa-tools">🛠️</i>
                 </div>
@@ -72,14 +72,14 @@
                     <p th:text="${n.message}">A customer has assigned you a job.</p>
                     
                     <!-- Accept/Reject buttons if it's a new assignment and not yet handled -->
-                    <div th:if="${n.type.name() == 'REQUEST_ASSIGNED' && n.relatedUrl != null && n.relatedUrl.contains('requestId=')}" class="notification-actions" style="display:flex; gap:10px; margin-top: 14px;">
+                    <div th:if="${n.type.name() == 'REQUEST_ASSIGNED' && n.link != null && n.link.contains('requestId=')}" class="notification-actions" style="display:flex; gap:10px; margin-top: 14px;">
                         <!-- relatedUrl for mechanic points to the requestId -->
                         <form th:action="@{/mechanic/accept-request}" method="post">
-                            <input type="hidden" name="requestId" th:value="${n.relatedUrl.split('=')[1]}">
+                            <input type="hidden" name="requestId" th:value="${n.link.split('=')[1]}">
                             <button type="submit" class="approve-btn">Accept Job</button>
                         </form>
                         <form th:action="@{/mechanic/reject-request}" method="post">
-                            <input type="hidden" name="requestId" th:value="${n.relatedUrl.split('=')[1]}">
+                            <input type="hidden" name="requestId" th:value="${n.link.split('=')[1]}">
                             <button type="submit" class="reject-btn">Reject</button>
                         </form>
                     </div>
@@ -100,3 +100,4 @@
 
 </body>
 </html>
+

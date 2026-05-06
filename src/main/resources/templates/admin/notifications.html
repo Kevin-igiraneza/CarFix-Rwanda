@@ -72,7 +72,7 @@
                 </form>
             </div>
 
-            <div th:each="n : ${notifications}" class="notification-card" th:classappend="${!n.isRead ? 'unread' : ''}">
+            <div th:each="n : ${notifications}" class="notification-card" th:classappend="${!n.read ? 'unread' : ''}">
                 <div class="notification-icon" th:classappend="${n.type.name() == 'NEW_MECHANIC' ? 'blue' : (n.type.name() == 'NO_MECHANIC_REQUEST' ? 'orange' : 'blue')}">
                     <i th:if="${n.type.name() == 'NEW_MECHANIC'}" class="fas fa-user-plus">👤</i>
                     <i th:if="${n.type.name() == 'NO_MECHANIC_REQUEST'}" class="fas fa-exclamation-triangle">⚠️</i>
@@ -82,7 +82,7 @@
                     <p th:text="${n.message}">Notification message goes here...</p>
                     <div class="notification-meta">
                         <span class="notification-time" th:text="${#temporals.format(n.createdAt, 'MMM dd, HH:mm')}">Time</span>
-                        <a th:if="${n.relatedUrl != null}" th:href="${n.relatedUrl}" class="notification-link">View Details</a>
+                        <a th:if="${n.link != null}" th:href="${n.link}" class="notification-link">View Details</a>
                     </div>
                 </div>
             </div>
@@ -97,3 +97,4 @@
 
 </body>
 </html>
+

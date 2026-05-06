@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Notifications - Admin - CarFix Rwanda</title>
+    <link rel="stylesheet" th:href="@{/style.css?v=18}">
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('cfr-theme') || 'light');</script>
+    <script defer th:src="@{/app-dialogs.js}"></script>
+    <script defer th:src="@{/dashboard-sidebar.js}"></script>
+</head>
+<body class="app-page admin-page">
+
+<div class="admin-layout dashboard-shell">
+
+    <aside class="admin-sidebar dashboard-sidebar">
+        <!-- Sidebar content same as admin-dashboard -->
+        <div class="dashboard-sidebar-top">
+            <div class="dashboard-brand-shell">
+                <div class="dashboard-brand-badge">A</div>
+                <div class="dashboard-brand-copy">
+                    <div class="admin-brand">CarFix Rwanda</div>
+                    <div class="admin-subtitle">ADMIN CONSOLE</div>
+                </div>
+            </div>
+            <nav class="admin-menu dashboard-menu">
+                <a href="/real-admin-dashboard" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg></span>
+                    <span>Overview</span>
+                </a>
+                <a href="/admin/service-requests" class="dashboard-menu-link nav-item-with-badge">
+                    <span class="dashboard-menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="4" width="14" height="16" rx="2"></rect><path d="M9 9h6"></path><path d="M9 13h6"></path><path d="M9 17h4"></path></svg></span>
+                    <span>Service requests</span>
+                </a>
+                <a href="/admin/mechanic-verification" class="dashboard-menu-link nav-item-with-badge">
+                    <span class="dashboard-menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 4v5c0 5-3.4 8-7 9-3.6-1-7-4-7-9V7l7-4z"></path><path d="M9.5 12l1.7 1.7L14.8 10"></path></svg></span>
+                    <span>Review mechanics</span>
+                </a>
+                <a href="/admin/recent-status-activity" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span>
+                    <span>Recent Status</span>
+                </a>
+                <a href="/admin/notifications" class="active dashboard-menu-link nav-item-with-badge">
+                    <span class="dashboard-menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></span>
+                    <span>Notifications</span>
+                    <span th:if="${unreadNotificationCount > 0}" class="notification-badge" th:text="${unreadNotificationCount}">0</span>
+                </a>
+            </nav>
+        </div>
+        <div class="dashboard-sidebar-footer">
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <button type="submit" class="sidebar-logout-btn">
+                    <svg style="width:20px;height:20px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    <span>Logout</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <h2>Notifications</h2>
+            <div class="admin-userbox">
+                <div class="admin-avatar" th:text="${currentUser.fullName != null ? #strings.substring(currentUser.fullName,0,1) : 'A'}">A</div>
+                <div class="admin-user-name" th:text="${currentUser.fullName}">Admin</div>
+            </div>
+        </header>
+
+        <section class="notifications-container" style="padding: 24px;">
+            <div class="mark-read-header">
+                <h3>Inbox</h3>
+                <form th:action="@{/admin/notifications/mark-all-read}" method="post">
+                    <button type="submit" class="mark-read-btn">Mark all as read</button>
+                </form>
+            </div>
+
+            <div th:each="n : ${notifications}" class="notification-card" th:classappend="${!n.isRead ? 'unread' : ''}">
+                <div class="notification-icon" th:classappend="${n.type.name() == 'NEW_MECHANIC' ? 'blue' : (n.type.name() == 'NO_MECHANIC_REQUEST' ? 'orange' : 'blue')}">
+                    <i th:if="${n.type.name() == 'NEW_MECHANIC'}" class="fas fa-user-plus">👤</i>
+                    <i th:if="${n.type.name() == 'NO_MECHANIC_REQUEST'}" class="fas fa-exclamation-triangle">⚠️</i>
+                </div>
+                <div class="notification-content">
+                    <h4 th:text="${n.title}">Notification Title</h4>
+                    <p th:text="${n.message}">Notification message goes here...</p>
+                    <div class="notification-meta">
+                        <span class="notification-time" th:text="${#temporals.format(n.createdAt, 'MMM dd, HH:mm')}">Time</span>
+                        <a th:if="${n.relatedUrl != null}" th:href="${n.relatedUrl}" class="notification-link">View Details</a>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${notifications == null || notifications.isEmpty()}" style="text-align: center; padding: 60px 0; color: #64748b;">
+                <div style="font-size: 48px; margin-bottom: 16px;">📭</div>
+                <p>Your inbox is empty.</p>
+            </div>
+        </section>
+    </main>
+</div>
+
+</body>
+</html>

@@ -76,10 +76,27 @@
                     </span>
                     <span data-i18n="nav.help">Help</span>
                 </a>
+                <a href="/mechanic/notifications" class="dashboard-menu-link nav-item-with-badge">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                    </span>
+                    <span>Notifications</span>
+                    <span th:if="${unreadNotificationCount > 0}" class="notification-badge" th:text="${unreadNotificationCount}">0</span>
+                </a>
             </nav>
         </div>
 
-        <div class="dashboard-sidebar-footer"></div>
+        <div class="dashboard-sidebar-footer">
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <button type="submit" class="sidebar-logout-btn">
+                    <svg style="width:20px;height:20px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    <span>Logout</span>
+                </button>
+            </form>
+        </div>
     </aside>
 
     <main class="mechanic-main">
@@ -170,17 +187,25 @@
                                     <small th:text="${request.status}" th:if="${request.status.name() != 'CANCELLED'}">PENDING</small>
                                 </div>
                                 <div>
+                                    <!-- Explicit Accept/Reject for ASSIGNED status -->
+                                    <div th:if="${request.status.name() == 'ASSIGNED' && !request.cancellationRequested}" style="display:flex; gap:8px;">
+                                        <form th:action="@{/mechanic/accept-request}" method="post">
+                                            <input type="hidden" name="requestId" th:value="${request.id}">
+                                            <button type="submit" style="padding: 8px 12px; border: none; background: #16a34a; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px;">Accept Job</button>
+                                        </form>
+                                        <form th:action="@{/mechanic/reject-request}" method="post">
+                                            <input type="hidden" name="requestId" th:value="${request.id}">
+                                            <button type="submit" style="padding: 8px 12px; border: 1px solid #dc2626; background: white; color: #dc2626; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px;">Reject</button>
+                                        </form>
+                                    </div>
+
                                     <form th:action="@{/update-request-status}" method="post"
-                                          th:if="${request.status.name() != 'CANCELLED'}">
+                                          th:if="${request.status.name() != 'CANCELLED' && request.status.name() != 'ASSIGNED'}">
                                         <input type="hidden" name="requestId" th:value="${request.id}">
                                         <select name="status"
                                                 th:disabled="${request.status.name() == 'COMPLETED' || request.status.name() == 'CANCELLED' || request.cancellationRequested}"
                                                 onchange="if(!this.disabled){this.form.submit();}"
                                                 style="padding:8px 10px;border-radius:10px;border:1px solid #dbe4f0;width:100%;max-width:200px;">
-                                            <th:block th:if="${request.status.name() == 'ASSIGNED'}">
-                                                <option value="ASSIGNED" selected>ASSIGNED</option>
-                                                <option value="IN_PROGRESS">IN_PROGRESS</option>
-                                            </th:block>
                                             <th:block th:if="${request.status.name() == 'IN_PROGRESS'}">
                                                 <option value="IN_PROGRESS" selected>IN_PROGRESS</option>
                                                 <option value="COMPLETED">COMPLETED</option>

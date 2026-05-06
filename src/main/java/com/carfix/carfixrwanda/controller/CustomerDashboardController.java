@@ -29,19 +29,22 @@ public class CustomerDashboardController {
     private final UserRepository userRepository;
     private final com.carfix.carfixrwanda.service.InvoiceService invoiceService;
     private final com.carfix.carfixrwanda.service.ReviewService reviewService;
+    private final com.carfix.carfixrwanda.service.NotificationService notificationService;
 
     public CustomerDashboardController(CustomerVehicleService customerVehicleService,
                                        ServiceRequestService serviceRequestService,
                                        MechanicService mechanicService,
                                        UserRepository userRepository,
                                        com.carfix.carfixrwanda.service.InvoiceService invoiceService,
-                                       com.carfix.carfixrwanda.service.ReviewService reviewService) {
+                                       com.carfix.carfixrwanda.service.ReviewService reviewService,
+                                       com.carfix.carfixrwanda.service.NotificationService notificationService) {
         this.customerVehicleService = customerVehicleService;
         this.serviceRequestService = serviceRequestService;
         this.mechanicService = mechanicService;
         this.userRepository = userRepository;
         this.invoiceService = invoiceService;
         this.reviewService = reviewService;
+        this.notificationService = notificationService;
     }
 
     @GetMapping("/customer-dashboard")
@@ -120,5 +123,24 @@ public class CustomerDashboardController {
             redirectAttributes.addFlashAttribute("flashError", ex.getMessage());
         }
         return "redirect:/customer-dashboard";
+    }
+
+    @GetMapping("/customer/notifications")
+    public String showNotifications(Model model, Authentication authentication) {
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
+        
+        model.addAttribute("currentUser", com.carfix.carfixrwanda.dto.DtoMapper.toUserDto(currentUser));
+        model.addAttribute("notifications", notificationService.getNotificationsForUser(currentUser.getId()));
+        return "customer/notifications";
+    }
+
+    @PostMapping("/customer/notifications/mark-all-read")
+    public String markNotificationsRead(Authentication authentication) {
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
+        
+        notificationService.markAllRead(currentUser.getId());
+        return "redirect:/customer/notifications";
     }
 }

@@ -24,15 +24,18 @@ public class MechanicDashboardController {
     private final UserRepository userRepository;
     private final MechanicService mechanicService;
     private final com.carfix.carfixrwanda.service.InvoiceService invoiceService;
+    private final com.carfix.carfixrwanda.service.NotificationService notificationService;
 
     public MechanicDashboardController(ServiceRequestService serviceRequestService,
                                        UserRepository userRepository,
                                        MechanicService mechanicService,
-                                       com.carfix.carfixrwanda.service.InvoiceService invoiceService) {
+                                       com.carfix.carfixrwanda.service.InvoiceService invoiceService,
+                                       com.carfix.carfixrwanda.service.NotificationService notificationService) {
         this.serviceRequestService = serviceRequestService;
         this.userRepository = userRepository;
         this.mechanicService = mechanicService;
         this.invoiceService = invoiceService;
+        this.notificationService = notificationService;
     }
 
     @GetMapping("/real-mechanic-dashboard")
@@ -147,5 +150,60 @@ public class MechanicDashboardController {
             redirectAttributes.addFlashAttribute("mechanicFlashError", ex.getMessage());
         }
         return "redirect:/real-mechanic-dashboard";
+    }
+
+    @PostMapping("/mechanic/accept-request")
+    public String acceptRequest(@RequestParam("requestId") Long requestId,
+                                Authentication authentication,
+                                RedirectAttributes redirectAttributes) {
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
+        Mechanic mechanic = mechanicService.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new IllegalStateException("No mechanic profile is linked to this account"));
+
+        try {
+            serviceRequestService.acceptRequestAsMechanic(requestId, mechanic, "MECHANIC:" + currentUser.getEmail());
+            redirectAttributes.addFlashAttribute("mechanicFlashMessage", "Request accepted.");
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("mechanicFlashError", ex.getMessage());
+        }
+        return "redirect:/real-mechanic-dashboard";
+    }
+
+    @PostMapping("/mechanic/reject-request")
+    public String rejectRequest(@RequestParam("requestId") Long requestId,
+                                Authentication authentication,
+                                RedirectAttributes redirectAttributes) {
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
+        Mechanic mechanic = mechanicService.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new IllegalStateException("No mechanic profile is linked to this account"));
+
+        try {
+            serviceRequestService.rejectRequestAsMechanic(requestId, mechanic, "MECHANIC:" + currentUser.getEmail());
+            redirectAttributes.addFlashAttribute("mechanicFlashMessage", "Request rejected and returned to pending.");
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("mechanicFlashError", ex.getMessage());
+        }
+        return "redirect:/real-mechanic-dashboard";
+    }
+
+    @GetMapping("/mechanic/notifications")
+    public String showNotifications(Model model, Authentication authentication) {
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
+        
+        model.addAttribute("currentUser", com.carfix.carfixrwanda.dto.DtoMapper.toUserDto(currentUser));
+        model.addAttribute("notifications", notificationService.getNotificationsForUser(currentUser.getId()));
+        return "mechanic/notifications";
+    }
+
+    @PostMapping("/mechanic/notifications/mark-all-read")
+    public String markNotificationsRead(Authentication authentication) {
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
+        
+        notificationService.markAllRead(currentUser.getId());
+        return "redirect:/mechanic/notifications";
     }
 }

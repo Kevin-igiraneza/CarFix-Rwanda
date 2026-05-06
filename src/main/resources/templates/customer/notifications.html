@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Notifications - Customer - CarFix Rwanda</title>
+    <link rel="stylesheet" th:href="@{/style.css?v=18}">
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('cfr-theme') || 'light');</script>
+    <script defer th:src="@{/app-dialogs.js}"></script>
+    <script defer th:src="@{/dashboard-sidebar.js}"></script>
+</head>
+<body class="app-page customer-page">
+
+<div class="customer-layout dashboard-shell">
+
+    <aside class="customer-sidebar dashboard-sidebar">
+        <div class="dashboard-sidebar-top">
+            <div class="dashboard-brand-shell">
+                <div class="dashboard-brand-badge">C</div>
+                <div class="dashboard-brand-copy">
+                    <div class="customer-brand">CarFix Rwanda</div>
+                    <div class="customer-subtitle">CUSTOMER PORTAL</div>
+                </div>
+            </div>
+            <nav class="customer-menu dashboard-menu">
+                <a href="/customer-dashboard" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg></span>
+                    <span data-i18n="dash.overview">Overview</span>
+                </a>
+                <a href="/vehicle-registration" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 16l1.4-4.2A2 2 0 0 1 8.3 10h7.4a2 2 0 0 1 1.9 1.8L19 16"></path><path d="M4 16h16"></path><path d="M6 19h1"></path><path d="M17 19h1"></path><circle cx="7.5" cy="16.5" r="1.5"></circle><circle cx="16.5" cy="16.5" r="1.5"></circle></svg></span>
+                    <span data-i18n="dash.my_vehicles">My vehicles</span>
+                </a>
+                <a href="/customer/notifications" class="active dashboard-menu-link nav-item-with-badge">
+                    <span class="dashboard-menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></span>
+                    <span>Notifications</span>
+                    <span th:if="${unreadNotificationCount > 0}" class="notification-badge" th:text="${unreadNotificationCount}">0</span>
+                </a>
+            </nav>
+        </div>
+        <div class="dashboard-sidebar-footer">
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <button type="submit" class="sidebar-logout-btn">
+                    <svg style="width:20px;height:20px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    <span>Logout</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="customer-main">
+        <header class="customer-topbar">
+            <h2>Notifications</h2>
+            <div class="customer-userbox">
+                <div class="customer-avatar" th:text="${currentUser.fullName != null ? #strings.substring(currentUser.fullName,0,1) : 'C'}">C</div>
+                <div class="customer-user-name" th:text="${currentUser.fullName}">Name</div>
+            </div>
+        </header>
+
+        <section class="notifications-container" style="padding: 24px;">
+            <div class="mark-read-header">
+                <h3>Updates</h3>
+                <form th:action="@{/customer/notifications/mark-all-read}" method="post">
+                    <button type="submit" class="mark-read-btn">Mark all as read</button>
+                </form>
+            </div>
+
+            <div th:each="n : ${notifications}" class="notification-card" th:classappend="${!n.isRead ? 'unread' : ''}">
+                <div class="notification-icon" th:classappend="${n.type.name() == 'REQUEST_ACCEPTED' ? 'green' : (n.type.name() == 'REQUEST_REJECTED' ? 'red' : 'blue')}">
+                    <i th:if="${n.type.name() == 'REQUEST_ACCEPTED'}" class="fas fa-check-circle">✅</i>
+                    <i th:if="${n.type.name() == 'REQUEST_REJECTED'}" class="fas fa-times-circle">❌</i>
+                    <i th:if="${n.type.name() != 'REQUEST_ACCEPTED' && n.type.name() != 'REQUEST_REJECTED'}" class="fas fa-info-circle">ℹ️</i>
+                </div>
+                <div class="notification-content">
+                    <h4 th:text="${n.title}">Update Title</h4>
+                    <p th:text="${n.message}">Update message...</p>
+                    <div class="notification-meta">
+                        <span class="notification-time" th:text="${#temporals.format(n.createdAt, 'MMM dd, HH:mm')}">Time</span>
+                        <a th:if="${n.relatedUrl != null}" th:href="${n.relatedUrl}" class="notification-link">View Job</a>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${notifications == null || notifications.isEmpty()}" style="text-align: center; padding: 60px 0; color: #64748b;">
+                <div style="font-size: 48px; margin-bottom: 16px;">📭</div>
+                <p>No new notifications.</p>
+            </div>
+        </section>
+    </main>
+</div>
+
+</body>
+</html>

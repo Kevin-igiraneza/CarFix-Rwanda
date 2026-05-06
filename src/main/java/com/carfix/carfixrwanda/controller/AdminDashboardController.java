@@ -29,15 +29,18 @@ public class AdminDashboardController {
     private final ServiceRequestService serviceRequestService;
     private final CustomerVehicleService customerVehicleService;
     private final UserRepository userRepository;
+    private final com.carfix.carfixrwanda.service.NotificationService notificationService;
 
     public AdminDashboardController(MechanicService mechanicService,
                                     ServiceRequestService serviceRequestService,
                                     CustomerVehicleService customerVehicleService,
-                                    UserRepository userRepository) {
+                                    UserRepository userRepository,
+                                    com.carfix.carfixrwanda.service.NotificationService notificationService) {
         this.mechanicService = mechanicService;
         this.serviceRequestService = serviceRequestService;
         this.customerVehicleService = customerVehicleService;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     @GetMapping("/real-admin-dashboard")
@@ -46,7 +49,6 @@ public class AdminDashboardController {
                 .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
         List<Mechanic> mechanics = mechanicService.getAllMechanics();
         List<ServiceRequest> requests = serviceRequestService.getAllRequests();
-        List<ServiceRequestStatusHistory> recentStatusHistory = serviceRequestService.getRecentStatusHistory();
         List<CustomerVehicle> vehicles = customerVehicleService.getAllVehicles();
 
         List<User> recentUsers = userRepository.findAll()
@@ -54,32 +56,87 @@ public class AdminDashboardController {
                 .sorted(Comparator.comparing(User::getId).reversed())
                 .limit(6)
                 .toList();
+        
+        List<ServiceRequestStatusHistory> recentStatusHistory = serviceRequestService.getRecentStatusHistory();
 
         model.addAttribute("currentUser", com.carfix.carfixrwanda.dto.DtoMapper.toUserDto(currentUser));
-        model.addAttribute("mechanics", com.carfix.carfixrwanda.dto.DtoMapper.toMechanicDtoList(mechanics));
-        model.addAttribute("requests", com.carfix.carfixrwanda.dto.DtoMapper.toServiceRequestDtoList(requests));
-        model.addAttribute("recentStatusHistory", recentStatusHistory); // keeping entity for now to avoid creating another DTO unless necessary
-        model.addAttribute("vehicles", com.carfix.carfixrwanda.dto.DtoMapper.toCustomerVehicleDtoList(vehicles));
         model.addAttribute("recentUsers", com.carfix.carfixrwanda.dto.DtoMapper.toUserDtoList(recentUsers));
+        model.addAttribute("recentStatusHistory", recentStatusHistory);
 
         model.addAttribute("mechanicCount", mechanics.size());
         long activeRequestCount = requests.stream()
             .filter(r -> r.getStatus() != RequestStatus.COMPLETED && r.getStatus() != RequestStatus.CANCELLED)
             .count();
         model.addAttribute("requestCount", activeRequestCount);
-        model.addAttribute("totalRequestCount", requests.size());
         model.addAttribute("vehicleCount", vehicles.size());
-        model.addAttribute("requestStatuses", RequestStatus.values());
-        model.addAttribute("approvedMechanics", mechanicService.getVerifiedMechanics());
 
         return "admin-dashboard";
+    }
+
+    @GetMapping("/admin/service-requests")
+    public String serviceRequests(Model model, Authentication authentication) {
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
+        List<ServiceRequest> requests = serviceRequestService.getAllRequests();
+        
+        model.addAttribute("currentUser", com.carfix.carfixrwanda.dto.DtoMapper.toUserDto(currentUser));
+        model.addAttribute("requests", com.carfix.carfixrwanda.dto.DtoMapper.toServiceRequestDtoList(requests));
+        model.addAttribute("approvedMechanics", mechanicService.getVerifiedMechanics());
+        model.addAttribute("requestStatuses", RequestStatus.values());
+        
+        return "admin-service-requests";
+    }
+
+    @GetMapping("/admin/mechanic-verification")
+    public String mechanicVerification(Model model, Authentication authentication) {
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
+        List<Mechanic> mechanics = mechanicService.getAllMechanics().stream()
+                .filter(m -> m.getVerificationStatus() == VerificationStatus.PENDING)
+                .toList();
+        
+        model.addAttribute("currentUser", com.carfix.carfixrwanda.dto.DtoMapper.toUserDto(currentUser));
+        model.addAttribute("mechanics", com.carfix.carfixrwanda.dto.DtoMapper.toMechanicDtoList(mechanics));
+        
+        return "admin-mechanic-verification";
+    }
+
+    @GetMapping("/admin/recent-status-activity")
+    public String recentStatusActivity(Model model, Authentication authentication) {
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
+        List<ServiceRequestStatusHistory> recentStatusHistory = serviceRequestService.getRecentStatusHistory();
+        
+        model.addAttribute("currentUser", com.carfix.carfixrwanda.dto.DtoMapper.toUserDto(currentUser));
+        model.addAttribute("recentStatusHistory", recentStatusHistory);
+        
+        return "admin-recent-status-activity";
+    }
+
+    @GetMapping("/admin/notifications")
+    public String showNotifications(Model model, Authentication authentication) {
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
+        
+        model.addAttribute("currentUser", com.carfix.carfixrwanda.dto.DtoMapper.toUserDto(currentUser));
+        model.addAttribute("notifications", notificationService.getNotificationsForUser(currentUser.getId()));
+        return "admin/notifications";
+    }
+
+    @PostMapping("/admin/notifications/mark-all-read")
+    public String markNotificationsRead(Authentication authentication) {
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
+        
+        notificationService.markAllRead(currentUser.getId());
+        return "redirect:/admin/notifications";
     }
 
     @PostMapping("/update-mechanic-verification")
     public String updateMechanicVerification(@RequestParam("mechanicId") Long mechanicId,
                                              @RequestParam("status") VerificationStatus status) {
         mechanicService.updateVerificationStatus(mechanicId, status);
-        return "redirect:/real-admin-dashboard";
+        return "redirect:/admin/mechanic-verification";
     }
 
     @PostMapping("/admin/update-request-status")
@@ -93,7 +150,7 @@ public class AdminDashboardController {
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("adminFlashError", ex.getMessage());
         }
-        return "redirect:/real-admin-dashboard#requests";
+        return "redirect:/admin/service-requests";
     }
 
     @PostMapping("/admin/assign-mechanic")
@@ -107,7 +164,7 @@ public class AdminDashboardController {
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("adminFlashError", ex.getMessage());
         }
-        return "redirect:/real-admin-dashboard#requests";
+        return "redirect:/admin/service-requests";
     }
 
     @PostMapping("/admin/clear-mechanic-assignment")
@@ -120,7 +177,7 @@ public class AdminDashboardController {
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("adminFlashError", ex.getMessage());
         }
-        return "redirect:/real-admin-dashboard#requests";
+        return "redirect:/admin/service-requests";
     }
 
     @PostMapping("/admin/delete-request")
@@ -133,6 +190,6 @@ public class AdminDashboardController {
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("adminFlashError", ex.getMessage());
         }
-        return "redirect:/real-admin-dashboard#requests";
+        return "redirect:/admin/service-requests";
     }
 }

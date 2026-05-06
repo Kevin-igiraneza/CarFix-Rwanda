@@ -15,13 +15,16 @@ public class AccountRegistrationService {
     private final UserRepository userRepository;
     private final MechanicService mechanicService;
     private final PasswordEncoder passwordEncoder;
+    private final NotificationService notificationService;
 
     public AccountRegistrationService(UserRepository userRepository,
                                       MechanicService mechanicService,
-                                      PasswordEncoder passwordEncoder) {
+                                      PasswordEncoder passwordEncoder,
+                                      NotificationService notificationService) {
         this.userRepository = userRepository;
         this.mechanicService = mechanicService;
         this.passwordEncoder = passwordEncoder;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -67,6 +70,8 @@ public class AccountRegistrationService {
                 mechanic.setSupportedVehicleModel(supportedVehicleModel.trim());
                 mechanic.setGarageLocation(garageLocation.trim());
                 mechanicService.saveMechanic(mechanic);
+                // Notify all admins that a new mechanic needs verification
+                notificationService.notifyAdminsNewMechanic(fullName.trim());
             }
         } catch (DataIntegrityViolationException ex) {
             throw new IllegalStateException("Phone number or email is already in use. Please use different values.");

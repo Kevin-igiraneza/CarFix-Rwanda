@@ -43,4 +43,6 @@ public interface MechanicRepository extends JpaRepository<Mechanic, Long> {
             order by m.id desc
             """)
     List<Mechanic> findAllWithExistingUser();
+
+    long countByVerificationStatus(VerificationStatus verificationStatus);
 }

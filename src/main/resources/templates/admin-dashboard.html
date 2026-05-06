@@ -46,7 +46,7 @@
                     </span>
                     <span>Overview</span>
                 </a>
-                <a href="/real-admin-dashboard#requests" class="dashboard-menu-link">
+                <a href="/admin/service-requests" class="dashboard-menu-link nav-item-with-badge">
                     <span class="dashboard-menu-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="5" y="4" width="14" height="16" rx="2"></rect>
@@ -56,8 +56,9 @@
                         </svg>
                     </span>
                     <span>Service requests</span>
+                    <span th:if="${unassignedRequestCount > 0}" class="notification-badge" th:text="${unassignedRequestCount}">0</span>
                 </a>
-                <a href="/real-admin-dashboard#verification" class="dashboard-menu-link">
+                <a href="/admin/mechanic-verification" class="dashboard-menu-link nav-item-with-badge">
                     <span class="dashboard-menu-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 3l7 4v5c0 5-3.4 8-7 9-3.6-1-7-4-7-9V7l7-4z"></path>
@@ -65,6 +66,26 @@
                         </svg>
                     </span>
                     <span>Review mechanics</span>
+                    <span th:if="${pendingMechanicCount > 0}" class="notification-badge" th:text="${pendingMechanicCount}">0</span>
+                </a>
+                <a href="/admin/recent-status-activity" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </span>
+                    <span>Recent Status</span>
+                </a>
+                <a href="/admin/notifications" class="dashboard-menu-link nav-item-with-badge">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                    </span>
+                    <span>Notifications</span>
+                    <span th:if="${unreadNotificationCount > 0}" class="notification-badge" th:text="${unreadNotificationCount}">0</span>
                 </a>
                 <a href="/mechanics" class="dashboard-menu-link">
                     <span class="dashboard-menu-icon" aria-hidden="true">
@@ -77,20 +98,18 @@
                     </span>
                     <span>Mechanic directory</span>
                 </a>
-                <a href="/help" class="dashboard-menu-link">
-                    <span class="dashboard-menu-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="9"></circle>
-                            <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4"></path>
-                            <path d="M12 17h.01"></path>
-                        </svg>
-                    </span>
-                    <span>Help</span>
-                </a>
             </nav>
         </div>
 
-        <div class="dashboard-sidebar-footer"></div>
+        <div class="dashboard-sidebar-footer">
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <button type="submit" class="sidebar-logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <svg style="width:20px;height:20px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    <span>Logout</span>
+                </button>
+            </form>
+        </div>
     </aside>
 
     <main class="admin-main">
@@ -171,235 +190,45 @@
         </section>
 
         <section class="admin-dashboard-grid">
-
             <div class="admin-primary-column">
-
-                <div class="dashboard-panel" id="requests">
-                    <div class="panel-header">
-                        <h3>Service requests</h3>
-                        <a href="/real-admin-dashboard">Refresh</a>
-                    </div>
-
-                    <p style="margin:0 0 16px;font-size:14px;color:#475569;line-height:1.55;">
-                        If a customer did not pick a mechanic, use <strong>Assign</strong> below. Only <strong>verified</strong> mechanics appear in the list.
-                    </p>
-
-                    <div class="admin-table-scroll" th:if="${requests != null && !requests.isEmpty()}">
-                    <table class="admin-table refined-table">
-                        <thead>
-                        <tr>
-                            <th>Request ID</th>
-                            <th>Vehicle & Issue</th>
-                            <th>Customer</th>
-                            <th>Mechanic</th>
-                            <th>Assign / unassign</th>
-                            <th>Status</th>
-                            <th>Change status</th>
-                            <th>Preferred time</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="request : ${requests}"
-                            th:classappend="${request.preferredMechanic == null && request.status != null && request.status.name() != 'COMPLETED' && request.status.name() != 'CANCELLED'} ? 'admin-row-needs-mechanic'">
-                            <td th:text="${'#RX-' + request.id}">#RX-1</td>
-                            <td>
-                                <strong th:text="${request.customerVehicle.vehicleName}">Toyota RAV4</strong><br>
-                                <small th:text="${request.problemTitle}">Brake issue</small>
-                            </td>
-                            <td>
-                                <span th:text="${request.customerVehicle.user != null ? request.customerVehicle.user.fullName : '—'}">Owner</span><br>
-                                <small style="color:#64748b;" th:text="${request.customerVehicle.user != null ? request.customerVehicle.user.email : ''}">email</small>
-                            </td>
-                            <td th:text="${request.preferredMechanic != null && request.preferredMechanic.user != null ? request.preferredMechanic.user.fullName : '—'}">
-                                Not Assigned
-                            </td>
-                            <td style="min-width:200px;">
-                                <form th:action="@{/admin/assign-mechanic}" method="post" style="display:flex; flex-direction:column; gap:6px; margin-bottom:8px;"
-                                      th:if="${approvedMechanics != null && !approvedMechanics.isEmpty()}">
-                                    <input type="hidden" name="requestId" th:value="${request.id}">
-                                    <select name="mechanicId" required style="padding:6px 8px;border-radius:8px;border:1px solid #dbe4f0;">
-                                        <option value="" selected disabled hidden>Select verified mechanic</option>
-                                        <option th:each="m : ${approvedMechanics}"
-                                                th:value="${m.id}"
-                                                th:text="${m.user.fullName + ' — ' + m.specialization}">Name</option>
-                                    </select>
-                                    <button type="submit" style="padding:8px 10px;border-radius:8px;border:none;background:#0b3b92;color:white;font-weight:700;cursor:pointer;">Assign</button>
-                                </form>
-                                <form th:action="@{/admin/clear-mechanic-assignment}" method="post"
-                                      th:if="${request.preferredMechanic != null && request.status.name() != 'IN_PROGRESS'}">
-                                    <input type="hidden" name="requestId" th:value="${request.id}">
-                                    <button type="submit" style="padding:6px 10px;border-radius:8px;border:1px solid #cbd5e1;background:white;color:#334155;font-weight:700;cursor:pointer;width:100%;">Unassign</button>
-                                </form>
-                                <small th:if="${approvedMechanics == null || approvedMechanics.isEmpty()}" style="color:#64748b;">Approve a mechanic first to assign.</small>
-                            </td>
-                            <td>
-                                <span class="status-pill"
-                                      th:classappend="${request.status != null && request.status.name() == 'COMPLETED'} ? ' green' : (${request.status != null && request.status.name() == 'CANCELLED'} ? ' red' : (${request.status != null && request.status.name() == 'IN_PROGRESS'} ? ' blue' : ' orange'))"
-                                      th:text="${request.status}">PENDING</span>
-                            </td>
-                            <td>
-                                <form th:action="@{/admin/update-request-status}" method="post" style="display:flex; gap:8px; align-items:center;">
-                                    <input type="hidden" name="requestId" th:value="${request.id}">
-                                    <select name="status"
-                                            th:disabled="${request.status.name() == 'COMPLETED' || request.status.name() == 'CANCELLED'}"
-                                            onchange="if(!this.disabled){this.form.submit();}"
-                                            style="padding:6px 8px;border-radius:8px;">
-                                        <th:block th:if="${request.status.name() == 'PENDING'}">
-                                            <option value="PENDING" selected>PENDING</option>
-                                            <option value="ASSIGNED" th:if="${request.preferredMechanic != null}">ASSIGNED</option>
-                                            <option value="CANCELLED">CANCELLED</option>
-                                        </th:block>
-                                        <th:block th:if="${request.status.name() == 'ASSIGNED'}">
-                                            <option value="ASSIGNED" selected>ASSIGNED</option>
-                                            <option value="IN_PROGRESS">IN_PROGRESS</option>
-                                            <option value="PENDING">PENDING</option>
-                                            <option value="CANCELLED">CANCELLED</option>
-                                        </th:block>
-                                        <th:block th:if="${request.status.name() == 'IN_PROGRESS'}">
-                                            <option value="IN_PROGRESS" selected>IN_PROGRESS</option>
-                                            <option value="COMPLETED">COMPLETED</option>
-                                            <option value="ASSIGNED">ASSIGNED</option>
-                                            <option value="CANCELLED">CANCELLED</option>
-                                        </th:block>
-                                        <option value="COMPLETED" th:if="${request.status.name() == 'COMPLETED'}" selected>COMPLETED</option>
-                                        <option value="CANCELLED" th:if="${request.status.name() == 'CANCELLED'}" selected>CANCELLED</option>
-                                    </select>
-                                </form>
-                                <form th:action="@{/admin/delete-request}" method="post"
-                                      th:if="${request.status.name() == 'COMPLETED' || request.status.name() == 'CANCELLED'}"
-                                      style="margin-top:8px;">
-                                    <input type="hidden" name="requestId" th:value="${request.id}">
-                                    <button type="submit"
-                                            data-confirm="This will permanently remove the closed request and its status history."
-                                            data-confirm-title="Delete Closed Request"
-                                            data-confirm-accept="Delete Permanently"
-                                            style="padding:6px 10px;border-radius:8px;border:1px solid #fecaca;background:#fff1f2;color:#b91c1c;font-weight:700;cursor:pointer;width:100%;">
-                                        Delete
-                                    </button>
-                                </form>
-                            </td>
-                            <td th:text="${request.preferredTime != null ? request.preferredTime : '—'}">—</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    </div>
-
-                    <p th:if="${requests == null || requests.isEmpty()}" style="color:#64748b;font-size:14px;line-height:1.6;">
-                        No service requests yet.
-                    </p>
-                </div>
-
-                <div class="dashboard-panel" id="verification">
-                    <h3>Mechanic Verification Queue</h3>
-
-                    <p th:if="${mechanics == null || mechanics.isEmpty()}" style="color:#64748b;font-size:14px;line-height:1.6;">
-                        No mechanic profiles are waiting for review.
-                    </p>
-
-                    <div class="verification-grid" th:if="${mechanics != null && !mechanics.isEmpty()}">
-                        <div class="verification-card refined" th:each="mechanic, stat : ${mechanics}">
-                            <div class="verification-profile">
-                                <div class="verification-avatar" th:classappend="${stat.index % 2 == 1} ? ' alt' : ''">
-                                    <span th:text="${#strings.substring(mechanic.user.fullName,0,1)}">K</span>
-                                </div>
-                                <div>
-                                    <h4 th:text="${mechanic.user.fullName}">Kevin Igiraneza</h4>
-                                    <p>
-                                        Specialty:
-                                        <span th:text="${mechanic.specialization}">Engine</span>
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="verification-tags">
-                                <span>Garage Registered</span>
-                                <span th:text="${mechanic.supportedVehicleModel}">BMW</span>
-                            </div>
-
-                            <p class="verification-status-line">
-                                <strong>Status:</strong>
-                                <span class="status-pill blue" th:text="${mechanic.verificationStatus}">PENDING</span>
-                            </p>
-
-                            <div class="verification-actions">
-                                <form th:action="@{/update-mechanic-verification}" method="post">
-                                    <input type="hidden" name="mechanicId" th:value="${mechanic.id}">
-                                    <input type="hidden" name="status" value="APPROVED">
-                                    <button type="submit" class="approve-btn">Approve</button>
-                                </form>
-
-                                <form th:action="@{/update-mechanic-verification}" method="post">
-                                    <input type="hidden" name="mechanicId" th:value="${mechanic.id}">
-                                    <input type="hidden" name="status" value="REJECTED">
-                                    <button type="submit" class="reject-btn">Reject</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="dashboard-panel">
                     <div class="panel-header">
-                        <h3>Recent User Registrations</h3>
+                        <h3>Recent Status Activity</h3>
                         <div class="mini-filters">
-                            <span>Live</span>
+                            <span>Live Audit</span>
                             <span>System View</span>
                         </div>
                     </div>
 
-                    <div class="recent-users-grid">
-                        <div class="recent-user-card" th:each="user : ${recentUsers}">
-                            <div class="avatar" th:text="${#strings.substring(user.fullName,0,1)}">U</div>
-                            <div>
-                                <h4 th:text="${user.fullName}">User Name</h4>
-                                <p th:text="${user.role}">CUSTOMER</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dashboard-panel">
-                    <div class="panel-header">
-                        <h3>Recent Status Activity</h3>
-                        <span style="font-size:12px;color:#64748b;font-weight:700;">Last 20 events</span>
-                    </div>
-
-                    <p th:if="${recentStatusHistory == null || recentStatusHistory.isEmpty()}" style="color:#64748b;font-size:14px;line-height:1.6;">
-                        No request status activity recorded yet.
-                    </p>
-
                     <div class="admin-table-scroll" th:if="${recentStatusHistory != null && !recentStatusHistory.isEmpty()}">
                         <table class="admin-table refined-table">
                             <thead>
-                            <tr>
-                                <th>When</th>
-                                <th>Request</th>
-                                <th>Action</th>
-                                <th>From</th>
-                                <th>To</th>
-                                <th>Changed by</th>
-                            </tr>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Request</th>
+                                    <th>Action</th>
+                                    <th>New Status</th>
+                                    <th>Actor</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="h : ${recentStatusHistory}">
-                                <td th:text="${h.changedAt != null ? #temporals.format(h.changedAt, 'yyyy-MM-dd HH:mm') : '—'}">2026-01-01 09:20</td>
-                                <td th:text="${h.serviceRequest != null ? '#RX-' + h.serviceRequest.id : '—'}">#RX-1</td>
-                                <td th:text="${h.actionType}">ADMIN_STATUS_UPDATED</td>
-                                <td th:text="${h.previousStatus != null ? h.previousStatus : '—'}">PENDING</td>
-                                <td th:text="${h.newStatus}">ASSIGNED</td>
-                                <td>
-                                    <span th:text="${h.changedBy}">ADMIN:admin@carfix.com</span>
-                                    <br>
-                                    <small th:if="${h.note != null}" th:text="${h.note}">note</small>
-                                </td>
-                            </tr>
+                                <tr th:each="h : ${recentStatusHistory}">
+                                    <td th:text="${h.changedAt != null ? #temporals.format(h.changedAt, 'yyyy-MM-dd HH:mm') : '—'}">Date</td>
+                                    <td th:text="${h.serviceRequest != null ? '#RX-' + h.serviceRequest.id : '—'}">Request</td>
+                                    <td th:text="${h.actionType}">Action</td>
+                                    <td>
+                                        <span class="status-pill blue" th:text="${h.newStatus}">ASSIGNED</span>
+                                    </td>
+                                    <td th:text="${h.changedBy}">Actor</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
+                    <p th:if="${recentStatusHistory == null || recentStatusHistory.isEmpty()}" style="padding: 40px; text-align: center; color: #64748b;">
+                        No activity recorded yet.
+                    </p>
                 </div>
-
             </div>
-
         </section>
     </main>
 </div>

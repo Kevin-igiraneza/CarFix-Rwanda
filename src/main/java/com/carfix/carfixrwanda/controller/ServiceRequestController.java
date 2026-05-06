@@ -9,6 +9,7 @@ import com.carfix.carfixrwanda.model.User;
 import com.carfix.carfixrwanda.repository.UserRepository;
 import com.carfix.carfixrwanda.service.CustomerVehicleService;
 import com.carfix.carfixrwanda.service.MechanicService;
+import com.carfix.carfixrwanda.service.NotificationService;
 import com.carfix.carfixrwanda.service.ServiceRequestService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -29,15 +30,18 @@ public class ServiceRequestController {
     private final CustomerVehicleService customerVehicleService;
     private final UserRepository userRepository;
     private final MechanicService mechanicService;
+    private final NotificationService notificationService;
 
     public ServiceRequestController(ServiceRequestService serviceRequestService,
                                     CustomerVehicleService customerVehicleService,
                                     UserRepository userRepository,
-                                    MechanicService mechanicService) {
+                                    MechanicService mechanicService,
+                                    NotificationService notificationService) {
         this.serviceRequestService = serviceRequestService;
         this.customerVehicleService = customerVehicleService;
         this.userRepository = userRepository;
         this.mechanicService = mechanicService;
+        this.notificationService = notificationService;
     }
 
     @GetMapping("/service-request")
@@ -104,7 +108,26 @@ public class ServiceRequestController {
                 request.setPreferredTime(java.time.LocalTime.parse(preferredTime));
             }
 
-            serviceRequestService.saveRequest(request, "CUSTOMER:" + user.getEmail());
+            ServiceRequest saved = serviceRequestService.saveRequest(request, "CUSTOMER:" + user.getEmail());
+
+            // Notifications
+            if (preferredMechanicId == null) {
+                // No mechanic chosen — alert admins to assign one
+                notificationService.notifyAdminsNoMechanicRequest(saved.getId(), user.getFullName());
+            } else {
+                // Mechanic selected — notify them of the new assignment
+                Mechanic assignedMechanic = saved.getPreferredMechanic();
+                if (assignedMechanic != null && assignedMechanic.getUser() != null) {
+                    notificationService.notifyMechanicRequestAssigned(
+                            assignedMechanic.getUser(),
+                            saved.getId(),
+                            user.getFullName(),
+                            saved.getCustomerVehicle().getVehicleName(),
+                            saved.getProblemTitle()
+                    );
+                }
+            }
+
             redirectAttributes.addFlashAttribute("flashMessage", "Service request created successfully.");
             return "redirect:/customer-dashboard";
         } catch (DateTimeParseException ex) {

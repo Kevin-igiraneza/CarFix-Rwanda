@@ -11,4 +11,8 @@ public interface ServiceRequestRepository extends JpaRepository<ServiceRequest, 
     List<ServiceRequest> findByCustomerVehicleUserIdAndHiddenByCustomerFalse(Long userId);
 
     List<ServiceRequest> findByPreferredMechanicIdAndHiddenByMechanicFalse(Long mechanicId);
+
+    long countByPreferredMechanicIsNull();
+
+    long countByStatus(com.carfix.carfixrwanda.enums.RequestStatus status);
 }

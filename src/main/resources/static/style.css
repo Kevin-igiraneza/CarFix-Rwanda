@@ -502,10 +502,10 @@ table th {
  }
 
  .admin-sidebar {
-     width: 245px;
-     background: #f8fbff;
-     border-right: 1px solid #dde7f1;
-     padding: 28px 20px;
+     width: 286px;
+     background: #ffffff;
+     border-right: 1px solid #e2e8f0;
+     padding: 20px 16px 16px;
      display: flex;
      flex-direction: column;
      justify-content: space-between;
@@ -4616,10 +4616,18 @@ body.auth-page {
 [data-theme="dark"] .admin-summary-card h4 { color: #4a6b8a !important; }
 
 [data-theme="dark"] .refined-table th  { background: #1a2e4a !important; color: #7fa8d4 !important; }
-[data-theme="dark"] .refined-table td  { border-color: #1e2d45 !important; color: #c0d4ed !important; }
+[data-theme="dark"] .refined-table td  { background: #14213a !important; border-color: #1e2d45 !important; color: #c0d4ed !important; }
+[data-theme="dark"] .refined-table tr  { background: #14213a !important; }
+[data-theme="dark"] .refined-table tr:hover { background: #172640 !important; }
 [data-theme="dark"] table              { background: #14213a !important; }
-[data-theme="dark"] table th           { background: #1d4ed8 !important; color: #fff !important; }
-[data-theme="dark"] table td           { border-color: #1e2d45 !important; color: #c0d4ed !important; }
+[data-theme="dark"] table tr          { background: #14213a !important; }
+[data-theme="dark"] table th          { background: #1d4ed8 !important; color: #fff !important; }
+[data-theme="dark"] table td          { background: #14213a !important; border-color: #1e2d45 !important; color: #c0d4ed !important; }
+[data-theme="dark"] table tr:hover td { background: #172640 !important; }
+[data-theme="dark"] .admin-table-scroll { background: #14213a !important; border-radius: 16px; overflow: hidden; }
+[data-theme="dark"] .admin-row-needs-mechanic td { background: #15263e !important; }
+[data-theme="dark"] .refined-table td strong { color: #dde6f5 !important; }
+[data-theme="dark"] .refined-table td small  { color: #7fa8d4 !important; }
 
 [data-theme="dark"] .verification-tags span { background: #1a2e4a !important; color: #7fa8d4 !important; }
 [data-theme="dark"] .approve-btn       { background: #1d4ed8 !important; }

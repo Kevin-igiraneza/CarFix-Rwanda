@@ -161,12 +161,7 @@
                     </div>
                 </div>
 
-                <div class="admin-mini-chart">
-                    <span></span>
-                    <span></span>
-                    <span class="highlight"></span>
-                    <span></span>
-                </div>
+
             </div>
         </section>
 
@@ -340,6 +335,7 @@
 
                 <div class="dashboard-panel">
                     <div class="panel-header">
+<<<<<<< Updated upstream
                         <h3>Recent User Registrations</h3>
                         <div class="mini-filters">
                             <span>Live</span>
@@ -396,6 +392,40 @@
                             </tbody>
                         </table>
                     </div>
+=======
+                        <h3>Recent Users</h3>
+                        <div class="mini-filters">
+                            <span>All Roles</span>
+                            <span>Newest</span>
+                        </div>
+                    </div>
+
+                    <div class="admin-table-scroll" th:if="${recentUsers != null && !recentUsers.isEmpty()}">
+                        <table class="admin-table refined-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="user : ${recentUsers}">
+                                    <td th:text="${'#USR-' + user.id}">ID</td>
+                                    <td th:text="${user.fullName}">Name</td>
+                                    <td th:text="${user.email}">Email</td>
+                                    <td>
+                                        <span class="status-pill" th:classappend="${user.role != null && user.role.name() == 'ADMIN'} ? 'blue' : (${user.role != null && user.role.name() == 'MECHANIC'} ? 'orange' : 'green')" th:text="${user.role}">ROLE</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p th:if="${recentUsers == null || recentUsers.isEmpty()}" style="padding: 40px; text-align: center; color: #64748b;">
+                        No users recorded yet.
+                    </p>
+>>>>>>> Stashed changes
                 </div>
 
             </div>

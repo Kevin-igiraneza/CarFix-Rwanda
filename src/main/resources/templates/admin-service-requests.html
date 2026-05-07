@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Service Requests - CarFix Rwanda</title>
+    <link rel="stylesheet" th:href="@{/style.css?v=18}">
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('cfr-theme') || 'light');</script>
+    <script defer th:src="@{/app-dialogs.js}"></script>
+    <script defer th:src="@{/dashboard-sidebar.js}"></script>
+    <script defer th:src="@{/theme-lang.js?v=18}"></script>
+</head>
+<body class="app-page admin-page">
+
+<div class="admin-layout dashboard-shell">
+
+    <aside class="admin-sidebar dashboard-sidebar">
+        <div class="dashboard-sidebar-top">
+            <div class="dashboard-brand-shell">
+                <div class="dashboard-brand-badge">A</div>
+                <div class="dashboard-brand-copy">
+                    <div class="admin-brand">CarFix Rwanda</div>
+                    <div class="admin-subtitle">ADMIN CONSOLE</div>
+                </div>
+                <button type="button" class="dashboard-sidebar-toggle" aria-label="Collapse sidebar" aria-expanded="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <nav class="admin-menu dashboard-menu">
+                <a href="/real-admin-dashboard" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                        </svg>
+                    </span>
+                    <span>Overview</span>
+                </a>
+                <a href="/admin/service-requests" class="active dashboard-menu-link nav-item-with-badge">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="4" width="14" height="16" rx="2"></rect>
+                            <path d="M9 9h6"></path>
+                            <path d="M9 13h6"></path>
+                            <path d="M9 17h4"></path>
+                        </svg>
+                    </span>
+                    <span>Service requests</span>
+                    <span th:if="${unassignedRequestCount > 0}" class="notification-badge" th:text="${unassignedRequestCount}">0</span>
+                </a>
+                <a href="/admin/mechanic-verification" class="dashboard-menu-link nav-item-with-badge">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 3l7 4v5c0 5-3.4 8-7 9-3.6-1-7-4-7-9V7l7-4z"></path>
+                            <path d="M9.5 12l1.7 1.7L14.8 10"></path>
+                        </svg>
+                    </span>
+                    <span>Review mechanics</span>
+                    <span th:if="${pendingMechanicCount > 0}" class="notification-badge" th:text="${pendingMechanicCount}">0</span>
+                </a>
+                <a href="/admin/recent-status-activity" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </span>
+                    <span>Recent Status</span>
+                </a>
+                <a href="/admin/notifications" class="dashboard-menu-link nav-item-with-badge">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                    </span>
+                    <span>Notifications</span>
+                    <span th:if="${unreadNotificationCount > 0}" class="notification-badge" th:text="${unreadNotificationCount}">0</span>
+                </a>
+                <a href="/mechanics" class="dashboard-menu-link">
+                    <span class="dashboard-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="10" cy="7" r="4"></circle>
+                            <path d="M20 8v6"></path>
+                            <path d="M23 11h-6"></path>
+                        </svg>
+                    </span>
+                    <span>Mechanic directory</span>
+                </a>
+            </nav>
+        </div>
+        <div class="dashboard-sidebar-footer">
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <button type="submit" class="sidebar-logout-btn">
+                    <svg style="width:20px;height:20px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    <span>Logout</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <h2>All Service Requests</h2>
+            <div class="admin-userbox">
+                <div class="admin-avatar" th:text="${currentUser.fullName != null ? #strings.substring(currentUser.fullName,0,1) : 'A'}">A</div>
+                <div class="admin-user-name" th:text="${currentUser.fullName}">Admin</div>
+            </div>
+        </header>
+
+        <div th:if="${adminFlashMessage}" class="alert alert-success" th:text="${adminFlashMessage}" style="margin: 20px; padding: 15px; background: #ecfdf5; color: #047857; border-radius: 12px; font-weight: 600;"></div>
+        <div th:if="${adminFlashError}" class="alert alert-danger" th:text="${adminFlashError}" style="margin: 20px; padding: 15px; background: #fef2f2; color: #b91c1c; border-radius: 12px; font-weight: 600;"></div>
+
+        <section class="admin-content" style="padding: 24px;">
+            <div class="dashboard-panel">
+                <div class="panel-header">
+                    <h3>Requests Management</h3>
+                </div>
+                <p style="margin-bottom: 20px; color: #64748b; font-size: 14px;">Review and manage all service requests. Use "Assign" to link a verified mechanic to pending requests.</p>
+                
+                <div class="admin-table-scroll" th:if="${requests != null && !requests.isEmpty()}">
+                    <table class="admin-table refined-table">
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Vehicle & Issue</th>
+                                <th>Customer</th>
+                                <th>Mechanic</th>
+                                <th>Assignment</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="request : ${requests}" th:classappend="${request.preferredMechanic == null && request.status.name() != 'COMPLETED' && request.status.name() != 'CANCELLED'} ? 'admin-row-needs-mechanic'">
+                                <td th:text="${'#RX-' + request.id}">#RX-1</td>
+                                <td>
+                                    <strong th:text="${request.customerVehicle.vehicleName}">Toyota</strong><br>
+                                    <small th:text="${request.problemTitle}">Oil Leak</small>
+                                </td>
+                                <td>
+                                    <span th:text="${request.customerVehicle.user.fullName}">Name</span><br>
+                                    <small th:text="${request.customerVehicle.user.email}">email</small>
+                                </td>
+                                <td th:text="${request.preferredMechanic != null ? request.preferredMechanic.user.fullName : 'Not Assigned'}">Mechanic</td>
+                                <td style="min-width: 220px;">
+                                    <form th:action="@{/admin/assign-mechanic}" method="post" style="display:flex; flex-direction: column; gap:6px;">
+                                        <input type="hidden" name="requestId" th:value="${request.id}">
+                                        <select name="mechanicId" required style="padding:8px; border-radius:8px; border: 1px solid #dbe4f0;">
+                                            <option value="" disabled selected>Assign Mechanic</option>
+                                            <option th:each="m : ${approvedMechanics}" th:value="${m.id}" th:text="${m.user.fullName}"></option>
+                                        </select>
+                                        <button type="submit" style="padding: 8px 10px; border: none; background: #0b3b92; color: white; border-radius: 8px; cursor: pointer; font-weight: 700;">Assign</button>
+                                    </form>
+                                    <form th:action="@{/admin/clear-mechanic-assignment}" method="post" th:if="${request.preferredMechanic != null}" style="margin-top: 6px;">
+                                        <input type="hidden" name="requestId" th:value="${request.id}">
+                                        <button type="submit" style="width: 100%; padding: 6px; border: 1px solid #cbd5e1; background: white; border-radius: 8px; cursor: pointer; color: #475569; font-weight: 600;">Unassign</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <span class="status-pill" 
+                                          th:classappend="${request.status.name() == 'COMPLETED' ? ' green' : (request.status.name() == 'CANCELLED' ? ' red' : (request.status.name() == 'IN_PROGRESS' ? ' blue' : ' orange'))}" 
+                                          th:text="${request.status}">PENDING</span>
+                                </td>
+                                <td>
+                                    <form th:action="@{/admin/update-request-status}" method="post">
+                                        <input type="hidden" name="requestId" th:value="${request.id}">
+                                        <select name="status" onchange="this.form.submit()" style="padding:8px; border-radius:8px; border: 1px solid #dbe4f0;">
+                                            <option th:each="st : ${requestStatuses}" th:value="${st}" th:text="${st}" th:selected="${request.status == st}"></option>
+                                        </select>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p th:if="${requests == null || requests.isEmpty()}" style="padding: 20px; text-align: center; color: #64748b;">No requests found.</p>
+            </div>
+        </section>
+    </main>
+</div>
+
+</body>
+</html>

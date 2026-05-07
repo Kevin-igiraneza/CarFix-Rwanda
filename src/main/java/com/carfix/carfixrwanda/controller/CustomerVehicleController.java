@@ -27,7 +27,14 @@ public class CustomerVehicleController {
     }
 
     @GetMapping("/vehicle-registration")
-    public String showVehicleForm() {
+    public String showVehicleForm(org.springframework.ui.Model model, Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
+            userRepository.findByEmail(authentication.getName()).ifPresent(user -> {
+                java.util.List<CustomerVehicle> vehicles = customerVehicleService.getVehiclesByUserId(user.getId());
+                model.addAttribute("vehicles", com.carfix.carfixrwanda.dto.DtoMapper.toCustomerVehicleDtoList(vehicles));
+                model.addAttribute("currentUser", com.carfix.carfixrwanda.dto.DtoMapper.toUserDto(user));
+            });
+        }
         return "vehicle-registration";
     }
 

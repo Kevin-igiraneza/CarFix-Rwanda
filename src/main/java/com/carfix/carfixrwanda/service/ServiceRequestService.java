@@ -26,13 +26,16 @@ public class ServiceRequestService {
     private final ServiceRequestRepository serviceRequestRepository;
     private final ServiceRequestStatusHistoryRepository statusHistoryRepository;
     private final MechanicService mechanicService;
+    private final NotificationService notificationService;
 
     public ServiceRequestService(ServiceRequestRepository serviceRequestRepository,
                                  ServiceRequestStatusHistoryRepository statusHistoryRepository,
-                                 MechanicService mechanicService) {
+                                 MechanicService mechanicService,
+                                 NotificationService notificationService) {
         this.serviceRequestRepository = serviceRequestRepository;
         this.statusHistoryRepository = statusHistoryRepository;
         this.mechanicService = mechanicService;
+        this.notificationService = notificationService;
     }
 
     public ServiceRequest saveRequest(ServiceRequest serviceRequest, String actor) {
@@ -53,11 +56,11 @@ public class ServiceRequestService {
     }
 
     public List<ServiceRequest> getRequestsByUserId(Long userId) {
-        return serviceRequestRepository.findByCustomerVehicleUserId(userId);
+        return serviceRequestRepository.findByCustomerVehicleUserIdAndHiddenByCustomerFalse(userId);
     }
 
     public List<ServiceRequest> getRequestsForMechanic(Mechanic mechanic) {
-        return serviceRequestRepository.findByPreferredMechanicId(mechanic.getId());
+        return serviceRequestRepository.findByPreferredMechanicIdAndHiddenByMechanicFalse(mechanic.getId());
     }
 
     public List<ServiceRequestStatusHistory> getRecentStatusHistory() {
@@ -261,8 +264,6 @@ public class ServiceRequestService {
                 "ASSIGNMENT_CHANGED",
                 "Admin assigned or changed the preferred mechanic."
         );
-<<<<<<< Updated upstream
-=======
 
         // Notify the newly assigned mechanic
         if (mechanic.getUser() != null) {
@@ -280,21 +281,21 @@ public class ServiceRequestService {
     public void acceptRequestAsMechanic(Long requestId, Mechanic mechanic, String actor) {
         ServiceRequest request = serviceRequestRepository.findById(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("Request not found"));
-        
+
         if (request.getPreferredMechanic() == null || !request.getPreferredMechanic().getId().equals(mechanic.getId())) {
             throw new AccessDeniedException("This request is not assigned to you.");
         }
-        
+
         if (request.getStatus() != RequestStatus.ASSIGNED) {
             throw new IllegalStateException("Only requests with status ASSIGNED can be accepted.");
         }
 
         RequestStatus before = request.getStatus();
         request.setStatus(RequestStatus.IN_PROGRESS);
-        
+
         ServiceRequest saved = serviceRequestRepository.save(request);
         appendHistory(saved, before, RequestStatus.IN_PROGRESS, actor, "MECHANIC_ACCEPTED", "Mechanic accepted the job. Status moved to IN_PROGRESS.");
-        
+
         // Remove notification for mechanic
         notificationService.removeMechanicAssignmentNotification(mechanic.getUser(), request.getId());
 
@@ -310,11 +311,11 @@ public class ServiceRequestService {
     public void rejectRequestAsMechanic(Long requestId, Mechanic mechanic, String actor) {
         ServiceRequest request = serviceRequestRepository.findById(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("Request not found"));
-        
+
         if (request.getPreferredMechanic() == null || !request.getPreferredMechanic().getId().equals(mechanic.getId())) {
             throw new AccessDeniedException("This request is not assigned to you.");
         }
-        
+
         if (request.getStatus() != RequestStatus.ASSIGNED) {
             throw new IllegalStateException("Only requests with status ASSIGNED can be rejected.");
         }
@@ -322,10 +323,10 @@ public class ServiceRequestService {
         RequestStatus before = request.getStatus();
         request.setPreferredMechanic(null);
         request.setStatus(RequestStatus.PENDING);
-        
+
         ServiceRequest saved = serviceRequestRepository.save(request);
         appendHistory(saved, before, RequestStatus.PENDING, actor, "MECHANIC_REJECTED", "Mechanic rejected the job. Request set back to PENDING.");
-        
+
         // Remove notification for mechanic
         notificationService.removeMechanicAssignmentNotification(mechanic.getUser(), request.getId());
 
@@ -338,7 +339,6 @@ public class ServiceRequestService {
 
         // Notify admins that a request is now unassigned
         notificationService.notifyAdminsNoMechanicRequest(saved.getId(), saved.getCustomerVehicle().getUser().getFullName());
->>>>>>> Stashed changes
     }
 
     public void clearMechanicAssignmentAsAdmin(Long requestId, String actor) {

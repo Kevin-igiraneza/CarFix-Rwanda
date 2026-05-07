@@ -43,7 +43,7 @@ public class AdminDashboardController {
         this.notificationService = notificationService;
     }
 
-    @GetMapping("/real-admin-dashboard")
+    @GetMapping("/admin/dashboard")
     public String realAdminDashboard(Model model, Authentication authentication) {
         User currentUser = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
@@ -51,17 +51,28 @@ public class AdminDashboardController {
         List<ServiceRequest> requests = serviceRequestService.getAllRequests();
         List<CustomerVehicle> vehicles = customerVehicleService.getAllVehicles();
 
-        List<User> recentUsers = userRepository.findAll()
-                .stream()
-                .sorted(Comparator.comparing(User::getId).reversed())
-                .limit(6)
-                .toList();
-        
         List<ServiceRequestStatusHistory> recentStatusHistory = serviceRequestService.getRecentStatusHistory();
+        List<User> recentUsers = userRepository.findAll().stream()
+                .sorted(Comparator.comparing(User::getId).reversed())
+                .limit(4)
+                .toList();
+        List<ServiceRequest> recentRequests = requests.stream()
+                .sorted(Comparator.comparing(ServiceRequest::getId).reversed())
+                .limit(5)
+                .toList();
 
         model.addAttribute("currentUser", com.carfix.carfixrwanda.dto.DtoMapper.toUserDto(currentUser));
-        model.addAttribute("recentUsers", com.carfix.carfixrwanda.dto.DtoMapper.toUserDtoList(recentUsers));
         model.addAttribute("recentStatusHistory", recentStatusHistory);
+        model.addAttribute("recentUsers", com.carfix.carfixrwanda.dto.DtoMapper.toUserDtoList(recentUsers));
+        model.addAttribute("recentRequests", com.carfix.carfixrwanda.dto.DtoMapper.toServiceRequestDtoList(recentRequests));
+
+        long unassignedRequests = requests.stream().filter(r -> r.getPreferredMechanic() == null && r.getStatus() != RequestStatus.COMPLETED && r.getStatus() != RequestStatus.CANCELLED).count();
+        long pendingMechanics = mechanics.stream().filter(m -> m.getVerificationStatus() == VerificationStatus.PENDING).count();
+        long unreadNotifications = notificationService.getNotificationsForUser(currentUser.getId()).stream().filter(n -> !n.isRead()).count();
+
+        model.addAttribute("unassignedRequestCount", unassignedRequests);
+        model.addAttribute("pendingMechanicCount", pendingMechanics);
+        model.addAttribute("unreadNotificationCount", unreadNotifications);
 
         model.addAttribute("mechanicCount", mechanics.size());
         long activeRequestCount = requests.stream()

@@ -59,7 +59,7 @@ public class NotificationService {
                 "New service request assigned to you",
                 "Request #" + requestId + " from " + customerName + " — " + vehicleName + ": " + problemTitle,
                 NotificationType.REQUEST_ASSIGNED,
-                "/real-mechanic-dashboard?requestId=" + requestId);
+                "/mechanic/dashboard?requestId=" + requestId);
     }
 
     // ── Customer: mechanic accepted ───────────────────────────────────────────
@@ -86,7 +86,7 @@ public class NotificationService {
                 "Cancellation requested",
                 customerName + " has requested to cancel request #" + requestId + ". Please review.",
                 NotificationType.CANCELLATION_REQUESTED,
-                "/real-mechanic-dashboard");
+                "/mechanic/dashboard");
     }
 
     // ── Customer: mechanic approved cancellation ──────────────────────────────
@@ -126,7 +126,7 @@ public class NotificationService {
     }
 
     public void removeMechanicAssignmentNotification(User mechanicUser, Long requestId) {
-        String link = "/real-mechanic-dashboard?requestId=" + requestId;
+        String link = "/mechanic/dashboard?requestId=" + requestId;
         notificationRepository.deleteByRecipientAndTypeAndLink(mechanicUser.getId(), NotificationType.REQUEST_ASSIGNED, link);
     }
 }

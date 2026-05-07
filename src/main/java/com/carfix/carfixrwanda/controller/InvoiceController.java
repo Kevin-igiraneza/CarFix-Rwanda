@@ -37,7 +37,7 @@ public class InvoiceController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("mechanicFlashError", e.getMessage());
         }
-        return "redirect:/real-mechanic-dashboard";
+        return "redirect:/mechanic/dashboard";
     }
 
     @GetMapping("/invoice/{id}")

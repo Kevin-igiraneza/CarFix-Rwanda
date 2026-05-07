@@ -62,11 +62,11 @@ public class GlobalNavAdvice {
         model.addAttribute("navIsAdmin", admin);
 
         if (admin) {
-            model.addAttribute("navDashboardUrl", "/real-admin-dashboard");
+            model.addAttribute("navDashboardUrl", "/admin/dashboard");
             model.addAttribute("pendingMechanicCount", mechanicRepository.countByVerificationStatus(com.carfix.carfixrwanda.enums.VerificationStatus.PENDING));
             model.addAttribute("unassignedRequestCount", serviceRequestRepository.countByStatus(com.carfix.carfixrwanda.enums.RequestStatus.PENDING));
         } else if (mechanic) {
-            model.addAttribute("navDashboardUrl", "/real-mechanic-dashboard");
+            model.addAttribute("navDashboardUrl", "/mechanic/dashboard");
         } else if (customer) {
             model.addAttribute("navDashboardUrl", "/customer-dashboard");
         }

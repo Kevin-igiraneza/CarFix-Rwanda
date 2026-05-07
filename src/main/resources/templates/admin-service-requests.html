@@ -28,7 +28,7 @@
             </div>
 
             <nav class="admin-menu dashboard-menu">
-                <a href="/real-admin-dashboard" class="dashboard-menu-link">
+                <a href="/admin/dashboard" class="dashboard-menu-link">
                     <span class="dashboard-menu-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
@@ -137,7 +137,7 @@
                         </thead>
                         <tbody>
                             <tr th:each="request : ${requests}" th:classappend="${request.preferredMechanic == null && request.status.name() != 'COMPLETED' && request.status.name() != 'CANCELLED'} ? 'admin-row-needs-mechanic'">
-                                <td th:text="${'#RX-' + request.id}">#RX-1</td>
+                                <td th:text="${'#RQ-' + request.id}">#RQ-1</td>
                                 <td>
                                     <strong th:text="${request.customerVehicle.vehicleName}">Toyota</strong><br>
                                     <small th:text="${request.problemTitle}">Oil Leak</small>
@@ -172,6 +172,11 @@
                                         <select name="status" onchange="this.form.submit()" style="padding:8px; border-radius:8px; border: 1px solid #dbe4f0;">
                                             <option th:each="st : ${requestStatuses}" th:value="${st}" th:text="${st}" th:selected="${request.status == st}"></option>
                                         </select>
+                                    </form>
+
+                                    <form th:action="@{/admin/delete-request}" method="post" style="margin-top: 6px;">
+                                        <input type="hidden" name="requestId" th:value="${request.id}">
+                                        <button type="submit" onclick="return confirm('Are you sure you want to completely delete this request?')" style="width: 100%; padding: 6px; border: 1px solid #fecdd3; background: #fef2f2; border-radius: 8px; cursor: pointer; color: #e11d48; font-weight: 600;">Delete</button>
                                     </form>
                                 </td>
                             </tr>

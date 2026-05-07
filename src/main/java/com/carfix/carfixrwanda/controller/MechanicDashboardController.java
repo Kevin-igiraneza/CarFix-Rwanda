@@ -38,7 +38,7 @@ public class MechanicDashboardController {
         this.notificationService = notificationService;
     }
 
-    @GetMapping("/real-mechanic-dashboard")
+    @GetMapping("/mechanic/dashboard")
     public String realMechanicDashboard(Model model, Authentication authentication) {
         User currentUser = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new IllegalArgumentException("Logged in user not found"));
@@ -101,7 +101,7 @@ public class MechanicDashboardController {
                 } catch (Exception ex) {
                         redirectAttributes.addFlashAttribute("mechanicFlashError", ex.getMessage());
                 }
-        return "redirect:/real-mechanic-dashboard";
+        return "redirect:/mechanic/dashboard";
     }
 
     @PostMapping("/mechanic/review-cancellation-request")
@@ -131,7 +131,7 @@ public class MechanicDashboardController {
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("mechanicFlashError", ex.getMessage());
         }
-        return "redirect:/real-mechanic-dashboard";
+        return "redirect:/mechanic/dashboard";
     }
 
     @PostMapping("/mechanic/delete-service-request")
@@ -149,7 +149,7 @@ public class MechanicDashboardController {
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("mechanicFlashError", ex.getMessage());
         }
-        return "redirect:/real-mechanic-dashboard";
+        return "redirect:/mechanic/dashboard";
     }
 
     @PostMapping("/mechanic/accept-request")
@@ -167,7 +167,7 @@ public class MechanicDashboardController {
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("mechanicFlashError", ex.getMessage());
         }
-        return "redirect:/real-mechanic-dashboard";
+        return "redirect:/mechanic/dashboard";
     }
 
     @PostMapping("/mechanic/reject-request")
@@ -185,7 +185,7 @@ public class MechanicDashboardController {
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("mechanicFlashError", ex.getMessage());
         }
-        return "redirect:/real-mechanic-dashboard";
+        return "redirect:/mechanic/dashboard";
     }
 
     @GetMapping("/mechanic/notifications")

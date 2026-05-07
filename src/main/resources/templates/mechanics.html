@@ -304,11 +304,11 @@
     </nav>
     <nav class="nav-center" th:if="${navLoggedIn && navIsMechanic}">
         <a href="/mechanics" class="active">Directory</a>
-        <a href="/real-mechanic-dashboard">Dashboard</a>
+        <a href="/mechanic/dashboard">Dashboard</a>
     </nav>
     <nav class="nav-center" th:if="${navLoggedIn && navIsAdmin}">
         <a href="/mechanics" class="active">Directory</a>
-        <a href="/real-admin-dashboard">Admin</a>
+        <a href="/admin/dashboard">Admin</a>
     </nav>
     <nav class="nav-center" th:unless="${navLoggedIn}">
         <a href="/">Home</a>

@@ -18,10 +18,10 @@ public class AuthRedirectController {
             String role = authority.getAuthority();
 
             if ("ROLE_ADMIN".equals(role)) {
-                return "redirect:/real-admin-dashboard";
+                return "redirect:/admin/dashboard";
             }
             if ("ROLE_MECHANIC".equals(role)) {
-                return "redirect:/real-mechanic-dashboard";
+                return "redirect:/mechanic/dashboard";
             }
             if ("ROLE_CUSTOMER".equals(role)) {
                 return "redirect:/customer-dashboard";

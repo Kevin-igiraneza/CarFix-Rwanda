@@ -80,13 +80,40 @@ public class NotificationService {
                 "/customer-dashboard");
     }
 
+    // ── Mechanic: customer requested cancellation ─────────────────────────────
+    public void notifyMechanicCancellationRequested(User mechanicUser, Long requestId, String customerName) {
+        send(mechanicUser,
+                "Cancellation requested",
+                customerName + " has requested to cancel request #" + requestId + ". Please review.",
+                NotificationType.CANCELLATION_REQUESTED,
+                "/real-mechanic-dashboard");
+    }
+
+    // ── Customer: mechanic approved cancellation ──────────────────────────────
+    public void notifyCustomerCancellationApproved(User customerUser, Long requestId, String mechanicName) {
+        send(customerUser,
+                "Cancellation approved",
+                mechanicName + " has approved the cancellation for request #" + requestId + ".",
+                NotificationType.CANCELLATION_APPROVED,
+                "/customer-dashboard");
+    }
+
+    // ── Customer: mechanic declined cancellation ──────────────────────────────
+    public void notifyCustomerCancellationDeclined(User customerUser, Long requestId, String mechanicName) {
+        send(customerUser,
+                "Cancellation declined",
+                mechanicName + " has declined the cancellation for request #" + requestId + ". They left a message for you.",
+                NotificationType.CANCELLATION_DECLINED,
+                "/customer-dashboard");
+    }
+
     // ── Read/unread helpers ──────────────────────────────────────────────────
     public long getUnreadCount(Long userId) {
         return notificationRepository.countByRecipientIdAndReadFalse(userId);
     }
 
     public List<Notification> getNotificationsForUser(Long userId) {
-        return notificationRepository.findByRecipientIdOrderByCreatedAtDesc(userId);
+        return notificationRepository.findByRecipientIdAndReadFalseOrderByCreatedAtDesc(userId);
     }
 
     public void markAllRead(Long userId) {
@@ -96,5 +123,10 @@ public class NotificationService {
     // ── Legacy stub kept for backward compat ─────────────────────────────────
     public void notifyStatusChange(ServiceRequest request) {
         // no-op: status changes are reflected in the dashboard directly
+    }
+
+    public void removeMechanicAssignmentNotification(User mechanicUser, Long requestId) {
+        String link = "/real-mechanic-dashboard?requestId=" + requestId;
+        notificationRepository.deleteByRecipientAndTypeAndLink(mechanicUser.getId(), NotificationType.REQUEST_ASSIGNED, link);
     }
 }

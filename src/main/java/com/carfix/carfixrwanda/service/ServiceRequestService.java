@@ -26,16 +26,13 @@ public class ServiceRequestService {
     private final ServiceRequestRepository serviceRequestRepository;
     private final ServiceRequestStatusHistoryRepository statusHistoryRepository;
     private final MechanicService mechanicService;
-    private final com.carfix.carfixrwanda.service.NotificationService notificationService;
 
     public ServiceRequestService(ServiceRequestRepository serviceRequestRepository,
                                  ServiceRequestStatusHistoryRepository statusHistoryRepository,
-                                 MechanicService mechanicService,
-                                 com.carfix.carfixrwanda.service.NotificationService notificationService) {
+                                 MechanicService mechanicService) {
         this.serviceRequestRepository = serviceRequestRepository;
         this.statusHistoryRepository = statusHistoryRepository;
         this.mechanicService = mechanicService;
-        this.notificationService = notificationService;
     }
 
     public ServiceRequest saveRequest(ServiceRequest serviceRequest, String actor) {
@@ -56,11 +53,11 @@ public class ServiceRequestService {
     }
 
     public List<ServiceRequest> getRequestsByUserId(Long userId) {
-        return serviceRequestRepository.findByCustomerVehicleUserIdAndHiddenByCustomerFalse(userId);
+        return serviceRequestRepository.findByCustomerVehicleUserId(userId);
     }
 
     public List<ServiceRequest> getRequestsForMechanic(Mechanic mechanic) {
-        return serviceRequestRepository.findByPreferredMechanicIdAndHiddenByMechanicFalse(mechanic.getId());
+        return serviceRequestRepository.findByPreferredMechanicId(mechanic.getId());
     }
 
     public List<ServiceRequestStatusHistory> getRecentStatusHistory() {
@@ -172,6 +169,15 @@ public class ServiceRequestService {
         ServiceRequest saved = serviceRequestRepository.save(request);
         appendHistory(saved, current, current, actor, "CUSTOMER_CANCELLATION_REQUESTED",
                 reason);
+
+        // Notify mechanic
+        if (request.getPreferredMechanic() != null && request.getPreferredMechanic().getUser() != null) {
+            notificationService.notifyMechanicCancellationRequested(
+                    request.getPreferredMechanic().getUser(),
+                    request.getId(),
+                    request.getCustomerVehicle().getUser().getFullName()
+            );
+        }
     }
 
     public void reviewCancellationRequestAsMechanic(Long requestId,
@@ -201,12 +207,26 @@ public class ServiceRequestService {
             auditStatusChange(request, actor);
             ServiceRequest saved = serviceRequestRepository.save(request);
             appendHistory(saved, current, RequestStatus.CANCELLED, actor, "MECHANIC_CANCELLATION_APPROVED", mechanicMessage);
+            
+            // Notify customer
+            notificationService.notifyCustomerCancellationApproved(
+                    request.getCustomerVehicle().getUser(),
+                    request.getId(),
+                    mechanic.getUser().getFullName()
+            );
             return;
         }
 
         request.setCancellationRequestStatus(CancellationRequestStatus.DECLINED);
         ServiceRequest saved = serviceRequestRepository.save(request);
         appendHistory(saved, current, current, actor, "MECHANIC_CANCELLATION_DECLINED", mechanicMessage);
+
+        // Notify customer
+        notificationService.notifyCustomerCancellationDeclined(
+                request.getCustomerVehicle().getUser(),
+                request.getId(),
+                mechanic.getUser().getFullName()
+        );
     }
 
     /**
@@ -241,6 +261,8 @@ public class ServiceRequestService {
                 "ASSIGNMENT_CHANGED",
                 "Admin assigned or changed the preferred mechanic."
         );
+<<<<<<< Updated upstream
+=======
 
         // Notify the newly assigned mechanic
         if (mechanic.getUser() != null) {
@@ -273,6 +295,9 @@ public class ServiceRequestService {
         ServiceRequest saved = serviceRequestRepository.save(request);
         appendHistory(saved, before, RequestStatus.IN_PROGRESS, actor, "MECHANIC_ACCEPTED", "Mechanic accepted the job. Status moved to IN_PROGRESS.");
         
+        // Remove notification for mechanic
+        notificationService.removeMechanicAssignmentNotification(mechanic.getUser(), request.getId());
+
         // Notify customer
         notificationService.notifyCustomerRequestAccepted(
                 request.getCustomerVehicle().getUser(),
@@ -301,6 +326,9 @@ public class ServiceRequestService {
         ServiceRequest saved = serviceRequestRepository.save(request);
         appendHistory(saved, before, RequestStatus.PENDING, actor, "MECHANIC_REJECTED", "Mechanic rejected the job. Request set back to PENDING.");
         
+        // Remove notification for mechanic
+        notificationService.removeMechanicAssignmentNotification(mechanic.getUser(), request.getId());
+
         // Notify customer
         notificationService.notifyCustomerRequestRejected(
                 request.getCustomerVehicle().getUser(),
@@ -310,6 +338,7 @@ public class ServiceRequestService {
 
         // Notify admins that a request is now unassigned
         notificationService.notifyAdminsNoMechanicRequest(saved.getId(), saved.getCustomerVehicle().getUser().getFullName());
+>>>>>>> Stashed changes
     }
 
     public void clearMechanicAssignmentAsAdmin(Long requestId, String actor) {
@@ -362,8 +391,7 @@ public class ServiceRequestService {
         if (request.getStatus() != RequestStatus.CANCELLED) {
             throw new IllegalStateException("Only cancelled requests can be deleted from the dashboard.");
         }
-        request.setHiddenByCustomer(true);
-        serviceRequestRepository.save(request);
+        deleteRequestWithHistory(request);
     }
 
     @Transactional
@@ -377,8 +405,7 @@ public class ServiceRequestService {
         if (request.getStatus() != RequestStatus.CANCELLED) {
             throw new IllegalStateException("Only cancelled requests can be deleted from the dashboard.");
         }
-        request.setHiddenByMechanic(true);
-        serviceRequestRepository.save(request);
+        deleteRequestWithHistory(request);
     }
 
     private void normalizeAndValidateNewRequest(ServiceRequest request) {
@@ -405,7 +432,6 @@ public class ServiceRequestService {
     private void auditStatusChange(ServiceRequest request, String actor) {
         request.setStatusUpdatedAt(LocalDateTime.now());
         request.setStatusUpdatedBy(actor == null || actor.isBlank() ? "SYSTEM" : actor.trim());
-        notificationService.notifyStatusChange(request);
     }
 
     private void deleteRequestWithHistory(ServiceRequest request) {
